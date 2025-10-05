@@ -6,6 +6,8 @@ Proyecto de ejemplo en el cual veremos como crear órdenes de compra usando una 
 
 > **⚡ ACTUALIZADO A .NET 9** - Este proyecto ha sido migrado exitosamente de .NET Core 3.1 a .NET 9.0. Ver [MIGRATION_TO_NET9.md](MIGRATION_TO_NET9.md) para detalles completos.
 
+> **📚 [VER ÍNDICE COMPLETO DE DOCUMENTACIÓN](DOCUMENTATION_INDEX.md)** - Encuentra toda la documentación, diagramas y guías en un solo lugar.
+
 ## ¿Cómo levantar el proyecto?
 ### 1. Cambiar las cadenas de conexión
 Actualicen las cadenas de conexión de cada Microservicio por la de ustedes.
@@ -35,11 +37,19 @@ INSERT [Identity].[AspNetUsers] ([Id], [UserName], [NormalizedUserName], [Email]
 - **SQL Server** (LocalDB, Express, o versión completa)
 - **Visual Studio 2022** (17.8+) o **VS Code**
 
-## 📚 Documentación de Migración
+## 📚 Documentación Completa
 
+### 🔄 Migración a .NET 9
 - **[MIGRATION_SUMMARY.md](MIGRATION_SUMMARY.md)** - Resumen ejecutivo de la migración
 - **[MIGRATION_TO_NET9.md](MIGRATION_TO_NET9.md)** - Documentación técnica detallada
 - **[QUICK_START_NET9.md](QUICK_START_NET9.md)** - Guía rápida de inicio
+- **[MIGRACION_COMPLETADA.md](MIGRACION_COMPLETADA.md)** - Resumen en español
+
+### 🗄️ Base de Datos
+- **[DATABASE_SCHEMA.md](DATABASE_SCHEMA.md)** - 📊 **Esquema completo con diagramas ER**
+- **[DATABASE_DIAGRAM.md](DATABASE_DIAGRAM.md)** - 🎨 **Visualización rápida y simplificada**
+- **[DATABASE_CONNECTION_VERIFIED.md](DATABASE_CONNECTION_VERIFIED.md)** - Verificación de conexión
+- **[DATABASE_MIGRATION_COMPLETE.md](DATABASE_MIGRATION_COMPLETE.md)** - Historial de migraciones
 
 ## 🎯 ¿Quiéres aprender más sobre esto?
 Pues tenemos un curso completo donde vemos la teoría y la llevamos a la práctica realizando este proyecto.
