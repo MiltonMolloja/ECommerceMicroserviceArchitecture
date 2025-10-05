@@ -68,7 +68,7 @@ namespace Identity.Api
             });
 
             // Event handlers
-            services.AddMediatR(Assembly.Load("Identity.Service.EventHandlers"));
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Identity.Service.EventHandlers")));
 
             // Query services
             services.AddTransient<IUserQueryService, UserQueryService>();

@@ -50,7 +50,7 @@ namespace Customer.Api
             services.AddHealthChecksUI();
 
             // Event handlers
-            services.AddMediatR(Assembly.Load("Customer.Service.EventHandlers"));
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Customer.Service.EventHandlers")));
 
             // Query services
             services.AddTransient<IClientQueryService, ClientQueryService>();

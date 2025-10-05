@@ -47,7 +47,7 @@ namespace Catalog.Api
             services.AddHealthChecksUI();
 
             // Event handlers
-            services.AddMediatR(Assembly.Load("Catalog.Service.EventHandlers"));
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Catalog.Service.EventHandlers")));
 
             // Query services
             services.AddTransient<IProductQueryService, ProductQueryService>();

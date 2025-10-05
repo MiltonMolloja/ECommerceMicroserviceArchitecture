@@ -58,7 +58,7 @@ namespace Order.Api
             services.AddHttpClient<ICatalogProxy, CatalogProxy>();
 
             // Event handlers
-            services.AddMediatR(Assembly.Load("Order.Service.EventHandlers"));
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Order.Service.EventHandlers")));
 
             // Query services
             services.AddTransient<IOrderQueryService, OrderQueryService>();
