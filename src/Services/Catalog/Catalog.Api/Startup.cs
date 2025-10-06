@@ -44,7 +44,13 @@ namespace Catalog.Api
                         .AddCheck("self", () => HealthCheckResult.Healthy())
                         .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name);
 
-            // services.AddHealthChecksUI(); // Commented out - requires additional configuration
+            // Health Checks UI
+            services.AddHealthChecksUI(setup =>
+            {
+                setup.SetEvaluationTimeInSeconds(10); // Evalúa cada 10 segundos
+                setup.MaximumHistoryEntriesPerEndpoint(50); // Mantiene historial de 50 entradas                
+            })
+            .AddInMemoryStorage(); // Usa almacenamiento en memoria (puede cambiarse a SQL Server si se desea)
 
             // Event handlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Catalog.Service.EventHandlers")));
