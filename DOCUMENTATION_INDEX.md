@@ -1,6 +1,6 @@
-# 📚 Índice de Documentación - KODOTI Commerce
+# 📚 Índice de Documentación - ECommerce
 
-Bienvenido a la documentación completa del proyecto KODOTI Commerce con arquitectura de microservicios en .NET 9.
+Bienvenido a la documentación completa del proyecto ECommerce con arquitectura de microservicios en .NET 9.
 
 ## 🚀 Inicio Rápido
 
@@ -28,7 +28,7 @@ Bienvenido a la documentación completa del proyecto KODOTI Commerce con arquite
 
 ```mermaid
 graph TB
-    subgraph "KodotiCommerceDb"
+    subgraph "ECommerceDb"
         Identity["🔐 Identity<br/>7 tablas"]
         Catalog["📦 Catalog<br/>2 tablas"]
         Customer["👥 Customer<br/>1 tabla"]
@@ -78,9 +78,9 @@ graph LR
 
 ```
 Servidor: localhost\SQLEXPRESS
-Base de Datos: KodotiCommerceDb
+Base de Datos: ECommerceDb
 Autenticación: Windows (Trusted_Connection)
-Usuario Admin: admin@kodoti.com / Pa$$w0rd!
+Usuario Admin: admin@gmail.com / Pa$$w0rd!
 ```
 
 ## 🏗️ Arquitectura del Proyecto
@@ -98,7 +98,7 @@ graph TB
     Customer[👥 Customer API<br/>:30000]
     Order[🛒 Order API<br/>:40000]
     
-    DB[(💾 KodotiCommerceDb)]
+    DB[(💾 ECommerceDb)]
     
     Client --> Gateway
     Auth --> Gateway
@@ -286,7 +286,7 @@ Todos los diagramas de este proyecto usan **Mermaid**, lo que significa que:
 
 ---
 
-**🎉 ¡Gracias por usar KODOTI Commerce!**
+**🎉 ¡Gracias por usar ECommerce!**
 
 Para cualquier pregunta, consulta la documentación específica enlazada arriba.
 

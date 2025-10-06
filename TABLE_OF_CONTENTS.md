@@ -206,9 +206,7 @@ TOTAL:                 14 documentos
 ## 📞 Información de Contacto
 
 ### Proyecto Original
-- **Autor:** KODOTI / Anexsoft
-- **Curso:** [Udemy - Microservicios con .NET](https://www.udemy.com/course/microservicios-con-net-core-3-hasta-su-publicacion-en-azure/)
-- **Website:** https://anexsoft.com
+- **Autor:** Milton Molloja
 
 ### Migración a .NET 9
 - **Fecha:** 2025-10-04
@@ -252,7 +250,7 @@ TOTAL:                 14 documentos
 ---
 
 <p align="center">
-  <strong>Documentación Completa de KODOTI Commerce</strong><br/>
+  <strong>Documentación Completa de ECommerce</strong><br/>
   <sub>E-Commerce con Arquitectura de Microservicios en .NET 9</sub>
 </p>
 

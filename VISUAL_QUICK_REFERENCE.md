@@ -25,7 +25,7 @@ erDiagram
 
 ```mermaid
 graph TB
-    subgraph "KodotiCommerceDb"
+    subgraph "ECommerceDb"
         Identity["🔐 Identity<br/>7 tablas<br/>Autenticación"]
         Catalog["📦 Catalog<br/>2 tablas<br/>Productos"]
         Customer["👥 Customer<br/>1 tabla<br/>Clientes"]
@@ -64,7 +64,7 @@ graph TB
     end
     
     subgraph "Database"
-        DB[(KodotiCommerceDb<br/>4 Schemas)]
+        DB[(ECommerceDb<br/>4 Schemas)]
     end
     
     WC --> GW
@@ -192,7 +192,7 @@ Health Checks:    8.0.2
 **Cadena de Conexión:**
 ```
 Server=localhost\SQLEXPRESS;
-Database=KodotiCommerceDb;
+Database=ECommerceDb;
 Trusted_Connection=True;
 MultipleActiveResultSets=true;
 TrustServerCertificate=True
@@ -230,7 +230,7 @@ dotnet run
 ### 4️⃣ Credenciales de Prueba
 
 ```
-Email:    admin@kodoti.com
+Email:    admin@gmail.com
 Password: Pa$$w0rd!
 ```
 

@@ -1,8 +1,6 @@
-# KODOTI Commerce - Microservice Architecture .NET 9 🚀
+# ECommerce - Microservice Architecture .NET 9 🚀
 
 Proyecto de ejemplo en el cual veremos como crear órdenes de compra usando una arquitectura orientada a microservicios y **.NET 9**.
-
-![kodoti course](https://anexsoft.com/storage/app/media/common/kodoti-microservice-architecture.jpg "Curso de Microservicios con .NET Core")
 
 > **⚡ ACTUALIZADO A .NET 9** - Este proyecto ha sido migrado exitosamente de .NET Core 3.1 a .NET 9.0. Ver [MIGRATION_TO_NET9.md](MIGRATION_TO_NET9.md) para detalles completos.
 
@@ -28,7 +26,7 @@ update-database -context ApplicationDbContext
 
 ### 4. Agregar un usuario por defecto a la base de datos
 ```
-INSERT [Identity].[AspNetUsers] ([Id], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount], [FirstName], [LastName]) VALUES (N'cc7deafd-2977-4c1b-91ad-7b8d37a01ffe', N'admin@kodoti.com', N'ADMIN@KODOTI.COM', N'admin@kodoti.com', N'ADMIN@KODOTI.COM', 0, N'AQAAAAEAACcQAAAAEL5faIXPhAOdXYU+vAAKbF32yd2ONSGUdGJ6wo9jkhm8KKlLF/h5x0zjJbcPKt8WYg==', N'PS7QHYXIO4NUC65ZYEP4SBEYOXP4DTWA', N'e955992b-abf5-41d3-b504-ec6dc0632989', NULL, 0, 0, NULL, 1, 0, N'Eduardo', N'Rodríguez Patiño')
+INSERT [Identity].[AspNetUsers] ([Id], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount], [FirstName], [LastName]) VALUES (N'cc7deafd-2977-4c1b-91ad-7b8d37a01ffe', N'admin@gmail.com', N'admin@gmail.com', N'admin@gmail.com', N'admin@gmail.com', 0, N'AQAAAAEAACcQAAAAEL5faIXPhAOdXYU+vAAKbF32yd2ONSGUdGJ6wo9jkhm8KKlLF/h5x0zjJbcPKt8WYg==', N'PS7QHYXIO4NUC65ZYEP4SBEYOXP4DTWA', N'e955992b-abf5-41d3-b504-ec6dc0632989', NULL, 0, 0, NULL, 1, 0, N'Milton', N'Mollloja')
 ```
 
 ## 📋 Requisitos

@@ -93,7 +93,7 @@ namespace Common.Logging
 
             var hostName = Dns.GetHostName();
             var assemblyName = Assembly.GetEntryAssembly().GetName().Name;
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT").ToLower();
+            var environment = (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production").ToLower();
 
             switch (environment)
             {
@@ -107,6 +107,7 @@ namespace Common.Logging
                     environment = "PROD";
                     break;
                 default:
+                    environment = "PROD";
                     break;
             }
 

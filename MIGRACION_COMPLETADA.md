@@ -2,7 +2,7 @@
 
 ## 🎉 ¡Felicitaciones!
 
-La migración de tu proyecto **KODOTI Commerce - Microservice Architecture** de **.NET Core 3.1** a **.NET 9** se ha completado **exitosamente**.
+La migración de tu proyecto **ECommerce - Microservice Architecture** de **.NET Core 3.1** a **.NET 9** se ha completado **exitosamente**.
 
 ---
 

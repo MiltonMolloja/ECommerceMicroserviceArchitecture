@@ -112,15 +112,15 @@ INSERT INTO [Identity].[AspNetUsers]
    [LockoutEnabled], [AccessFailedCount], [FirstName], [LastName]) 
 VALUES 
   (N'cc7deafd-2977-4c1b-91ad-7b8d37a01ffe', 
-   N'admin@kodoti.com', N'ADMIN@KODOTI.COM', 
-   N'admin@kodoti.com', N'ADMIN@KODOTI.COM', 
+   N'admin@gmail.com', N'admin@gmail.com', 
+   N'admin@gmail.com', N'admin@gmail.com', 
    0, N'AQAAAAEAACcQAAAAEL5faIXPhAOdXYU+vAAKbF32yd2ONSGUdGJ6wo9jkhm8KKlLF/h5x0zjJbcPKt8WYg==', 
    N'PS7QHYXIO4NUC65ZYEP4SBEYOXP4DTWA', N'e955992b-abf5-41d3-b504-ec6dc0632989', 
-   NULL, 0, 0, NULL, 1, 0, N'Eduardo', N'Rodríguez Patiño');
+   NULL, 0, 0, NULL, 1, 0, N'Milton', N'Molloja');
 ```
 
 **Credenciales:**
-- **Usuario:** admin@kodoti.com
+- **Usuario:** admin@gmail.com
 - **Contraseña:** Pa$$w0rd! (según el hash proporcionado)
 
 ---
@@ -336,7 +336,7 @@ Para no exponer claves secretas en `appsettings.json`:
 ```powershell
 cd src/Services/Identity/Identity.Api
 dotnet user-secrets init
-dotnet user-secrets set "SecretKey" "TuClaveSecretaMuyLarga123456789"
+dotnet user-secrets set "SecretKey" "molloja-ecommerce-secret-key-super-secure-2025-minimum-32chars"
 ```
 
 Repite para cada microservicio.

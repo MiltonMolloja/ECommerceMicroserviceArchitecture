@@ -4,7 +4,7 @@
 
 ```mermaid
 graph TB
-    subgraph DB[KodotiCommerceDb]
+    subgraph DB[ECommerceDb]
         subgraph Identity["🔐 Identity Schema (7 tablas)"]
             Users[👤 AspNetUsers<br/>Usuarios del sistema]
             Roles[🎭 AspNetRoles<br/>Roles]
@@ -243,5 +243,5 @@ INNER JOIN [Identity].AspNetRoles r ON ur.RoleId = r.Id;
 ---
 
 **Última actualización:** 2025-10-04  
-**Base de datos:** KodotiCommerceDb  
+**Base de datos:** ECommerceDb  
 **Servidor:** localhost\SQLEXPRESS

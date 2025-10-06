@@ -30,8 +30,18 @@ namespace Clients.WebClient.Controllers
         public async Task<IActionResult> Connect(string access_token)
         {
             var token = access_token.Split('.');
-            var base64Content = Convert.FromBase64String(token[1]);
-
+    
+            // Convert Base64URL to Base64
+            string base64 = token[1].Replace('-', '+').Replace('_', '/');
+    
+            // Add proper padding
+            switch (base64.Length % 4)
+            {
+                case 2: base64 += "=="; break;
+                case 3: base64 += "="; break;
+            }
+    
+            var base64Content = Convert.FromBase64String(base64);
             var user = JsonSerializer.Deserialize<AccessTokenUserInformation>(base64Content);
 
             var claims = new List<Claim>

@@ -1,4 +1,4 @@
-# 📚 Documentación Visual - KODOTI Commerce
+# 📚 Documentación Visual - E Commerce
 
 > **Sistema de E-Commerce con Arquitectura de Microservicios en .NET 9**
 
@@ -80,7 +80,7 @@ graph TB
     GW --> CU[👥 Customer :30000]
     GW --> O[🛒 Order :40000]
     
-    I --> DB[(KodotiCommerceDb)]
+    I --> DB[(ECommerceDb)]
     C --> DB
     CU --> DB
     O --> DB
@@ -95,7 +95,7 @@ graph TB
 
 ```mermaid
 graph TB
-    subgraph "KodotiCommerceDb"
+    subgraph "ECommerceDb"
         Identity["🔐 Identity Schema<br/>7 tablas"]
         Catalog["📦 Catalog Schema<br/>2 tablas"]
         Customer["👥 Customer Schema<br/>1 tabla"]
@@ -219,7 +219,7 @@ graph TB
 
 ```mermaid
 mindmap
-  root((KODOTI<br/>Commerce))
+  root((E<br/>Commerce))
     Framework
       .NET 9.0
       ASP.NET Core
@@ -251,7 +251,7 @@ mindmap
    ```
 
 2. **🗄️ Configurar Base de Datos**
-   - Conexión: `Server=localhost\SQLEXPRESS;Database=KodotiCommerceDb;...`
+   - Conexión: `Server=localhost\SQLEXPRESS;Database=ECommerceDb;...`
    - Ver: [DATABASE_CONNECTION_VERIFIED.md](./DATABASE_CONNECTION_VERIFIED.md)
 
 3. **▶️ Ejecutar Servicios**
@@ -272,7 +272,7 @@ mindmap
 ### Credenciales de Prueba
 
 ```
-📧 Email:    admin@kodoti.com
+📧 Email:    admin@gmail.com
 🔑 Password: Pa$$w0rd!
 ```
 
@@ -338,7 +338,7 @@ pie title Progreso del Proyecto
 ---
 
 <p align="center">
-  <strong>KODOTI Commerce - E-Commerce con Microservicios en .NET 9</strong><br/>
+  <strong> E-Commerce con Microservicios en .NET 9</strong><br/>
   <sub>Última actualización: 2025-10-04 | Versión: .NET 9.0</sub>
 </p>
 

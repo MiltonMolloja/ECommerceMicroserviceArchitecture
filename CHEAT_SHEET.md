@@ -152,16 +152,16 @@ sqllocaldb create MyInstance
 sqlcmd -S "localhost\SQLEXPRESS" -E
 
 # Ejecutar query
-sqlcmd -S "localhost\SQLEXPRESS" -d "KodotiCommerceDb" -Q "SELECT * FROM [Identity].[AspNetUsers]" -E
+sqlcmd -S "localhost\SQLEXPRESS" -d "ECommerceDb" -Q "SELECT * FROM [Identity].[AspNetUsers]" -E
 
 # Ejecutar script
-sqlcmd -S "localhost\SQLEXPRESS" -d "KodotiCommerceDb" -i "script.sql" -E
+sqlcmd -S "localhost\SQLEXPRESS" -d "ECommerceDb" -i "script.sql" -E
 
 # Exportar resultados a archivo
 sqlcmd -S "localhost\SQLEXPRESS" -Q "SELECT * FROM sys.tables" -o "output.txt" -E
 
 # Modo interactivo
-sqlcmd -S "localhost\SQLEXPRESS" -d "KodotiCommerceDb" -E
+sqlcmd -S "localhost\SQLEXPRESS" -d "ECommerceDb" -E
 ```
 
 ### Queries Útiles
@@ -239,10 +239,10 @@ docker rm sql-server
 
 ```powershell
 # Build de imagen
-docker build -t kodoti-identity -f src/Services/Identity/Identity.Api/Dockerfile .
+docker build -t eCommerce-identity -f src/Services/Identity/Identity.Api/Dockerfile .
 
 # Ejecutar contenedor
-docker run -d -p 10000:80 --name identity-api kodoti-identity
+docker run -d -p 10000:80 --name identity-api eCommerce-identity
 
 # Ver logs
 docker logs identity-api
@@ -280,7 +280,7 @@ $parts = $token.Split('.')
 # Login
 curl -X POST http://localhost:10000/api/user/login `
   -H "Content-Type: application/json" `
-  -d '{"email":"admin@kodoti.com","password":"Pa$$w0rd!"}'
+  -d '{"email":"admin@gmail.com","password":"Pa$$w0rd!"}'
 
 # Con token
 curl -X GET http://localhost:10000/api/user/profile `
@@ -371,13 +371,13 @@ dotnet publish -c Release -r linux-x64 --self-contained false
 # Descargar: https://dotnet.microsoft.com/permalink/dotnetcore-current-windows-runtime-bundle-installer
 
 # Crear sitio en IIS
-New-IISSite -Name "KodotiIdentity" -PhysicalPath "C:\inetpub\wwwroot\identity" -BindingInformation "*:10000:"
+New-IISSite -Name "ECommerceIdentity" -PhysicalPath "C:\inetpub\wwwroot\identity" -BindingInformation "*:10000:"
 
 # Detener sitio
-Stop-IISSite -Name "KodotiIdentity"
+Stop-IISSite -Name "ECommerceIdentity"
 
 # Iniciar sitio
-Start-IISSite -Name "KodotiIdentity"
+Start-IISSite -Name "ECommerceIdentity"
 ```
 
 ## 📦 NuGet
@@ -548,13 +548,13 @@ dotnet ef --version
 sqlcmd -S "localhost\SQLEXPRESS" -Q "SELECT @@VERSION" -E
 
 # Verificar base de datos
-sqlcmd -S "localhost\SQLEXPRESS" -Q "SELECT name FROM sys.databases WHERE name = 'KodotiCommerceDb'" -E
+sqlcmd -S "localhost\SQLEXPRESS" -Q "SELECT name FROM sys.databases WHERE name = 'ECommerceDb'" -E
 ```
 
 ## 📚 Referencias Rápidas
 
-- **Conexión DB:** `Server=localhost\SQLEXPRESS;Database=KodotiCommerceDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True`
-- **Usuario Admin:** `admin@kodoti.com` / `Pa$$w0rd!`
+- **Conexión DB:** `Server=localhost\SQLEXPRESS;Database=ECommerceDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True`
+- **Usuario Admin:** `admin@gmail.com` / `Pa$$w0rd!`
 - **Puertos:** Identity:10000, Catalog:20000, Customer:30000, Order:40000
 
 ---

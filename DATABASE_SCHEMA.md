@@ -1,4 +1,4 @@
-# 🗄️ Esquema de Base de Datos - KodotiCommerceDb
+# 🗄️ Esquema de Base de Datos - ECommerceDb
 
 ## 📊 Diagrama Entidad-Relación
 
@@ -127,7 +127,7 @@ erDiagram
 
 | Tabla | Descripción | Registros Iniciales |
 |-------|-------------|---------------------|
-| `AspNetUsers` | Usuarios del sistema | 1 (admin@kodoti.com) |
+| `AspNetUsers` | Usuarios del sistema | 1 (admin@gmail.com) |
 | `AspNetRoles` | Roles de usuario | 0 |
 | `AspNetUserRoles` | Relación usuarios-roles | 0 |
 | `AspNetUserClaims` | Claims personalizados de usuarios | 0 |
@@ -254,7 +254,7 @@ graph LR
 
 ### Usuario Administrador
 ```sql
-Email: admin@kodoti.com
+Email: admin@gmail.com
 Password: Pa$$w0rd!
 FirstName: Admin
 LastName: Administrator
@@ -318,5 +318,5 @@ ORDER BY SchemaName, TableName, IndexName;
 
 **Conexión:**
 ```
-Server=localhost\SQLEXPRESS;Database=KodotiCommerceDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True
+Server=localhost\SQLEXPRESS;Database=ECommerceDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True
 ```

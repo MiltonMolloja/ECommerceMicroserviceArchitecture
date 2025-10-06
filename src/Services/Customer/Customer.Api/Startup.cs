@@ -47,7 +47,7 @@ namespace Customer.Api
                         .AddCheck("self", () => HealthCheckResult.Healthy())
                         .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name);
 
-            services.AddHealthChecksUI();
+            // services.AddHealthChecksUI(); // Commented out - requires additional configuration
 
             // Event handlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Customer.Service.EventHandlers")));

@@ -49,7 +49,7 @@ namespace Identity.Api
                         .AddCheck("self", () => HealthCheckResult.Healthy())
                         .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name);
 
-            services.AddHealthChecksUI();
+            // services.AddHealthChecksUI(); // Commented out - requires additional configuration
 
             // Identity
             services.AddIdentity<ApplicationUser, ApplicationRole>()

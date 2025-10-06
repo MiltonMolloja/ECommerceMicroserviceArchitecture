@@ -8,19 +8,19 @@
 - **Versión:** Microsoft SQL Server 2022 (RTM-GDR) - 16.0.1150.1 (X64)
 
 ### ✅ Base de Datos
-- **Nombre:** `KodotiCommerceDb`
+- **Nombre:** `ECommerceDb`
 - **Fecha de Creación:** 2025-10-04 22:49:33
 - **Estado:** ✅ Creada y operativa
 
 ## 🔗 Cadena de Conexión Configurada
 
 ```
-Server=localhost\SQLEXPRESS;Database=KodotiCommerceDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True
+Server=localhost\SQLEXPRESS;Database=ECommerceDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True
 ```
 
 ### 📝 Componentes de la Cadena de Conexión:
 - **Server:** `localhost\SQLEXPRESS` (instancia local de SQL Express)
-- **Database:** `KodotiCommerceDb` (base de datos del e-commerce)
+- **Database:** `ECommerceDb` (base de datos del e-commerce)
 - **Trusted_Connection:** `True` (autenticación de Windows)
 - **MultipleActiveResultSets:** `True` (permite múltiples consultas simultáneas)
 - **TrustServerCertificate:** `True` (evita errores de certificado SSL)
@@ -55,7 +55,7 @@ Server=localhost\SQLEXPRESS;Database=KodotiCommerceDb;Trusted_Connection=True;Mu
 ## 👤 Usuario Administrador
 
 ### Credenciales de Acceso:
-- **Email:** `admin@kodoti.com`
+- **Email:** `admin@gmail.com`
 - **Password:** `Pa$$w0rd!`
 - **Nombre:** Admin Administrator
 - **Estado:** ✅ Insertado correctamente
@@ -141,13 +141,13 @@ Una vez ejecutados los servicios, verificar en:
 ### 3. Probar Login de Administrador
 
 Usar las credenciales del administrador para probar el login:
-- Email: admin@kodoti.com
+- Email: admin@gmail.com
 - Password: Pa$$w0rd!
 
 ## ✅ Checklist de Verificación Completada
 
 - [x] SQL Server Express en ejecución
-- [x] Base de datos `KodotiCommerceDb` creada
+- [x] Base de datos `ECommerceDb` creada
 - [x] Todos los esquemas creados (Identity, Catalog, Customer, Order)
 - [x] Todas las tablas creadas (13 tablas)
 - [x] Migraciones aplicadas (4/4)
