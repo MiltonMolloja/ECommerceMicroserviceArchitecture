@@ -193,7 +193,7 @@ graph TB
         OrderAPI --> OrderDB
     end
     
-    Gateway[API Gateway :5000]
+    Gateway[API Gateway :45000]
     WebClient[Web Client]
     
     WebClient --> Gateway

@@ -74,7 +74,7 @@
 
 ```mermaid
 graph TB
-    WC[Web Client :60001] --> GW[API Gateway :50000]
+    WC[Web Client :60001] --> GW[API Gateway :45000]
     GW --> I[🔐 Identity :10000]
     GW --> C[📦 Catalog :20000]
     GW --> CU[👥 Customer :30000]

@@ -135,7 +135,7 @@ Verifica que los siguientes puertos estén disponibles:
 | **Catalog.Api** | 20000 | https://localhost:20000 |
 | **Customer.Api** | 30000 | https://localhost:30000 |
 | **Order.Api** | 40000 | https://localhost:40000 |
-| **Api.Gateway.WebClient** | 50000 | https://localhost:50000 |
+| **Api.Gateway.WebClient** | 45000 | https://localhost:45000 |
 | **Clients.Authentication** | 60000 | https://localhost:60000 |
 | **Clients.WebClient** | 60001 | https://localhost:60001 |
 

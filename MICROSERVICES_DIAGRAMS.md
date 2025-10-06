@@ -411,7 +411,7 @@ graph TB
     Client[Web Client :60001]
     Auth[Authentication :60000]
     
-    Gateway[API Gateway :50000]
+    Gateway[API Gateway :45000]
     
     Gateway --> Identity[Identity.Api :10000]
     Gateway --> Catalog[Catalog.Api :20000]
@@ -621,7 +621,7 @@ graph LR
 | Catalog API | 20000 | Microservicio | http://localhost:20000 |
 | Customer API | 30000 | Microservicio | http://localhost:30000 |
 | Order API | 40000 | Microservicio | http://localhost:40000 |
-| API Gateway | 50000 | Gateway | http://localhost:50000 |
+| API Gateway | 45000 | Gateway | http://localhost:45000 |
 | Authentication | 60000 | Cliente | http://localhost:60000 |
 | Web Client | 60001 | Cliente | http://localhost:60001 |
 

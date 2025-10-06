@@ -91,7 +91,7 @@ Usuario Admin: admin@gmail.com / Pa$$w0rd!
 graph TB
     Client[🌐 Web Client<br/>:60001]
     Auth[🔐 Authentication<br/>:60000]
-    Gateway[🚪 API Gateway<br/>:50000]
+    Gateway[🚪 API Gateway<br/>:45000]
     
     Identity[🔑 Identity API<br/>:10000]
     Catalog[📦 Catalog API<br/>:20000]

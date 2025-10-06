@@ -53,7 +53,7 @@ graph TB
     end
     
     subgraph "Gateway Layer"
-        GW[API Gateway<br/>:50000]
+        GW[API Gateway<br/>:45000]
     end
     
     subgraph "Microservices"
