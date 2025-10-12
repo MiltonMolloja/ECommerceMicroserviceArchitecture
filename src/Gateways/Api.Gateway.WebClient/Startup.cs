@@ -29,6 +29,43 @@ namespace Api.Gateway.WebClient
 
             services.AddControllers();
 
+            // Swagger
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "API Gateway WebClient",
+                    Version = "v1",
+                    Description = "Gateway de ECommerce Architecture"
+                });
+
+                // Configuración de seguridad JWT
+                c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "Ingrese el token JWT en el formato: Bearer {token}"
+                });
+
+                c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+                {
+                    {
+                        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                        {
+                            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                            {
+                                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+            });
+
             var secretKey = Encoding.ASCII.GetBytes(
                 Configuration.GetValue<string>("SecretKey")
             );
@@ -53,6 +90,14 @@ namespace Api.Gateway.WebClient
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                // Swagger UI
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Gateway WebClient v1");
+                    c.RoutePrefix = "swagger";
+                });
             }
             else
             {

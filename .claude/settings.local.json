@@ -6,7 +6,15 @@
       "Bash(sqlcmd:*)",
       "Bash(dotnet restore:*)",
       "Bash(dotnet build:*)",
-      "Bash(echo $ASPNETCORE_ENVIRONMENT)"
+      "Bash(echo $ASPNETCORE_ENVIRONMENT)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(dotnet add:*)",
+      "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Services\\Identity\\Identity.Api\\Controllers\\DefaultController.cs\")",
+      "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Services\\Catalog\\Catalog.Api\\Controllers\\DefaultController.cs\")",
+      "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Services\\Customer\\Customer.Api\\Controllers\\DefaultController.cs\")",
+      "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Services\\Order\\Order.Api\\Controllers\\DefaultController.cs\")",
+      "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Gateways\\Api.Gateway.WebClient\\Controllers\\DefaultController.cs\")"
     ],
     "deny": [],
     "ask": []
