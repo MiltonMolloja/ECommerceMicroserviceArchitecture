@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(dotnet --version)",
+      "Bash(sqlcmd:*)",
+      "Bash(dotnet restore:*)",
+      "Bash(dotnet build:*)",
+      "Bash(echo $ASPNETCORE_ENVIRONMENT)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

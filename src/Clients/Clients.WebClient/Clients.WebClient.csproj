@@ -5,12 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Api.Gateway.Models">
-      <HintPath>Packages\Api.Gateway.Models.dll</HintPath>
-    </Reference>
-    <Reference Include="Api.Gateway.WebClient.Proxy">
-      <HintPath>Packages\Api.Gateway.WebClient.Proxy.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\Gateways\Api.Gateway.Models\Api.Gateway.Models.csproj" />
+    <ProjectReference Include="..\..\Gateways\Api.Gateway.WebClient.Proxy\Api.Gateway.WebClient.Proxy.csproj" />
   </ItemGroup>
 
 

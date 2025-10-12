@@ -50,7 +50,7 @@ namespace Customer.Api
             // Health Checks UI
             services.AddHealthChecksUI(setup =>
             {
-                setup.SetEvaluationTimeInSeconds(10); // Evalúa cada 10 segundos
+                setup.SetEvaluationTimeInSeconds(10); // Evalï¿½a cada 10 segundos
                 setup.MaximumHistoryEntriesPerEndpoint(50); // Mantiene historial de 50 entradas
             })
             .AddInMemoryStorage(); // Usa almacenamiento en memoria (puede cambiarse a SQL Server si se desea)
@@ -86,15 +86,14 @@ namespace Customer.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            // Database Logging - Enabled in all environments
+            loggerFactory.AddDatabase(
+                Configuration.GetConnectionString("DefaultConnection"),
+                "Customer.Api");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                loggerFactory.AddSyslog(
-                    Configuration.GetValue<string>("Papertrail:host"),
-                    Configuration.GetValue<int>("Papertrail:port"));
             }
 
             app.UseRouting();
