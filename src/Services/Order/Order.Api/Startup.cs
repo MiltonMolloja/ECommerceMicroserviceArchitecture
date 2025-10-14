@@ -1,3 +1,4 @@
+using Common.Caching;
 using Common.Logging;
 using HealthChecks.UI.Client;
 using MediatR;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Order.Common;
 using Order.Persistence.Database;
 using Order.Service.Proxies;
 using Order.Service.Proxies.Catalog;
@@ -36,6 +38,9 @@ namespace Order.Api
             // HttpContextAccessor
             services.AddHttpContextAccessor();
 
+            // Redis Cache
+            services.AddRedisCache(Configuration);
+
             // DbContext
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseSqlServer(
@@ -59,6 +64,9 @@ namespace Order.Api
 
             // ApiUrls
             services.Configure<ApiUrls>(opts => Configuration.GetSection("ApiUrls").Bind(opts));
+
+            // Cache Settings
+            services.Configure<CacheSettings>(opts => Configuration.GetSection("CacheSettings").Bind(opts));
 
             // Proxies
             services.AddHttpClient<ICatalogProxy, CatalogProxy>();

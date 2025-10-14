@@ -1,5 +1,7 @@
+using Common.Caching;
 using Common.Logging;
 using HealthChecks.UI.Client;
+using Identity.Common;
 using Identity.Domain;
 using Identity.Persistence.Database;
 using Identity.Service.Queries;
@@ -35,6 +37,9 @@ namespace Identity.Api
         {
             // HttpContextAccessor
             services.AddHttpContextAccessor();
+
+            // Redis Cache
+            services.AddRedisCache(Configuration);
 
             // DbContext
             services.AddDbContext<ApplicationDbContext>(
@@ -75,6 +80,9 @@ namespace Identity.Api
 
             // Event handlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Identity.Service.EventHandlers")));
+
+            // Cache Settings
+            services.Configure<CacheSettings>(opts => Configuration.GetSection("CacheSettings").Bind(opts));
 
             // Query services
             services.AddTransient<IUserQueryService, UserQueryService>();

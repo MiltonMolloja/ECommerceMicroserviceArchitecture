@@ -1,4 +1,6 @@
+using Api.Gateway.Models;
 using Api.Gateway.WebClient.Config;
+using Common.Caching;
 using Common.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -24,6 +26,12 @@ namespace Api.Gateway.WebClient
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Redis Cache
+            services.AddRedisCache(Configuration);
+
+            // Cache Settings
+            services.Configure<CacheSettings>(opts => Configuration.GetSection("CacheSettings").Bind(opts));
+
             services.AddAppsettingBinding(Configuration)
                     .AddProxiesRegistration(Configuration);
 

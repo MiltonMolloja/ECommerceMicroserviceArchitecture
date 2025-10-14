@@ -14,7 +14,17 @@
       "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Services\\Catalog\\Catalog.Api\\Controllers\\DefaultController.cs\")",
       "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Services\\Customer\\Customer.Api\\Controllers\\DefaultController.cs\")",
       "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Services\\Order\\Order.Api\\Controllers\\DefaultController.cs\")",
-      "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Gateways\\Api.Gateway.WebClient\\Controllers\\DefaultController.cs\")"
+      "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Gateways\\Api.Gateway.WebClient\\Controllers\\DefaultController.cs\")",
+      "Bash(dotnet new:*)",
+      "Bash(dotnet run)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(cmd /c taskkill:*)",
+      "Bash(tasklist)",
+      "Bash(dotnet run:*)",
+      "Bash(timeout:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

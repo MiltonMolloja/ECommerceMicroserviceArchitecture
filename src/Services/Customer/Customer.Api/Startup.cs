@@ -1,4 +1,6 @@
+using Common.Caching;
 using Common.Logging;
+using Customer.Common;
 using Customer.Persistence.Database;
 using HealthChecks.UI.Client;
 using MediatR;
@@ -34,6 +36,9 @@ namespace Customer.Api
             // HttpContextAccessor
             services.AddHttpContextAccessor();
 
+            // Redis Cache
+            services.AddRedisCache(Configuration);
+
             // DbContext
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseSqlServer(
@@ -57,6 +62,9 @@ namespace Customer.Api
 
             // Event handlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Customer.Service.EventHandlers")));
+
+            // Cache Settings
+            services.Configure<CacheSettings>(opts => Configuration.GetSection("CacheSettings").Bind(opts));
 
             // Query services
             services.AddTransient<IClientQueryService, ClientQueryService>();

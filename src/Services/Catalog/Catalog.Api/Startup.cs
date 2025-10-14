@@ -1,5 +1,7 @@
+using Catalog.Common;
 using Catalog.Persistence.Database;
 using Catalog.Service.Queries;
+using Common.Caching;
 using Common.Logging;
 using HealthChecks.UI.Client;
 using MediatR;
@@ -31,6 +33,9 @@ namespace Catalog.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Redis Cache
+            services.AddRedisCache(Configuration);
+
             // DbContext
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseSqlServer(
@@ -54,6 +59,9 @@ namespace Catalog.Api
 
             // Event handlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Catalog.Service.EventHandlers")));
+
+            // Cache Settings
+            services.Configure<CacheSettings>(opts => Configuration.GetSection("CacheSettings").Bind(opts));
 
             // Query services
             services.AddTransient<IProductQueryService, ProductQueryService>();

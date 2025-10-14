@@ -23,6 +23,7 @@
     <ProjectReference Include="..\Catalog.Persistence.Database\Catalog.Persistence.Database.csproj" />
     <ProjectReference Include="..\Catalog.Service.EventHandlers\Catalog.Service.EventHandlers.csproj" />
     <ProjectReference Include="..\Catalog.Service.Queries\Catalog.Service.Queries.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Caching\Common.Caching.csproj" />
   </ItemGroup>
 
 
