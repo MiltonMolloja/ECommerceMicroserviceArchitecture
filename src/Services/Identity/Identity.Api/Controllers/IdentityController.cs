@@ -74,6 +74,9 @@ namespace Identity.Api.Controllers
                 return BadRequest();
             }
 
+            // Obtener IP del cliente
+            command.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+
             // Rate limiting: verificar intentos de login fallidos
             var loginAttemptsKey = $"login:attempts:{command.Email}";
             var blockKey = $"login:blocked:{command.Email}";
@@ -120,6 +123,53 @@ namespace Identity.Api.Controllers
 
             _logger.LogInformation($"Successful login for user: {command.Email}");
             return Ok(result);
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            // Obtener IP del cliente
+            command.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+
+            var result = await _mediator.Send(command);
+
+            if (!result.Succeeded)
+            {
+                _logger.LogWarning($"Failed refresh token attempt from IP: {command.IpAddress}");
+                return Unauthorized(new { message = "Invalid or expired refresh token" });
+            }
+
+            _logger.LogInformation($"Successful token refresh from IP: {command.IpAddress}");
+            return Ok(result);
+        }
+
+        [HttpPost("revoke-token")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenCommand command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            // Obtener IP del cliente
+            command.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+
+            var result = await _mediator.Send(command);
+
+            if (!result)
+            {
+                _logger.LogWarning($"Failed revoke token attempt from IP: {command.IpAddress}");
+                return BadRequest(new { message = "Failed to revoke token" });
+            }
+
+            _logger.LogInformation($"Token revoked successfully from IP: {command.IpAddress}");
+            return Ok(new { message = "Token revoked successfully" });
         }
     }
 }

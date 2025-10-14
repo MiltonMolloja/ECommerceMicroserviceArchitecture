@@ -87,6 +87,9 @@ namespace Identity.Api
             // Query services
             services.AddTransient<IUserQueryService, UserQueryService>();
 
+            // Refresh Token Service
+            services.AddScoped<Identity.Service.EventHandlers.Services.IRefreshTokenService, Identity.Service.EventHandlers.Services.RefreshTokenService>();
+
             // API Controllers
             services.AddControllers();
 

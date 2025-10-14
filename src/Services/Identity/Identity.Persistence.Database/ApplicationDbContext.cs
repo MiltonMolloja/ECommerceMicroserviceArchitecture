@@ -7,6 +7,8 @@ namespace Identity.Persistence.Database
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options
         )
@@ -37,6 +39,7 @@ namespace Identity.Persistence.Database
         {
             new ApplicationUserConfiguration(modelBuilder.Entity<ApplicationUser>());
             new ApplicationRoleConfiguration(modelBuilder.Entity<ApplicationRole>());
+            new RefreshTokenConfiguration(modelBuilder.Entity<RefreshToken>());
         }
     }
 }

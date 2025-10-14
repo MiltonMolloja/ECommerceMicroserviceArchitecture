@@ -8,5 +8,6 @@ namespace Identity.Domain
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public ICollection<ApplicationUserRole> UserRoles { get; set; }
+        public ICollection<RefreshToken> RefreshTokens { get; set; }
     }
 }

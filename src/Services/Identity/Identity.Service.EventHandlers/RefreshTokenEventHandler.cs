@@ -1,10 +1,9 @@
-﻿using Identity.Domain;
+using Identity.Domain;
 using Identity.Persistence.Database;
 using Identity.Service.EventHandlers.Commands;
 using Identity.Service.EventHandlers.Responses;
 using Identity.Service.EventHandlers.Services;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -19,46 +18,55 @@ using System.Threading.Tasks;
 
 namespace Identity.Service.EventHandlers
 {
-    public class UserLoginEventHandler :
-        IRequestHandler<UserLoginCommand, IdentityAccess>
+    public class RefreshTokenEventHandler : IRequestHandler<RefreshTokenCommand, IdentityAccess>
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IRefreshTokenService _refreshTokenService;
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
-        private readonly IRefreshTokenService _refreshTokenService;
 
-        public UserLoginEventHandler(
-            SignInManager<ApplicationUser> signInManager,
+        public RefreshTokenEventHandler(
+            IRefreshTokenService refreshTokenService,
             ApplicationDbContext context,
-            IConfiguration configuration,
-            IRefreshTokenService refreshTokenService)
+            IConfiguration configuration)
         {
-            _signInManager = signInManager;
+            _refreshTokenService = refreshTokenService;
             _context = context;
             _configuration = configuration;
-            _refreshTokenService = refreshTokenService;
         }
 
-        public async Task<IdentityAccess> Handle(UserLoginCommand notification, CancellationToken cancellationToken)
+        public async Task<IdentityAccess> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
             var result = new IdentityAccess();
 
-            var user = await _context.Users.SingleAsync(x => x.Email == notification.Email);
-            var response = await _signInManager.CheckPasswordSignInAsync(user, notification.Password, false);
-
-            if (response.Succeeded)
+            try
             {
+                // Validar el refresh token
+                var refreshToken = await _refreshTokenService.ValidateRefreshTokenAsync(request.RefreshToken);
+
+                // Obtener el usuario
+                var user = refreshToken.User;
+
+                // Generar nuevo access token
                 result.Succeeded = true;
                 await GenerateToken(user, result);
 
-                // Generar refresh token
-                var refreshToken = await _refreshTokenService.GenerateRefreshTokenAsync(
-                    user.Id,
-                    notification.IpAddress ?? "Unknown"
+                // Generar nuevo refresh token
+                var newRefreshToken = await _refreshTokenService.GenerateRefreshTokenAsync(user.Id, request.IpAddress);
+
+                // Revocar el refresh token antiguo
+                await _refreshTokenService.RevokeRefreshTokenAsync(
+                    request.RefreshToken,
+                    request.IpAddress,
+                    newRefreshToken.Token
                 );
 
-                result.RefreshToken = refreshToken.Token;
-                result.ExpiresAt = refreshToken.ExpiresAt;
+                result.RefreshToken = newRefreshToken.Token;
+                result.ExpiresAt = newRefreshToken.ExpiresAt;
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                // Log the error here if needed
             }
 
             return result;
@@ -83,9 +91,7 @@ namespace Identity.Service.EventHandlers
 
             foreach (var role in roles)
             {
-                claims.Add(
-                    new Claim(ClaimTypes.Role, role.Name)
-                );
+                claims.Add(new Claim(ClaimTypes.Role, role.Name));
             }
 
             var tokenDescriptor = new SecurityTokenDescriptor
