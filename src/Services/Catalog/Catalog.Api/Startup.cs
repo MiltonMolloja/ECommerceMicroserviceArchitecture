@@ -2,6 +2,7 @@ using Catalog.Common;
 using Catalog.Persistence.Database;
 using Catalog.Service.Queries;
 using Common.Caching;
+using Common.CorrelationId;
 using Common.Logging;
 using Common.RateLimiting;
 using HealthChecks.UI.Client;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,11 +36,17 @@ namespace Catalog.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // HttpContextAccessor
+            services.AddHttpContextAccessor();
+
             // Redis Cache
             services.AddRedisCache(Configuration);
 
             // Rate Limiting
             services.AddCustomRateLimiting(Configuration);
+
+            // Correlation ID
+            services.AddCorrelationId();
 
             // DbContext
             services.AddDbContext<ApplicationDbContext>(
@@ -134,9 +142,11 @@ namespace Catalog.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             // Database Logging - Enabled in all environments
+            var httpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
             loggerFactory.AddDatabase(
                 Configuration.GetConnectionString("DefaultConnection"),
-                "Catalog.Api");
+                "Catalog.Api",
+                httpContextAccessor);
 
             if (env.IsDevelopment())
             {
@@ -153,11 +163,14 @@ namespace Catalog.Api
 
             app.UseRouting();
 
+            // Correlation ID
+            app.UseCorrelationId();
+
             // Rate Limiting
             app.UseCustomRateLimiting();
 
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

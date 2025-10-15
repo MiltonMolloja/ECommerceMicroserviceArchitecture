@@ -1,4 +1,5 @@
 using Common.Caching;
+using Common.CorrelationId;
 using Common.Logging;
 using Common.RateLimiting;
 using HealthChecks.UI.Client;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,6 +47,9 @@ namespace Order.Api
             // Rate Limiting
             services.AddCustomRateLimiting(Configuration);
 
+            // Correlation ID
+            services.AddCorrelationId();
+
             // DbContext
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseSqlServer(
@@ -72,8 +77,9 @@ namespace Order.Api
             // Cache Settings
             services.Configure<CacheSettings>(opts => Configuration.GetSection("CacheSettings").Bind(opts));
 
-            // Proxies
-            services.AddHttpClient<ICatalogProxy, CatalogProxy>();
+            // Proxies - Con propagación de Correlation ID
+            services.AddHttpClient<ICatalogProxy, CatalogProxy>()
+                .AddCorrelationIdPropagation();
 
             // Event handlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Order.Service.EventHandlers")));
@@ -144,9 +150,11 @@ namespace Order.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             // Database Logging - Enabled in all environments
+            var httpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
             loggerFactory.AddDatabase(
                 Configuration.GetConnectionString("DefaultConnection"),
-                "Order.Api");
+                "Order.Api",
+                httpContextAccessor);
 
             if (env.IsDevelopment())
             {
@@ -162,6 +170,9 @@ namespace Order.Api
             }
 
             app.UseRouting();
+
+            // Correlation ID
+            app.UseCorrelationId();
 
             // Rate Limiting
             app.UseCustomRateLimiting();

@@ -33,7 +33,8 @@
       "Bash(done)",
       "Bash(for i in 1 2 3 4 5 6 7)",
       "Bash(do echo \"\")",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(cmd /c:*)"
     ],
     "deny": [],
     "ask": []

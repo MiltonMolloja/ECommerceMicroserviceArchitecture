@@ -1,4 +1,5 @@
 using Common.Caching;
+using Common.CorrelationId;
 using Common.Logging;
 using Common.RateLimiting;
 using Customer.Common;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,6 +44,9 @@ namespace Customer.Api
 
             // Rate Limiting
             services.AddCustomRateLimiting(Configuration);
+
+            // Correlation ID
+            services.AddCorrelationId();
 
             // DbContext
             services.AddDbContext<ApplicationDbContext>(
@@ -136,9 +141,11 @@ namespace Customer.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             // Database Logging - Enabled in all environments
+            var httpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
             loggerFactory.AddDatabase(
                 Configuration.GetConnectionString("DefaultConnection"),
-                "Customer.Api");
+                "Customer.Api",
+                httpContextAccessor);
 
             if (env.IsDevelopment())
             {
@@ -155,11 +162,14 @@ namespace Customer.Api
 
             app.UseRouting();
 
+            // Correlation ID
+            app.UseCorrelationId();
+
             // Rate Limiting
             app.UseCustomRateLimiting();
 
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

@@ -25,6 +25,7 @@
     <ProjectReference Include="..\Customer.Service.Queries\Customer.Service.Queries.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.Caching\Common.Caching.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.RateLimiting\Common.RateLimiting.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.CorrelationId\Common.CorrelationId.csproj" />
   </ItemGroup>
 
 
