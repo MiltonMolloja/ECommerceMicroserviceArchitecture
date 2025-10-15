@@ -24,6 +24,7 @@
     <ProjectReference Include="..\Catalog.Service.EventHandlers\Catalog.Service.EventHandlers.csproj" />
     <ProjectReference Include="..\Catalog.Service.Queries\Catalog.Service.Queries.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.Caching\Common.Caching.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.RateLimiting\Common.RateLimiting.csproj" />
   </ItemGroup>
 
 

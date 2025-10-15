@@ -24,6 +24,7 @@
     <ProjectReference Include="..\Identity.Common\Identity.Common.csproj" />
     <ProjectReference Include="..\Identity.Service.EventHandlers\Identity.Service.EventHandlers.csproj" />
     <ProjectReference Include="..\Identity.Service.Queries\Identity.Service.Queries.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.RateLimiting\Common.RateLimiting.csproj" />
   </ItemGroup>
 
 

@@ -1,5 +1,6 @@
 using Common.Caching;
 using Common.Logging;
+using Common.RateLimiting;
 using Customer.Common;
 using Customer.Persistence.Database;
 using HealthChecks.UI.Client;
@@ -38,6 +39,9 @@ namespace Customer.Api
 
             // Redis Cache
             services.AddRedisCache(Configuration);
+
+            // Rate Limiting
+            services.AddCustomRateLimiting(Configuration);
 
             // DbContext
             services.AddDbContext<ApplicationDbContext>(
@@ -150,6 +154,9 @@ namespace Customer.Api
             }
 
             app.UseRouting();
+
+            // Rate Limiting
+            app.UseCustomRateLimiting();
 
             app.UseAuthorization();
             app.UseAuthentication();

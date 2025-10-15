@@ -26,7 +26,14 @@
       "Bash(timeout:*)",
       "Bash(curl:*)",
       "Bash(dotnet ef migrations add:*)",
-      "Bash(dotnet ef database update:*)"
+      "Bash(dotnet ef database update:*)",
+      "Bash(dotnet sln add:*)",
+      "Bash(for i in {1..7})",
+      "Bash(do echo \"=== Request $i ===\")",
+      "Bash(done)",
+      "Bash(for i in 1 2 3 4 5 6 7)",
+      "Bash(do echo \"\")",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []

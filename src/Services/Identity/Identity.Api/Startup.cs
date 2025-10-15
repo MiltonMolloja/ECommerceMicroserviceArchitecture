@@ -1,5 +1,6 @@
 using Common.Caching;
 using Common.Logging;
+using Common.RateLimiting;
 using HealthChecks.UI.Client;
 using Identity.Common;
 using Identity.Domain;
@@ -40,6 +41,9 @@ namespace Identity.Api
 
             // Redis Cache
             services.AddRedisCache(Configuration);
+
+            // Rate Limiting
+            services.AddCustomRateLimiting(Configuration);
 
             // DbContext
             services.AddDbContext<ApplicationDbContext>(
@@ -171,6 +175,9 @@ namespace Identity.Api
             }
 
             app.UseRouting();
+
+            // Rate Limiting debe estar antes de Authorization
+            app.UseCustomRateLimiting();
 
             app.UseAuthorization();
             app.UseAuthentication();

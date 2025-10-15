@@ -3,6 +3,7 @@ using Catalog.Persistence.Database;
 using Catalog.Service.Queries;
 using Common.Caching;
 using Common.Logging;
+using Common.RateLimiting;
 using HealthChecks.UI.Client;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -35,6 +36,9 @@ namespace Catalog.Api
         {
             // Redis Cache
             services.AddRedisCache(Configuration);
+
+            // Rate Limiting
+            services.AddCustomRateLimiting(Configuration);
 
             // DbContext
             services.AddDbContext<ApplicationDbContext>(
@@ -148,6 +152,9 @@ namespace Catalog.Api
             }
 
             app.UseRouting();
+
+            // Rate Limiting
+            app.UseCustomRateLimiting();
 
             app.UseAuthorization();
             app.UseAuthentication();

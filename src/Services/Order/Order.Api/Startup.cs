@@ -1,5 +1,6 @@
 using Common.Caching;
 using Common.Logging;
+using Common.RateLimiting;
 using HealthChecks.UI.Client;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -40,6 +41,9 @@ namespace Order.Api
 
             // Redis Cache
             services.AddRedisCache(Configuration);
+
+            // Rate Limiting
+            services.AddCustomRateLimiting(Configuration);
 
             // DbContext
             services.AddDbContext<ApplicationDbContext>(
@@ -158,6 +162,9 @@ namespace Order.Api
             }
 
             app.UseRouting();
+
+            // Rate Limiting
+            app.UseCustomRateLimiting();
 
             app.UseAuthorization();
 

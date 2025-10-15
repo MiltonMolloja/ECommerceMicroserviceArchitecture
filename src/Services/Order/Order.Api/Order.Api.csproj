@@ -24,6 +24,7 @@
     <ProjectReference Include="..\Order.Service.Proxies\Order.Service.Proxies.csproj" />
     <ProjectReference Include="..\Order.Service.Queries\Order.Service.Queries.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.Caching\Common.Caching.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.RateLimiting\Common.RateLimiting.csproj" />
   </ItemGroup>
 
 

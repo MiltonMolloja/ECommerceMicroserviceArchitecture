@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -37,6 +38,7 @@ namespace Identity.Api.Controllers
         }
 
         [HttpPost]
+        [EnableRateLimiting("write")]
         public async Task<IActionResult> Create(UserCreateCommand command)
         {
             if (ModelState.IsValid)
@@ -67,6 +69,7 @@ namespace Identity.Api.Controllers
         }
 
         [HttpPost("authentication")]
+        [EnableRateLimiting("authentication")]
         public async Task<IActionResult> Authentication(UserLoginCommand command)
         {
             if (!ModelState.IsValid)
@@ -126,6 +129,7 @@ namespace Identity.Api.Controllers
         }
 
         [HttpPost("refresh-token")]
+        [EnableRateLimiting("authentication")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
         {
             if (!ModelState.IsValid)
@@ -150,6 +154,7 @@ namespace Identity.Api.Controllers
 
         [HttpPost("revoke-token")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [EnableRateLimiting("write")]
         public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenCommand command)
         {
             if (!ModelState.IsValid)

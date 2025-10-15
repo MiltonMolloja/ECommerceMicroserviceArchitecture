@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Service.Common.Collection;
@@ -41,6 +42,7 @@ namespace Identity.Api.Controllers
         }
 
         [HttpGet]
+        [EnableRateLimiting("read")]
         public async Task<DataCollection<UserDto>> GetAll(int page = 1, int take = 10, string ids = null)
         {
             var cacheKey = $"users:all:page:{page}:take:{take}:ids:{ids ?? "all"}";
@@ -64,6 +66,7 @@ namespace Identity.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [EnableRateLimiting("read")]
         public async Task<UserDto> Get(string id)
         {
             var cacheKey = $"users:id:{id}";
