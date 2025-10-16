@@ -98,14 +98,6 @@ namespace Api.Gateway.WebClient
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-
-                // Swagger UI
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Gateway WebClient v1");
-                    c.RoutePrefix = "swagger";
-                });
             }
             else
             {
@@ -116,8 +108,17 @@ namespace Api.Gateway.WebClient
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            // Swagger UI - Disponible en todos los ambientes sin autenticación
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Gateway WebClient v1");
+                c.RoutePrefix = "swagger";
+            });
+
+
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

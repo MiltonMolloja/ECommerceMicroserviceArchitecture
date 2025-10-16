@@ -26,6 +26,7 @@
     <ProjectReference Include="..\Identity.Service.Queries\Identity.Service.Queries.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.RateLimiting\Common.RateLimiting.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.CorrelationId\Common.CorrelationId.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.ApiKey\Common.ApiKey.csproj" />
   </ItemGroup>
 
 

@@ -1,3 +1,4 @@
+using Common.ApiKey;
 using Common.Caching;
 using Common.CorrelationId;
 using Common.Logging;
@@ -19,6 +20,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Order.Service.Queries;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -44,6 +46,9 @@ namespace Customer.Api
 
             // Rate Limiting
             services.AddCustomRateLimiting(Configuration);
+
+            // API Key Authentication
+            services.AddApiKeyAuthentication(Configuration);
 
             // Correlation ID
             services.AddCorrelationId();
@@ -102,6 +107,15 @@ namespace Customer.Api
                     Description = "Ingrese el token JWT en el formato: Bearer {token}"
                 });
 
+                // Configuración de seguridad API Key
+                c.AddSecurityDefinition("ApiKey", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Name = "X-Api-Key",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "Ingrese el API Key para comunicación entre servicios"
+                });
+
                 c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
                 {
                     {
@@ -111,6 +125,17 @@ namespace Customer.Api
                             {
                                 Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
                                 Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    },
+                    {
+                        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                        {
+                            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                            {
+                                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                                Id = "ApiKey"
                             }
                         },
                         new string[] {}
@@ -150,20 +175,23 @@ namespace Customer.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-
-                // Swagger UI
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer API v1");
-                    c.RoutePrefix = "swagger";
-                });
             }
 
             app.UseRouting();
 
+            // Swagger UI - Disponible en todos los ambientes sin autenticación
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer API v1");
+                c.RoutePrefix = "swagger";
+            });
+
             // Correlation ID
             app.UseCorrelationId();
+
+            // API Key Authentication (debe ir antes de Rate Limiting)
+            app.UseApiKeyAuthentication();
 
             // Rate Limiting
             app.UseCustomRateLimiting();
