@@ -44,7 +44,10 @@
       "Bash(set ASPNETCORE_ENVIRONMENT=Development)",
       "Bash(dotnet:*)",
       "Bash(powershell:*)",
-      "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Services\\Order\\Order.Api\\Swagger\\ApiKeyOperationFilter.cs\")"
+      "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Services\\Order\\Order.Api\\Swagger\\ApiKeyOperationFilter.cs\")",
+      "Bash(git fetch:*)",
+      "Bash(git rebase:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []
