@@ -6,6 +6,8 @@ using Common.Caching;
 using Common.CorrelationId;
 using Common.Logging;
 using Common.RateLimiting;
+using Common.Validation;
+using FluentValidation;
 using HealthChecks.UI.Client;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -76,6 +78,10 @@ namespace Catalog.Api
 
             // Event handlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Catalog.Service.EventHandlers")));
+
+            // FluentValidation
+            services.AddValidatorsFromAssembly(Assembly.Load("Catalog.Service.EventHandlers"));
+            services.AddValidationBehavior();
 
             // Cache Settings
             services.Configure<CacheSettings>(opts => Configuration.GetSection("CacheSettings").Bind(opts));
@@ -177,6 +183,9 @@ namespace Catalog.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            // Validation exception handler
+            app.UseValidationExceptionHandler();
 
             app.UseRouting();
 

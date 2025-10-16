@@ -47,7 +47,10 @@
       "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Services\\Order\\Order.Api\\Swagger\\ApiKeyOperationFilter.cs\")",
       "Bash(git fetch:*)",
       "Bash(git rebase:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(cat:*)",
+      "Bash(del \"src\\Common\\Common.Validation\\Class1.cs\")",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

@@ -3,6 +3,8 @@ using Common.Caching;
 using Common.CorrelationId;
 using Common.Logging;
 using Common.RateLimiting;
+using Common.Validation;
+using FluentValidation;
 using HealthChecks.UI.Client;
 using Identity.Common;
 using Identity.Domain;
@@ -94,6 +96,10 @@ namespace Identity.Api
 
             // Event handlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Identity.Service.EventHandlers")));
+
+            // FluentValidation
+            services.AddValidatorsFromAssembly(Assembly.Load("Identity.Service.EventHandlers"));
+            services.AddValidationBehavior();
 
             // Cache Settings
             services.Configure<CacheSettings>(opts => Configuration.GetSection("CacheSettings").Bind(opts));
@@ -197,6 +203,9 @@ namespace Identity.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            // Validation exception handler
+            app.UseValidationExceptionHandler();
 
             app.UseRouting();
 

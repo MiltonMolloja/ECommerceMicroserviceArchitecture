@@ -2,6 +2,7 @@ using Api.Gateway.Models;
 using Api.Gateway.WebClient.Config;
 using Common.Caching;
 using Common.Logging;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 using System.Text;
 
 namespace Api.Gateway.WebClient
@@ -34,6 +36,9 @@ namespace Api.Gateway.WebClient
 
             services.AddAppsettingBinding(Configuration)
                     .AddProxiesRegistration(Configuration);
+
+            // FluentValidation
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             services.AddControllers();
 

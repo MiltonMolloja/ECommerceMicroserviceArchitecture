@@ -3,6 +3,8 @@ using Common.Caching;
 using Common.CorrelationId;
 using Common.Logging;
 using Common.RateLimiting;
+using Common.Validation;
+using FluentValidation;
 using Customer.Common;
 using Customer.Persistence.Database;
 using HealthChecks.UI.Client;
@@ -76,6 +78,10 @@ namespace Customer.Api
 
             // Event handlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Customer.Service.EventHandlers")));
+
+            // FluentValidation
+            services.AddValidatorsFromAssembly(Assembly.Load("Customer.Service.EventHandlers"));
+            services.AddValidationBehavior();
 
             // Cache Settings
             services.Configure<CacheSettings>(opts => Configuration.GetSection("CacheSettings").Bind(opts));
@@ -176,6 +182,9 @@ namespace Customer.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            // Validation exception handler
+            app.UseValidationExceptionHandler();
 
             app.UseRouting();
 

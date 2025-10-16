@@ -3,6 +3,7 @@ using Catalog.Service.EventHandlers.Commands;
 using Catalog.Service.Queries;
 using Catalog.Service.Queries.DTOs;
 using Common.Caching;
+using Common.Validation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -119,6 +120,18 @@ namespace Catalog.Api.Controllers
 
                 _logger.LogInformation("Product created successfully and cache invalidated");
                 return Ok(new { message = "Product created successfully", success = true });
+            }
+            catch (ValidationException vex)
+            {
+                _logger.LogWarning(vex, "Validation failed for product creation");
+                var errors = vex.GetErrorsDictionary();
+                return BadRequest(new
+                {
+                    type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                    title = "One or more validation errors occurred.",
+                    status = 400,
+                    errors = errors
+                });
             }
             catch (Exception ex)
             {

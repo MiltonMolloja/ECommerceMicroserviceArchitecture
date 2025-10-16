@@ -1,4 +1,5 @@
 ﻿using Common.Caching;
+using Common.Validation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -112,6 +113,18 @@ namespace Order.Api.Controllers
 
                 _logger.LogInformation("Order created successfully and cache invalidated");
                 return Ok(new { message = "Order created successfully", success = true });
+            }
+            catch (ValidationException vex)
+            {
+                _logger.LogWarning(vex, "Validation failed for order creation");
+                var errors = vex.GetErrorsDictionary();
+                return BadRequest(new
+                {
+                    type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                    title = "One or more validation errors occurred.",
+                    status = 400,
+                    errors = errors
+                });
             }
             catch (Exception ex)
             {

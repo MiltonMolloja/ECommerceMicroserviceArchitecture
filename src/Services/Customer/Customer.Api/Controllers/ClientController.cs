@@ -1,4 +1,5 @@
 ﻿using Common.Caching;
+using Common.Validation;
 using Customer.Common;
 using Customer.Service.EventHandlers.Commands;
 using Customer.Service.Queries.DTOs;
@@ -119,6 +120,18 @@ namespace Customer.Api.Controllers
 
                 _logger.LogInformation("Client created successfully and cache invalidated");
                 return Ok(new { message = "Client created successfully", success = true });
+            }
+            catch (ValidationException vex)
+            {
+                _logger.LogWarning(vex, "Validation failed for client creation");
+                var errors = vex.GetErrorsDictionary();
+                return BadRequest(new
+                {
+                    type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                    title = "One or more validation errors occurred.",
+                    status = 400,
+                    errors = errors
+                });
             }
             catch (Exception ex)
             {

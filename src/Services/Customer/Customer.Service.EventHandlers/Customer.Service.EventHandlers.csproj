@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Customer.Persistence.Database\Customer.Persistence.Database.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Validation\Common.Validation.csproj" />
   </ItemGroup>
 
 </Project>

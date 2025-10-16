@@ -3,6 +3,7 @@ using Api.Gateway.Models.Order.DTOs;
 using Api.Gateway.Models.Orders.Commands;
 using Api.Gateway.Proxies;
 using Common.Caching;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,7 @@ namespace Api.Gateway.WebClient.Controllers
         private readonly ICacheService _cacheService;
         private readonly CacheSettings _cacheSettings;
         private readonly ILogger<OrderController> _logger;
+        private readonly IValidator<OrderCreateCommand> _validator;
 
         public OrderController(
             IOrderProxy orderProxy,
@@ -32,7 +34,8 @@ namespace Api.Gateway.WebClient.Controllers
             ICatalogProxy catalogProxy,
             ICacheService cacheService,
             IOptions<CacheSettings> cacheSettings,
-            ILogger<OrderController> logger
+            ILogger<OrderController> logger,
+            IValidator<OrderCreateCommand> validator
         )
         {
             _orderProxy = orderProxy;
@@ -41,6 +44,7 @@ namespace Api.Gateway.WebClient.Controllers
             _cacheService = cacheService;
             _cacheSettings = cacheSettings.Value;
             _logger = logger;
+            _validator = validator;
         }
 
         /// <summary>
@@ -133,6 +137,27 @@ namespace Api.Gateway.WebClient.Controllers
         {
             try
             {
+                // Validate command
+                var validationResult = await _validator.ValidateAsync(command);
+                if (!validationResult.IsValid)
+                {
+                    _logger.LogWarning("Validation failed for order creation");
+                    var errors = validationResult.Errors
+                        .GroupBy(x => x.PropertyName)
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.Select(x => x.ErrorMessage).ToArray()
+                        );
+
+                    return BadRequest(new
+                    {
+                        type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                        title = "One or more validation errors occurred.",
+                        status = 400,
+                        errors = errors
+                    });
+                }
+
                 await _orderProxy.CreateAsync(command);
 
                 // Invalidar caché de listado de órdenes

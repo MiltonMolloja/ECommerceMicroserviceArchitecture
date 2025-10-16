@@ -3,6 +3,8 @@ using Common.Caching;
 using Common.CorrelationId;
 using Common.Logging;
 using Common.RateLimiting;
+using Common.Validation;
+using FluentValidation;
 using HealthChecks.UI.Client;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -88,6 +90,10 @@ namespace Order.Api
 
             // Event handlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Order.Service.EventHandlers")));
+
+            // FluentValidation
+            services.AddValidatorsFromAssembly(Assembly.Load("Order.Service.EventHandlers"));
+            services.AddValidationBehavior();
 
             // Query services
             services.AddTransient<IOrderQueryService, OrderQueryService>();
@@ -185,6 +191,9 @@ namespace Order.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            // Validation exception handler
+            app.UseValidationExceptionHandler();
 
             app.UseRouting();
 
