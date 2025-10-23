@@ -40,6 +40,17 @@ namespace Api.Gateway.WebClient
             // FluentValidation
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
+            // CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+            });
+
             services.AddControllers();
 
             // Swagger
@@ -110,6 +121,9 @@ namespace Api.Gateway.WebClient
                     Configuration.GetValue<string>("Papertrail:host"),
                     Configuration.GetValue<int>("Papertrail:port"));
             }
+
+            // CORS debe ir antes de UseRouting
+            app.UseCors("AllowAll");
 
             app.UseRouting();
 

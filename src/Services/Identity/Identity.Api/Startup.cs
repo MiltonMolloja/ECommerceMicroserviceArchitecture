@@ -110,6 +110,18 @@ namespace Identity.Api
             // Refresh Token Service
             services.AddScoped<Identity.Service.EventHandlers.Services.IRefreshTokenService, Identity.Service.EventHandlers.Services.RefreshTokenService>();
 
+            // CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+            });
+
+
             // API Controllers
             services.AddControllers();
 
@@ -206,6 +218,9 @@ namespace Identity.Api
 
             // Validation exception handler
             app.UseValidationExceptionHandler();
+
+            // CORS debe ir antes de UseRouting
+            app.UseCors("AllowAll");
 
             app.UseRouting();
 

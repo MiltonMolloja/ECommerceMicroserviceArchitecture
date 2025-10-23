@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace Catalog.Api.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    
     [ApiController]
     [Route("v1/products")]
     public class ProductController : ControllerBase
@@ -98,6 +98,7 @@ namespace Catalog.Api.Controllers
             return product;
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
         public async Task<IActionResult> Create(ProductCreateCommand notification)
         {
