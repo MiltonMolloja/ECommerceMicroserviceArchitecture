@@ -58,7 +58,14 @@ namespace Api.Gateway.WebClient
                 });
             });
 
-            services.AddControllers();
+            // API Controllers
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    // Fix circular reference issue
+                    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+                });
 
             // Swagger
             services.AddSwaggerGen(c =>

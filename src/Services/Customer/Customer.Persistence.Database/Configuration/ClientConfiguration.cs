@@ -1,5 +1,7 @@
 ﻿using Customer.Domain;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 using System.Collections.Generic;
 
 namespace Order.Persistence.Database.Configuration
@@ -8,21 +10,100 @@ namespace Order.Persistence.Database.Configuration
     {
         public ClientConfiguration(EntityTypeBuilder<Client> entityBuilder)
         {
+            // Table configuration
+            entityBuilder.ToTable("Clients", "Customer");
+
+            // Primary Key
             entityBuilder.HasKey(x => x.ClientId);
-            entityBuilder.Property(x => x.Name).IsRequired().HasMaxLength(100);
 
-            var clients = new List<Client>();
+            // Identificación
+            entityBuilder.Property(x => x.ClientId)
+                .ValueGeneratedOnAdd();
 
-            for (var i = 1; i <= 10; i++)
-            {
-                clients.Add(new Client
-                {
-                    ClientId = i,
-                    Name = $"Client {i}"
-                });
-            }
+            entityBuilder.Property(x => x.UserId)
+                .HasMaxLength(450); // Same as AspNetUsers.Id
 
-            entityBuilder.HasData(clients);
+            // Información Personal
+            entityBuilder.Property(x => x.FirstName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entityBuilder.Property(x => x.LastName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entityBuilder.Property(x => x.Email)
+                .IsRequired()
+                .HasMaxLength(256);
+
+            entityBuilder.Property(x => x.Phone)
+                .HasMaxLength(20);
+
+            entityBuilder.Property(x => x.MobilePhone)
+                .HasMaxLength(20);
+
+            entityBuilder.Property(x => x.Gender)
+                .HasMaxLength(20);
+
+            entityBuilder.Property(x => x.ProfileImageUrl)
+                .HasMaxLength(500);
+
+            // Preferencias
+            entityBuilder.Property(x => x.PreferredLanguage)
+                .HasMaxLength(10)
+                .HasDefaultValue("es");
+
+            entityBuilder.Property(x => x.PreferredCurrency)
+                .HasMaxLength(3)
+                .HasDefaultValue("USD");
+
+            entityBuilder.Property(x => x.NewsletterSubscribed)
+                .HasDefaultValue(false);
+
+            entityBuilder.Property(x => x.SmsNotificationsEnabled)
+                .HasDefaultValue(true);
+
+            entityBuilder.Property(x => x.EmailNotificationsEnabled)
+                .HasDefaultValue(true);
+
+            // Estado
+            entityBuilder.Property(x => x.IsActive)
+                .HasDefaultValue(true);
+
+            entityBuilder.Property(x => x.IsEmailVerified)
+                .HasDefaultValue(false);
+
+            entityBuilder.Property(x => x.IsPhoneVerified)
+                .HasDefaultValue(false);
+
+            // Auditoría
+            entityBuilder.Property(x => x.CreatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
+
+            entityBuilder.Property(x => x.UpdatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
+
+            // Indexes
+            entityBuilder.HasIndex(x => x.Email)
+                .IsUnique()
+                .HasDatabaseName("IX_Clients_Email");
+
+            entityBuilder.HasIndex(x => x.UserId)
+                .HasDatabaseName("IX_Clients_UserId");
+
+            // Relationships
+            entityBuilder.HasMany(x => x.Addresses)
+                .WithOne(x => x.Client)
+                .HasForeignKey(x => x.ClientId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Ignore computed properties
+            entityBuilder.Ignore(x => x.FullName);
+            entityBuilder.Ignore(x => x.DisplayName);
+            entityBuilder.Ignore(x => x.Age);
+
+            // Seed Data removed to avoid migration conflicts
+            // Will be added via separate SQL script or API
         }
     }
 }

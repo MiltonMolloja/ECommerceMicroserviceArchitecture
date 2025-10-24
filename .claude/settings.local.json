@@ -50,7 +50,8 @@
       "Bash(git stash:*)",
       "Bash(cat:*)",
       "Bash(del \"src\\Common\\Common.Validation\\Class1.cs\")",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(python -m json.tool:*)"
     ],
     "deny": [],
     "ask": []

@@ -33,10 +33,12 @@ namespace Customer.Persistence.Database
         }
 
         public DbSet<Client> Clients { get; set; }
+        public DbSet<ClientAddress> ClientAddresses { get; set; }
 
         private void ModelConfig(ModelBuilder modelBuilder)
         {
             new ClientConfiguration(modelBuilder.Entity<Client>());
+            new ClientAddressConfiguration(modelBuilder.Entity<ClientAddress>());
         }
     }
 }
