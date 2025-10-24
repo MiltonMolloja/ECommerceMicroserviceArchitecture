@@ -54,7 +54,31 @@ namespace Cart.Service.Queries
 
         private CartDto MapToDto(Domain.ShoppingCart cart)
         {
-            if (cart == null) return null;
+            if (cart == null)
+            {
+                // Return an empty cart DTO instead of null to avoid JSON deserialization errors
+                return new CartDto
+                {
+                    CartId = 0,
+                    ClientId = null,
+                    SessionId = null,
+                    Status = "NotFound",
+                    Items = new System.Collections.Generic.List<CartItemDto>(),
+                    Subtotal = 0,
+                    CouponDiscount = 0,
+                    SubtotalAfterCoupon = 0,
+                    TaxTotal = 0,
+                    Total = 0,
+                    ItemCount = 0,
+                    UniqueItemCount = 0,
+                    IsEmpty = true,
+                    IsAnonymous = false,
+                    HasCoupon = false,
+                    CreatedAt = System.DateTime.UtcNow,
+                    UpdatedAt = System.DateTime.UtcNow,
+                    ExpiresAt = null
+                };
+            }
 
             var dto = new CartDto
             {

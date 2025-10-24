@@ -26,6 +26,7 @@ namespace Api.Gateway.WebClient.Config
             service.AddHttpClient<IOrderProxy, OrderProxy>();
             service.AddHttpClient<ICustomerProxy, CustomerProxy>();
             service.AddHttpClient<ICatalogProxy, CatalogProxy>();
+            service.AddHttpClient<ICartProxy, CartProxy>();
 
             return service;
         }
