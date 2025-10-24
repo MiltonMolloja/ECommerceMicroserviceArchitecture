@@ -1,5 +1,6 @@
 using Api.Gateway.Models;
 using Api.Gateway.WebClient.Config;
+using Api.Gateway.WebClient.Swagger;
 using Common.Caching;
 using Common.Logging;
 using FluentValidation;
@@ -28,11 +29,17 @@ namespace Api.Gateway.WebClient
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // HttpContextAccessor (needed for language detection)
+            services.AddHttpContextAccessor();
+
             // Redis Cache
             services.AddRedisCache(Configuration);
 
             // Cache Settings
             services.Configure<CacheSettings>(opts => Configuration.GetSection("CacheSettings").Bind(opts));
+
+            // Language-Aware Cache Key Provider (Scoped for per-request)
+            services.AddScoped<ILanguageAwareCacheKeyProvider, LanguageAwareCacheKeyProvider>();
 
             services.AddAppsettingBinding(Configuration)
                     .AddProxiesRegistration(Configuration);
@@ -60,7 +67,7 @@ namespace Api.Gateway.WebClient
                 {
                     Title = "API Gateway WebClient",
                     Version = "v1",
-                    Description = "Gateway de ECommerce Architecture"
+                    Description = "Gateway de ECommerce Architecture - Soporte multiidioma con Accept-Language header (es, en)"
                 });
 
                 // Configuración de seguridad JWT
@@ -88,6 +95,9 @@ namespace Api.Gateway.WebClient
                         new string[] {}
                     }
                 });
+
+                // Agregar Accept-Language como parámetro global
+                c.OperationFilter<AcceptLanguageHeaderOperationFilter>();
             });
 
             var secretKey = Encoding.ASCII.GetBytes(

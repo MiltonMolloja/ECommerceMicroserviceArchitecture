@@ -20,24 +20,29 @@ namespace Api.Gateway.WebClient.Controllers
         private readonly ICacheService _cacheService;
         private readonly CacheSettings _cacheSettings;
         private readonly ILogger<ProductController> _logger;
+        private readonly ILanguageAwareCacheKeyProvider _cacheKeyProvider;
 
         public ProductController(
             ICatalogProxy catalogProxy,
             ICacheService cacheService,
             IOptions<CacheSettings> cacheSettings,
-            ILogger<ProductController> logger
+            ILogger<ProductController> logger,
+            ILanguageAwareCacheKeyProvider cacheKeyProvider
         )
         {
             _catalogProxy = catalogProxy;
             _cacheService = cacheService;
             _cacheSettings = cacheSettings.Value;
             _logger = logger;
+            _cacheKeyProvider = cacheKeyProvider;
         }
 
         [HttpGet]
         public async Task<DataCollection<ProductDto>> GetAll(int page, int take)
         {
-            var cacheKey = $"gateway:products:all:page:{page}:take:{take}";
+            // Generate language-aware cache key
+            var baseCacheKey = $"gateway:products:all:page:{page}:take:{take}";
+            var cacheKey = _cacheKeyProvider.GenerateKey(baseCacheKey);
 
             // Intentar obtener del caché
             var cachedProducts = await _cacheService.GetAsync<DataCollection<ProductDto>>(cacheKey);
@@ -60,7 +65,9 @@ namespace Api.Gateway.WebClient.Controllers
         [HttpGet("{id}")]
         public async Task<ProductDto> Get(int id)
         {
-            var cacheKey = $"gateway:products:id:{id}";
+            // Generate language-aware cache key
+            var baseCacheKey = $"gateway:products:id:{id}";
+            var cacheKey = _cacheKeyProvider.GenerateKey(baseCacheKey);
 
             // Intentar obtener del caché
             var cachedProduct = await _cacheService.GetAsync<ProductDto>(cacheKey);

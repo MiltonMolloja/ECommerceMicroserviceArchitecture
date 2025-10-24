@@ -28,25 +28,30 @@ namespace Catalog.Api.Controllers
         private readonly IMediator _mediator;
         private readonly ICacheService _cacheService;
         private readonly CacheSettings _cacheSettings;
+        private readonly ILanguageAwareCacheKeyProvider _cacheKeyProvider;
 
         public ProductController(
             ILogger<ProductController> logger,
             IMediator mediator,
             IProductQueryService productQueryService,
             ICacheService cacheService,
-            IOptions<CacheSettings> cacheSettings)
+            IOptions<CacheSettings> cacheSettings,
+            ILanguageAwareCacheKeyProvider cacheKeyProvider)
         {
             _logger = logger;
             _mediator = mediator;
             _productQueryService = productQueryService;
             _cacheService = cacheService;
             _cacheSettings = cacheSettings.Value;
+            _cacheKeyProvider = cacheKeyProvider;
         }
 
         [HttpGet]
         public async Task<DataCollection<ProductDto>> GetAll(int page = 1, int take = 10, string ids = null)
         {
-            var cacheKey = $"products:all:page:{page}:take:{take}:ids:{ids ?? "all"}";
+            // Generate language-aware cache key
+            var baseCacheKey = $"products:all:page:{page}:take:{take}:ids:{ids ?? "all"}";
+            var cacheKey = _cacheKeyProvider.GenerateKey(baseCacheKey);
 
             // Intentar obtener del caché
             var cachedProducts = await _cacheService.GetAsync<DataCollection<ProductDto>>(cacheKey);
@@ -75,7 +80,9 @@ namespace Catalog.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ProductDto> Get(int id)
         {
-            var cacheKey = $"products:id:{id}";
+            // Generate language-aware cache key
+            var baseCacheKey = $"products:id:{id}";
+            var cacheKey = _cacheKeyProvider.GenerateKey(baseCacheKey);
 
             // Intentar obtener del caché
             var cachedProduct = await _cacheService.GetAsync<ProductDto>(cacheKey);
@@ -107,15 +114,20 @@ namespace Catalog.Api.Controllers
                 // Crear el producto
                 await _mediator.Publish(notification);
 
-                // Invalidar caché de listado de productos
+                // Invalidar caché de listado de productos para ambos idiomas
                 var pageSizes = new[] { 10, 20, 50, 100 };
+                var languages = new[] { "es", "en" };
 
-                foreach (var pageSize in pageSizes)
+                foreach (var lang in languages)
                 {
-                    for (int page = 1; page <= 20; page++)
+                    foreach (var pageSize in pageSizes)
                     {
-                        var cacheKeyToRemove = $"products:all:page:{page}:take:{pageSize}:ids:all";
-                        await _cacheService.RemoveAsync(cacheKeyToRemove);
+                        for (int page = 1; page <= 20; page++)
+                        {
+                            var baseCacheKey = $"products:all:page:{page}:take:{pageSize}:ids:all";
+                            var cacheKeyToRemove = $"{baseCacheKey}_lang={lang}";
+                            await _cacheService.RemoveAsync(cacheKeyToRemove);
+                        }
                     }
                 }
 

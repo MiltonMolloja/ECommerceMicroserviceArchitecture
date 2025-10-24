@@ -1,29 +1,41 @@
-﻿using Catalog.Domain;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
+using Catalog.Domain;
 
 namespace Catalog.Persistence.Database.Configuration
 {
-    public class ProductInStockConfiguration
+    public class ProductInStockConfiguration : IEntityTypeConfiguration<ProductInStock>
     {
-        public ProductInStockConfiguration(EntityTypeBuilder<ProductInStock> entityBuilder)
+        public void Configure(EntityTypeBuilder<ProductInStock> builder)
         {
-            entityBuilder.HasKey(x => x.ProductInStockId);
+            builder.ToTable("ProductInStock");
+            builder.HasKey(x => x.ProductInStockId);
 
-            var random = new Random();
-            var products = new List<ProductInStock>();
+            builder.Property(x => x.Stock)
+                .IsRequired()
+                .HasDefaultValue(0);
 
-            for (var i = 1; i <= 100; i++) 
-            {
-                products.Add(new ProductInStock{
-                    ProductInStockId = i,
-                    ProductId = i,
-                    Stock = random.Next(0, 20)
-                });
-            }
+            builder.Property(x => x.MinStock)
+                .IsRequired()
+                .HasDefaultValue(0);
 
-            entityBuilder.HasData(products);
+            builder.Property(x => x.MaxStock)
+                .IsRequired()
+                .HasDefaultValue(1000);
+
+            // Índices
+            builder.HasIndex(x => x.ProductId)
+                .IsUnique();
+
+            // Check Constraints
+            builder.HasCheckConstraint("CK_Stock_Positive", "[Stock] >= 0");
+            builder.HasCheckConstraint("CK_MinStock_Positive", "[MinStock] >= 0");
+            builder.HasCheckConstraint("CK_MaxStock_Valid", "[MaxStock] > [MinStock]");
+
+            // Ignorar computed properties
+            builder.Ignore(x => x.IsLowStock);
+            builder.Ignore(x => x.IsOutOfStock);
+            builder.Ignore(x => x.IsOverStock);
         }
     }
 }

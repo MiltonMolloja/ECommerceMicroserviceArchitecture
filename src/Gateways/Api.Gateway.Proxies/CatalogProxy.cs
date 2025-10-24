@@ -22,6 +22,7 @@ namespace Api.Gateway.Proxies
     {
         private readonly ApiUrls _apiUrls;
         private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CatalogProxy(
             HttpClient httpClient,
@@ -34,10 +35,23 @@ namespace Api.Gateway.Proxies
 
             _httpClient = httpClient;
             _apiUrls = apiUrls.Value;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<DataCollection<ProductDto>> GetAllAsync(int page, int take, IEnumerable<int> clients = null) 
+        private void AddAcceptLanguageHeader()
         {
+            var acceptLanguage = _httpContextAccessor.HttpContext?.Request.Headers["Accept-Language"].ToString();
+            if (!string.IsNullOrEmpty(acceptLanguage))
+            {
+                _httpClient.DefaultRequestHeaders.Remove("Accept-Language");
+                _httpClient.DefaultRequestHeaders.Add("Accept-Language", acceptLanguage);
+            }
+        }
+
+        public async Task<DataCollection<ProductDto>> GetAllAsync(int page, int take, IEnumerable<int> clients = null)
+        {
+            AddAcceptLanguageHeader();
+
             var ids = string.Join(',', clients ?? new List<int>());
 
             var request = await _httpClient.GetAsync($"{_apiUrls.CatalogUrl}v1/products?page={page}&take={take}&ids={ids}");
@@ -54,6 +68,8 @@ namespace Api.Gateway.Proxies
 
         public async Task<ProductDto> GetAsync(int id)
         {
+            AddAcceptLanguageHeader();
+
             var request = await _httpClient.GetAsync($"{_apiUrls.CatalogUrl}v1/products/{id}");
             request.EnsureSuccessStatusCode();
 

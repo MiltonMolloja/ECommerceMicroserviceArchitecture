@@ -17,7 +17,7 @@ namespace Catalog.Persistence.Database
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            optionsBuilder.ConfigureWarnings(warnings => 
+            optionsBuilder.ConfigureWarnings(warnings =>
                 warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         }
 
@@ -28,17 +28,16 @@ namespace Catalog.Persistence.Database
             // Database schema
             builder.HasDefaultSchema("Catalog");
 
-            // Model Contraints
-            ModelConfig(builder);
+            // Apply configurations
+            builder.ApplyConfiguration(new ProductConfiguration());
+            builder.ApplyConfiguration(new CategoryConfiguration());
+            builder.ApplyConfiguration(new ProductCategoryConfiguration());
+            builder.ApplyConfiguration(new ProductInStockConfiguration());
         }
 
         public DbSet<Product> Products { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<ProductInStock> Stocks { get; set; }
-
-        private void ModelConfig(ModelBuilder modelBuilder)
-        {
-            new ProductConfiguration(modelBuilder.Entity<Product>());
-            new ProductInStockConfiguration(modelBuilder.Entity<ProductInStock>());
-        }
     }
 }

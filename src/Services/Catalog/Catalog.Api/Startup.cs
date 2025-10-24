@@ -1,3 +1,4 @@
+using Catalog.Api.Swagger;
 using Catalog.Common;
 using Catalog.Persistence.Database;
 using Catalog.Service.Queries;
@@ -86,6 +87,12 @@ namespace Catalog.Api
             // Cache Settings
             services.Configure<CacheSettings>(opts => Configuration.GetSection("CacheSettings").Bind(opts));
 
+            // Language Context (Scoped for per-request language detection)
+            services.AddScoped<ILanguageContext, LanguageContext>();
+
+            // Language-Aware Cache Key Provider (Scoped for per-request)
+            services.AddScoped<ILanguageAwareCacheKeyProvider, LanguageAwareCacheKeyProvider>();
+
             // Query services
             services.AddTransient<IProductQueryService, ProductQueryService>();
             services.AddTransient<IProductInStockQueryService, ProductInStockQueryService>();
@@ -100,7 +107,7 @@ namespace Catalog.Api
                 {
                     Title = "Catalog API",
                     Version = "v1",
-                    Description = "Microservicio de Catalog - ECommerce Architecture"
+                    Description = "Microservicio de Catalog - ECommerce Architecture - Soporte multiidioma con Accept-Language header (es, en)"
                 });
 
                 // Configuración de seguridad JWT
@@ -148,6 +155,9 @@ namespace Catalog.Api
                         new string[] {}
                     }
                 });
+
+                // Agregar Accept-Language como parámetro global
+                c.OperationFilter<AcceptLanguageHeaderOperationFilter>();
             });
 
             // Add Authentication
@@ -199,6 +209,9 @@ namespace Catalog.Api
 
             // Correlation ID
             app.UseCorrelationId();
+
+            // Language Detection Middleware (before authentication)
+            app.UseMiddleware<Catalog.Api.Middleware.LanguageMiddleware>();
 
             // API Key Authentication (debe ir antes de Rate Limiting)
             app.UseApiKeyAuthentication();
