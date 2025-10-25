@@ -52,7 +52,8 @@
       "Bash(del \"src\\Common\\Common.Validation\\Class1.cs\")",
       "Bash(rm:*)",
       "Bash(python -m json.tool:*)",
-      "Read(//c/Notas/Milton/**)"
+      "Read(//c/Notas/Milton/**)",
+      "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Services\\Notification\\Notification.Domain\\Class1.cs\")"
     ],
     "deny": [],
     "ask": []
