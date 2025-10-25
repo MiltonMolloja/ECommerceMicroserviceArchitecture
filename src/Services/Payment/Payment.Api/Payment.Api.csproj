@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="8.0.2" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="9.0.0" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="9.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Common.Logging\Common.Logging.csproj" />
+    <ProjectReference Include="..\Payment.Persistence.Database\Payment.Persistence.Database.csproj" />
+    <ProjectReference Include="..\Payment.Service.EventHandlers\Payment.Service.EventHandlers.csproj" />
+    <ProjectReference Include="..\Payment.Service.Queries\Payment.Service.Queries.csproj" />
+    <ProjectReference Include="..\Payment.Service.Gateways\Payment.Service.Gateways.csproj" />
+    <ProjectReference Include="..\Payment.Service.Proxies\Payment.Service.Proxies.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Caching\Common.Caching.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.RateLimiting\Common.RateLimiting.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.CorrelationId\Common.CorrelationId.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.ApiKey\Common.ApiKey.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Validation\Common.Validation.csproj" />
+  </ItemGroup>
+
+</Project>
