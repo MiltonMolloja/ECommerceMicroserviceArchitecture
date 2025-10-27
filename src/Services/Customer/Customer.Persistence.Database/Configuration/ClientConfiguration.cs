@@ -24,17 +24,7 @@ namespace Order.Persistence.Database.Configuration
                 .HasMaxLength(450); // Same as AspNetUsers.Id
 
             // Información Personal
-            entityBuilder.Property(x => x.FirstName)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            entityBuilder.Property(x => x.LastName)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            entityBuilder.Property(x => x.Email)
-                .IsRequired()
-                .HasMaxLength(256);
+            // NOTA: FirstName, LastName, Email eliminados - se obtienen de Identity.AspNetUsers
 
             entityBuilder.Property(x => x.Phone)
                 .HasMaxLength(20);
@@ -84,9 +74,7 @@ namespace Order.Persistence.Database.Configuration
                 .HasDefaultValueSql("GETUTCDATE()");
 
             // Indexes
-            entityBuilder.HasIndex(x => x.Email)
-                .IsUnique()
-                .HasDatabaseName("IX_Clients_Email");
+            // Email index eliminado - el campo ya no existe aquí
 
             entityBuilder.HasIndex(x => x.UserId)
                 .HasDatabaseName("IX_Clients_UserId");
@@ -98,8 +86,6 @@ namespace Order.Persistence.Database.Configuration
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Ignore computed properties
-            entityBuilder.Ignore(x => x.FullName);
-            entityBuilder.Ignore(x => x.DisplayName);
             entityBuilder.Ignore(x => x.Age);
 
             // Seed Data removed to avoid migration conflicts

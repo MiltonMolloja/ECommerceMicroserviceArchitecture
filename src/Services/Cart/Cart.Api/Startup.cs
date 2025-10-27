@@ -68,12 +68,12 @@ namespace Cart.Api
                         .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name);
 
             // Health Checks UI
-            //services.AddHealthChecksUI(setup =>
-            //{
-            //    setup.SetEvaluationTimeInSeconds(10);
-            //    setup.MaximumHistoryEntriesPerEndpoint(50);
-            //})
-            //.AddInMemoryStorage();
+            services.AddHealthChecksUI(setup =>
+            {
+                setup.SetEvaluationTimeInSeconds(10); // Evalúa cada 10 segundos
+                setup.MaximumHistoryEntriesPerEndpoint(50); // Mantiene historial de 50 entradas
+            })
+            .AddInMemoryStorage(); // Usa almacenamiento en memoria (puede cambiarse a SQL Server si se desea)
 
             // Event handlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Cart.Service.EventHandlers")));
@@ -87,6 +87,17 @@ namespace Cart.Api
 
             // Query services
             services.AddTransient<ICartQueryService, CartQueryService>();
+
+            // CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+            });
 
             // API Controllers
             services.AddControllers()
@@ -190,6 +201,9 @@ namespace Cart.Api
             // Validation exception handler
             app.UseValidationExceptionHandler();
 
+            // CORS debe ir antes de UseRouting
+            app.UseCors("AllowAll");
+
             app.UseRouting();
 
             // Swagger UI - Disponible en todos los ambientes sin autenticación
@@ -220,7 +234,7 @@ namespace Cart.Api
                     Predicate = _ => true,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
-                //endpoints.MapHealthChecksUI();
+                endpoints.MapHealthChecksUI();
             });
         }
     }

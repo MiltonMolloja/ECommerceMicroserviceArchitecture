@@ -39,20 +39,10 @@ namespace Customer.Persistence.Database.Migrations
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
                     b.Property<bool>("EmailNotificationsEnabled")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Gender")
                         .HasMaxLength(20)
@@ -75,11 +65,6 @@ namespace Customer.Persistence.Database.Migrations
 
                     b.Property<DateTime?>("LastLoginAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("MobilePhone")
                         .HasMaxLength(20)
@@ -125,10 +110,6 @@ namespace Customer.Persistence.Database.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ClientId");
-
-                    b.HasIndex("Email")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Clients_Email");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("IX_Clients_UserId");

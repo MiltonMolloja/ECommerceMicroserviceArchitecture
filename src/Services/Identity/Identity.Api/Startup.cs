@@ -106,9 +106,24 @@ namespace Identity.Api
 
             // Query services
             services.AddTransient<IUserQueryService, UserQueryService>();
+            services.AddTransient<ISessionQueryService, SessionQueryService>();
+            services.AddTransient<IAuditLogQueryService, AuditLogQueryService>();
 
-            // Refresh Token Service
+            // Event Handler Services
             services.AddScoped<Identity.Service.EventHandlers.Services.IRefreshTokenService, Identity.Service.EventHandlers.Services.RefreshTokenService>();
+            services.AddScoped<Identity.Service.EventHandlers.Services.IAuditService, Identity.Service.EventHandlers.Services.AuditService>();
+            services.AddScoped<Identity.Service.EventHandlers.Services.ITwoFactorService, Identity.Service.EventHandlers.Services.TwoFactorService>();
+
+            // Notification Client
+            services.AddHttpClient<Identity.Service.EventHandlers.Services.INotificationClient, Identity.Service.EventHandlers.Services.NotificationClient>();
+
+            // Customer API Client
+            services.AddHttpClient("CustomerApi", client =>
+            {
+                client.BaseAddress = new System.Uri(Configuration["CustomerApi:BaseUrl"]);
+                client.DefaultRequestHeaders.Add("X-Api-Key", Configuration["CustomerApi:ApiKey"]);
+                client.Timeout = System.TimeSpan.FromSeconds(30);
+            });
 
             // CORS
             services.AddCors(options =>

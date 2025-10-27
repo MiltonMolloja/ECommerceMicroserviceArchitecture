@@ -53,7 +53,8 @@
       "Bash(rm:*)",
       "Bash(python -m json.tool:*)",
       "Read(//c/Notas/Milton/**)",
-      "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Services\\Notification\\Notification.Domain\\Class1.cs\")"
+      "Bash(del \"C:\\Source\\ECommerceMicroserviceArchitecture\\src\\Services\\Notification\\Notification.Domain\\Class1.cs\")",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []

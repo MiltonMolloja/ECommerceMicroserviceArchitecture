@@ -89,6 +89,17 @@ namespace Customer.Api
             // Query services
             services.AddTransient<IClientQueryService, ClientQueryService>();
 
+            // CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+            });
+
             // API Controllers
             services.AddControllers()
                 .AddJsonOptions(options =>
@@ -191,6 +202,9 @@ namespace Customer.Api
 
             // Validation exception handler
             app.UseValidationExceptionHandler();
+
+            // CORS debe ir antes de UseRouting
+            app.UseCors("AllowAll");
 
             app.UseRouting();
 

@@ -1,14 +1,22 @@
 using Api.Gateway.Models;
 using Api.Gateway.WebClient.Config;
 using Api.Gateway.WebClient.Swagger;
+using Common.ApiKey;
 using Common.Caching;
+using Common.CorrelationId;
 using Common.Logging;
+using Common.RateLimiting;
+using Common.Validation;
 using FluentValidation;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -35,16 +43,37 @@ namespace Api.Gateway.WebClient
             // Redis Cache
             services.AddRedisCache(Configuration);
 
+            // Rate Limiting
+            services.AddCustomRateLimiting(Configuration);
+
+            // API Key Authentication
+            services.AddApiKeyAuthentication(Configuration);
+
+            // Correlation ID
+            services.AddCorrelationId();
+
             // Cache Settings
             services.Configure<CacheSettings>(opts => Configuration.GetSection("CacheSettings").Bind(opts));
 
             // Language-Aware Cache Key Provider (Scoped for per-request)
             services.AddScoped<ILanguageAwareCacheKeyProvider, LanguageAwareCacheKeyProvider>();
 
+            // Health check
+            services.AddHealthChecks()
+                        .AddCheck("self", () => HealthCheckResult.Healthy());
+
+            // Health Checks UI
+            services.AddHealthChecksUI(setup =>
+            {
+                setup.SetEvaluationTimeInSeconds(10); // Evalúa cada 10 segundos
+                setup.MaximumHistoryEntriesPerEndpoint(50); // Mantiene historial de 50 entradas
+            })
+            .AddInMemoryStorage(); // Usa almacenamiento en memoria (puede cambiarse a SQL Server si se desea)
+
             services.AddAppsettingBinding(Configuration)
                     .AddProxiesRegistration(Configuration);
 
-            // FluentValidation
+            // FluentValidation (NO usar AddValidationBehavior porque no hay MediatR en el Gateway)
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             // CORS
@@ -88,6 +117,15 @@ namespace Api.Gateway.WebClient
                     Description = "Ingrese el token JWT en el formato: Bearer {token}"
                 });
 
+                // Configuración de seguridad API Key
+                c.AddSecurityDefinition("ApiKey", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Name = "X-Api-Key",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "Ingrese el API Key para comunicación entre servicios"
+                });
+
                 c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
                 {
                     {
@@ -97,6 +135,17 @@ namespace Api.Gateway.WebClient
                             {
                                 Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
                                 Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    },
+                    {
+                        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                        {
+                            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                            {
+                                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                                Id = "ApiKey"
                             }
                         },
                         new string[] {}
@@ -139,6 +188,9 @@ namespace Api.Gateway.WebClient
                     Configuration.GetValue<int>("Papertrail:port"));
             }
 
+            // Validation exception handler
+            app.UseValidationExceptionHandler();
+
             // CORS debe ir antes de UseRouting
             app.UseCors("AllowAll");
 
@@ -152,6 +204,14 @@ namespace Api.Gateway.WebClient
                 c.RoutePrefix = "swagger";
             });
 
+            // Correlation ID debe estar al principio para rastrear toda la petición
+            app.UseCorrelationId();
+
+            // API Key Authentication (debe ir antes de Rate Limiting)
+            app.UseApiKeyAuthentication();
+
+            // Rate Limiting debe estar antes de Authorization
+            app.UseCustomRateLimiting();
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -159,6 +219,12 @@ namespace Api.Gateway.WebClient
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+                endpoints.MapHealthChecksUI();
             });
         }        
     }

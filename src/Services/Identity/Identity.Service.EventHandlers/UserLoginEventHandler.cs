@@ -4,9 +4,11 @@ using Identity.Service.EventHandlers.Commands;
 using Identity.Service.EventHandlers.Responses;
 using Identity.Service.EventHandlers.Services;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -23,42 +25,104 @@ namespace Identity.Service.EventHandlers
         IRequestHandler<UserLoginCommand, IdentityAccess>
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly IRefreshTokenService _refreshTokenService;
+        private readonly IAuditService _auditService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<UserLoginEventHandler> _logger;
 
         public UserLoginEventHandler(
             SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager,
             ApplicationDbContext context,
             IConfiguration configuration,
-            IRefreshTokenService refreshTokenService)
+            IRefreshTokenService refreshTokenService,
+            IAuditService auditService,
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<UserLoginEventHandler> logger)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
             _context = context;
             _configuration = configuration;
             _refreshTokenService = refreshTokenService;
+            _auditService = auditService;
+            _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         public async Task<IdentityAccess> Handle(UserLoginCommand notification, CancellationToken cancellationToken)
         {
             var result = new IdentityAccess();
 
-            var user = await _context.Users.SingleAsync(x => x.Email == notification.Email);
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.Email == notification.Email, cancellationToken);
+            if (user == null)
+            {
+                _logger.LogWarning($"Login attempt for non-existent user: {notification.Email}");
+                return result;
+            }
+
             var response = await _signInManager.CheckPasswordSignInAsync(user, notification.Password, false);
+
+            var ipAddress = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? notification.IpAddress ?? "Unknown";
+            var userAgent = _httpContextAccessor.HttpContext?.Request?.Headers["User-Agent"].ToString();
 
             if (response.Succeeded)
             {
+                // Check if 2FA is enabled
+                if (user.TwoFactorEnabled)
+                {
+                    _logger.LogInformation($"Login successful for {user.Email}, 2FA required");
+
+                    await _auditService.LogActionAsync(
+                        user.Id,
+                        "Login",
+                        true,
+                        ipAddress,
+                        userAgent,
+                        "2FA required");
+
+                    result.Succeeded = false;
+                    result.Requires2FA = true;
+                    result.UserId = user.Id;
+
+                    return result;
+                }
+
                 result.Succeeded = true;
                 await GenerateToken(user, result);
 
                 // Generar refresh token
                 var refreshToken = await _refreshTokenService.GenerateRefreshTokenAsync(
                     user.Id,
-                    notification.IpAddress ?? "Unknown"
+                    ipAddress
                 );
 
                 result.RefreshToken = refreshToken.Token;
                 result.ExpiresAt = refreshToken.ExpiresAt;
+
+                await _auditService.LogActionAsync(
+                    user.Id,
+                    "Login",
+                    true,
+                    ipAddress,
+                    userAgent);
+
+                _logger.LogInformation($"Login successful for {user.Email}");
+            }
+            else
+            {
+                await _auditService.LogActionAsync(
+                    user.Id,
+                    "Login",
+                    false,
+                    ipAddress,
+                    userAgent,
+                    "Invalid credentials");
+
+                _logger.LogWarning($"Failed login attempt for {user.Email}");
             }
 
             return result;

@@ -97,6 +97,17 @@ namespace Catalog.Api
             services.AddTransient<IProductQueryService, ProductQueryService>();
             services.AddTransient<IProductInStockQueryService, ProductInStockQueryService>();
 
+            // CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+            });
+
             // API Controllers
             services.AddControllers()
                 .AddJsonOptions(options =>
@@ -202,6 +213,9 @@ namespace Catalog.Api
 
             // Validation exception handler
             app.UseValidationExceptionHandler();
+
+            // CORS debe ir antes de UseRouting
+            app.UseCors("AllowAll");
 
             app.UseRouting();
 

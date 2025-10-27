@@ -5,19 +5,17 @@ namespace Customer.Service.EventHandlers.Commands
 {
     public class ClientCreateCommand : INotification
     {
+        // NOTA: FirstName, LastName, Email se obtienen de Identity via UserId
+        // No se duplican aquí
         public string UserId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
         public string Phone { get; set; }
         public string PreferredLanguage { get; set; }
     }
 
     public class ClientUpdateProfileCommand : INotification
     {
+        // NOTA: FirstName, LastName deben actualizarse en Identity.Api, no aquí
         public int ClientId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
         public string Phone { get; set; }
         public string MobilePhone { get; set; }
         public DateTime? DateOfBirth { get; set; }

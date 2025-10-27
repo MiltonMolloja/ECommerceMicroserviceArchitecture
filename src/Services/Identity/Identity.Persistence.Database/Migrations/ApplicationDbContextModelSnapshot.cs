@@ -52,7 +52,7 @@ namespace Identity.Persistence.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0bb5d877-15ea-4ce7-95bb-11742a14bcab",
+                            Id = "03b9e90c-0362-479b-a543-f569e4558c34",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -181,6 +181,85 @@ namespace Identity.Persistence.Database.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens", "Identity");
+                });
+
+            modelBuilder.Entity("Identity.Domain.UserAuditLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FailureReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("Success")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Timestamp");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "Timestamp");
+
+                    b.ToTable("UserAuditLogs", "Identity");
+                });
+
+            modelBuilder.Entity("Identity.Domain.UserBackupCode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CodeHash")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "IsUsed");
+
+                    b.ToTable("UserBackupCodes", "Identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -316,6 +395,28 @@ namespace Identity.Persistence.Database.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Identity.Domain.UserAuditLog", b =>
+                {
+                    b.HasOne("Identity.Domain.ApplicationUser", "User")
+                        .WithMany("AuditLogs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Identity.Domain.UserBackupCode", b =>
+                {
+                    b.HasOne("Identity.Domain.ApplicationUser", "User")
+                        .WithMany("BackupCodes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Identity.Domain.ApplicationRole", null)
@@ -378,6 +479,10 @@ namespace Identity.Persistence.Database.Migrations
 
             modelBuilder.Entity("Identity.Domain.ApplicationUser", b =>
                 {
+                    b.Navigation("AuditLogs");
+
+                    b.Navigation("BackupCodes");
+
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("UserRoles");

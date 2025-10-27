@@ -21,9 +21,9 @@ namespace Customer.Domain
 
         #region Properties - Información Personal
 
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
+        // NOTA: FirstName, LastName y Email se obtienen de Identity.AspNetUsers via UserId
+        // No se duplican aquí para evitar inconsistencias de datos
+
         public string Phone { get; set; }
         public string MobilePhone { get; set; }
 
@@ -71,15 +71,8 @@ namespace Customer.Domain
 
         #region Computed Properties
 
-        /// <summary>
-        /// Nombre completo del cliente
-        /// </summary>
-        public string FullName => $"{FirstName} {LastName}".Trim();
-
-        /// <summary>
-        /// Nombre para mostrar (FirstName o Email si no hay nombre)
-        /// </summary>
-        public string DisplayName => !string.IsNullOrEmpty(FirstName) ? FirstName : Email;
+        // NOTA: FullName, DisplayName se calculan en el DTO obteniendo datos de Identity
+        // FirstName, LastName, Email no están en esta entidad
 
         /// <summary>
         /// Edad calculada desde la fecha de nacimiento
@@ -100,11 +93,13 @@ namespace Customer.Domain
 
         #region Business Methods
 
-        public void UpdateProfile(string firstName, string lastName, string phone)
+        public void UpdateProfile(string phone, string mobilePhone, DateTime? dateOfBirth, string gender, string profileImageUrl)
         {
-            FirstName = firstName;
-            LastName = lastName;
             Phone = phone;
+            MobilePhone = mobilePhone;
+            DateOfBirth = dateOfBirth;
+            Gender = gender;
+            ProfileImageUrl = profileImageUrl;
             UpdatedAt = DateTime.UtcNow;
         }
 

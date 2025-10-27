@@ -22,6 +22,7 @@ namespace Identity.Api.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserQueryService _userQueryService;
+        private readonly IAuditLogQueryService _auditLogQueryService;
         private readonly ILogger<UserController> _logger;
         private readonly IMediator _mediator;
         private readonly ICacheService _cacheService;
@@ -31,12 +32,14 @@ namespace Identity.Api.Controllers
             ILogger<UserController> logger,
             IMediator mediator,
             IUserQueryService userQueryService,
+            IAuditLogQueryService auditLogQueryService,
             ICacheService cacheService,
             IOptions<CacheSettings> cacheSettings)
         {
             _logger = logger;
             _mediator = mediator;
             _userQueryService = userQueryService;
+            _auditLogQueryService = auditLogQueryService;
             _cacheService = cacheService;
             _cacheSettings = cacheSettings.Value;
         }
@@ -90,6 +93,15 @@ namespace Identity.Api.Controllers
             }
 
             return user;
+        }
+
+        [HttpGet("{id}/audit-logs")]
+        [EnableRateLimiting("read")]
+        public async Task<IActionResult> GetUserAuditLogs(string id, int page = 1, int pageSize = 50)
+        {
+            var auditLogs = await _auditLogQueryService.GetUserAuditLogsAsync(id, page, pageSize);
+
+            return Ok(new { auditLogs, page, pageSize, total = auditLogs.Count });
         }
     }
 }

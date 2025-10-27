@@ -28,12 +28,11 @@ namespace Customer.Service.EventHandlers
 
         public async Task Handle(ClientCreateCommand notification, CancellationToken cancellationToken)
         {
+            // NOTA: FirstName, LastName, Email NO se guardan aquí
+            // Se obtienen de Identity.AspNetUsers via UserId
             await _context.AddAsync(new Client
             {
                 UserId = notification.UserId,
-                FirstName = notification.FirstName,
-                LastName = notification.LastName,
-                Email = notification.Email,
                 Phone = notification.Phone,
                 PreferredLanguage = notification.PreferredLanguage ?? "es",
                 PreferredCurrency = "USD",
@@ -52,8 +51,7 @@ namespace Customer.Service.EventHandlers
             var client = await _context.Clients.FindAsync(notification.ClientId);
             if (client == null) return;
 
-            client.FirstName = notification.FirstName;
-            client.LastName = notification.LastName;
+            // NOTA: FirstName, LastName deben actualizarse en Identity.Api
             client.Phone = notification.Phone;
             client.MobilePhone = notification.MobilePhone;
             client.DateOfBirth = notification.DateOfBirth;

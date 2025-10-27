@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 
 namespace Customer.Api.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("v1/clients")]
     public class ClientController : ControllerBase
@@ -44,6 +43,7 @@ namespace Customer.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<DataCollection<ClientDto>> GetAll(int page = 1, int take = 10, string ids = null)
         {
             var cacheKey = $"clients:all:page:{page}:take:{take}:ids:{ids ?? "all"}";
@@ -73,6 +73,7 @@ namespace Customer.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ClientDto> Get(int id)
         {
             var cacheKey = $"clients:id:{id}";

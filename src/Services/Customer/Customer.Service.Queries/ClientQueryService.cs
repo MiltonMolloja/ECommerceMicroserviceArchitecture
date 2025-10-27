@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Service.Common.Collection;
 using Service.Common.Mapping;
 using Service.Common.Paging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -38,8 +39,8 @@ namespace Order.Service.Queries
             var collection = await _context.Clients
                 .Include(x => x.Addresses)
                 .Where(x => clients == null || clients.Contains(x.ClientId))
-                .OrderBy(x => x.FirstName)
-                .ThenBy(x => x.LastName)
+                // NOTA: No podemos ordenar por FirstName/LastName ya que no están en esta tabla
+                .OrderBy(x => x.ClientId)
                 .GetPagedAsync(page, take);
 
             var dtos = collection.Items.Select(MapToCompleteDto).ToList();
@@ -59,8 +60,8 @@ namespace Order.Service.Queries
         public async Task<DataCollection<ClientSummaryDto>> GetAllSummaryAsync(int page, int take)
         {
             var collection = await _context.Clients
-                .OrderBy(x => x.FirstName)
-                .ThenBy(x => x.LastName)
+                // NOTA: No podemos ordenar por FirstName/LastName ya que no están en esta tabla
+                .OrderBy(x => x.ClientId)
                 .GetPagedAsync(page, take);
 
             return collection.MapTo<DataCollection<ClientSummaryDto>>();
@@ -82,16 +83,14 @@ namespace Order.Service.Queries
 
         /// <summary>
         /// Obtiene un cliente por email
+        /// OBSOLETO: Email ya no está en esta tabla. Usar GetByUserIdAsync en su lugar.
         /// </summary>
+        [Obsolete("Email field removed from Client entity. Use GetByUserIdAsync instead.")]
         public async Task<ClientDto> GetByEmailAsync(string email)
         {
-            var client = await _context.Clients
-                .Include(x => x.Addresses)
-                .FirstOrDefaultAsync(x => x.Email == email);
-
-            if (client == null) return null;
-
-            return MapToCompleteDto(client);
+            // Este método ya no es funcional porque Email se eliminó de la tabla Client
+            // Se debe usar GetByUserIdAsync y obtener el UserId desde Identity
+            return null;
         }
 
         /// <summary>
@@ -145,11 +144,13 @@ namespace Order.Service.Queries
             {
                 ClientId = client.ClientId,
                 UserId = client.UserId,
-                FirstName = client.FirstName,
-                LastName = client.LastName,
-                FullName = client.FullName,
-                DisplayName = client.DisplayName,
-                Email = client.Email,
+                // NOTA: FirstName, LastName, Email deben obtenerse de Identity.AspNetUsers
+                // Por ahora se dejan null - el frontend puede obtenerlos del JWT o llamando a Identity.Api
+                FirstName = null,
+                LastName = null,
+                FullName = "From Identity",
+                DisplayName = "From Identity",
+                Email = null,
                 Phone = client.Phone,
                 MobilePhone = client.MobilePhone,
                 DateOfBirth = client.DateOfBirth,
