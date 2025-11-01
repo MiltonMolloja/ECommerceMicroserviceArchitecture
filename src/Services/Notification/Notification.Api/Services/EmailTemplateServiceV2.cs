@@ -280,15 +280,40 @@ namespace Notification.Api.Services
 
         private string RenderPasswordChangedTemplate(Dictionary<string, object> data)
         {
+            // Prepare data with computed values
+            var firstName = GetValue(data, "FirstName");
+            var ipAddress = GetValue(data, "IpAddress");
+
+            // Parse change time
+            DateTime changeTime = DateTime.UtcNow;
+            if (data.ContainsKey("ChangeTime"))
+            {
+                if (data["ChangeTime"] is DateTime dt)
+                    changeTime = dt;
+                else if (DateTime.TryParse(data["ChangeTime"]?.ToString(), out DateTime parsed))
+                    changeTime = parsed;
+            }
+
+            // Format date and time
+            var date = changeTime.ToString("dd/MM/yyyy");
+            var time = changeTime.ToString("HH:mm:ss");
+
             // Try to load from file first
             var template = LoadTemplateFromFile("password-changed.html");
 
             if (template == null)
             {
                 _logger.LogWarning("Could not load password-changed.html, using fallback template");
-                var firstName = GetValue(data, "FirstName");
-                return $@"<html><body><h1>Contraseña Cambiada</h1><p>Hola {firstName},</p><p>Tu contraseña ha sido cambiada exitosamente.</p></body></html>";
+                return $@"<html><body><h1>Contraseña Cambiada</h1><p>Hola {firstName},</p><p>Tu contraseña ha sido cambiada exitosamente.</p><p>Fecha: {date} {time}</p><p>IP: {ipAddress}</p></body></html>";
             }
+
+            // Add computed values to data
+            data["firstName"] = firstName;
+            data["date"] = date;
+            data["time"] = time;
+            data["ipAddress"] = ipAddress ?? "Unknown";
+            data["location"] = "Unknown"; // TODO: Implement IP geolocation
+            data["device"] = GetValue(data, "Device") ?? "Unknown";
 
             // Render template with data
             var renderedTemplate = RenderTemplateWithHandlebars(template, data);
@@ -397,10 +422,134 @@ namespace Notification.Api.Services
             return renderedTemplate;
         }
 
-        // Placeholder para los otros templates...
-        private string Render2FAEnabledTemplate(Dictionary<string, object> data) => RenderEmailVerificationTemplate(data);
-        private string Render2FABackupCodesTemplate(Dictionary<string, object> data) => RenderEmailVerificationTemplate(data);
-        private string Render2FADisabledTemplate(Dictionary<string, object> data) => RenderEmailVerificationTemplate(data);
-        private string RenderDefaultTemplate(Dictionary<string, object> data) => RenderEmailVerificationTemplate(data);
+        private string Render2FAEnabledTemplate(Dictionary<string, object> data)
+        {
+            // Prepare data with computed values
+            var firstName = GetValue(data, "FirstName");
+            var baseUrl = GetValue(data, "baseUrl");
+
+            // Try to load from file first
+            var template = LoadTemplateFromFile("2fa-enabled.html");
+
+            if (template == null)
+            {
+                _logger.LogWarning("Could not load 2fa-enabled.html, using fallback template");
+                return $@"<html><body><h1>2FA Habilitada</h1><p>Hola {firstName},</p><p>La autenticación de dos factores ha sido habilitada exitosamente en tu cuenta.</p></body></html>";
+            }
+
+            // Add computed values to data
+            data["firstName"] = firstName;
+
+            // Render template with data
+            var renderedTemplate = RenderTemplateWithHandlebars(template, data);
+
+            // Replace AuthApp with ECommerce branding
+            renderedTemplate = renderedTemplate.Replace("AuthApp", "ECommerce");
+
+            return renderedTemplate;
+        }
+
+        private string Render2FABackupCodesTemplate(Dictionary<string, object> data)
+        {
+            // Prepare data with computed values
+            var firstName = GetValue(data, "FirstName");
+            var baseUrl = GetValue(data, "baseUrl");
+
+            // Try to load from file first
+            var template = LoadTemplateFromFile("2fa-backup-codes.html");
+
+            if (template == null)
+            {
+                _logger.LogWarning("Could not load 2fa-backup-codes.html, using fallback template");
+                return $@"<html><body><h1>Códigos de Respaldo 2FA</h1><p>Hola {firstName},</p><p>Aquí están tus códigos de respaldo para 2FA. Guárdalos en un lugar seguro.</p></body></html>";
+            }
+
+            // Add computed values to data
+            data["firstName"] = firstName;
+
+            // Render template with data
+            var renderedTemplate = RenderTemplateWithHandlebars(template, data);
+
+            // Replace AuthApp with ECommerce branding
+            renderedTemplate = renderedTemplate.Replace("AuthApp", "ECommerce");
+
+            return renderedTemplate;
+        }
+
+        private string Render2FADisabledTemplate(Dictionary<string, object> data)
+        {
+            // No template file exists, using inline HTML
+            var firstName = GetValue(data, "FirstName");
+            var baseUrl = GetValue(data, "baseUrl");
+            var year = DateTime.Now.Year;
+
+            return $@"<!DOCTYPE html>
+<html lang=""es"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>2FA Deshabilitada - ECommerce</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; }}
+        .container {{ max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
+        h1 {{ color: #232F3E; text-align: center; }}
+        .icon {{ text-align: center; font-size: 64px; margin: 20px 0; }}
+        .warning {{ background: #FFF3CD; border-left: 4px solid #FFC107; padding: 15px; margin: 20px 0; border-radius: 4px; }}
+        .warning p {{ color: #856404; margin: 0; }}
+        p {{ color: #555; line-height: 1.6; }}
+        .footer {{ margin-top: 40px; text-align: center; color: #666; font-size: 13px; }}
+    </style>
+</head>
+<body>
+    <div class=""container"">
+        <div class=""icon"">⚠️</div>
+        <h1>Autenticación de Dos Factores Deshabilitada</h1>
+        <p>Hola {firstName},</p>
+        <p>Te informamos que la autenticación de dos factores (2FA) ha sido deshabilitada en tu cuenta de ECommerce.</p>
+        <div class=""warning"">
+            <p><strong>⚠️ Advertencia de Seguridad:</strong> Tu cuenta ahora está menos protegida. Recomendamos habilitar 2FA nuevamente para mayor seguridad.</p>
+        </div>
+        <p>Si no realizaste este cambio, contacta inmediatamente con soporte.</p>
+        <p style=""margin-top: 30px;"">Saludos,<br><strong>El equipo de ECommerce</strong></p>
+        <div class=""footer"">
+            <p>© {year} ECommerce, Inc. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>";
+        }
+
+        private string RenderDefaultTemplate(Dictionary<string, object> data)
+        {
+            var firstName = GetValue(data, "FirstName") ?? "Usuario";
+            var year = DateTime.Now.Year;
+
+            return $@"<!DOCTYPE html>
+<html lang=""es"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>Notificación - ECommerce</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; }}
+        .container {{ max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
+        h1 {{ color: #232F3E; text-align: center; }}
+        p {{ color: #555; line-height: 1.6; }}
+        .footer {{ margin-top: 40px; text-align: center; color: #666; font-size: 13px; }}
+    </style>
+</head>
+<body>
+    <div class=""container"">
+        <h1>Notificación de ECommerce</h1>
+        <p>Hola {firstName},</p>
+        <p>Has recibido una notificación de tu cuenta de ECommerce.</p>
+        <p style=""margin-top: 30px;"">Saludos,<br><strong>El equipo de ECommerce</strong></p>
+        <div class=""footer"">
+            <p>© {year} ECommerce, Inc. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>";
+        }
     }
 }
