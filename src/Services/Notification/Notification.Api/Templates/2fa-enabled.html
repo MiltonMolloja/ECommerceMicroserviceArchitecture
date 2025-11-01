@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autenticación de Dos Factores Habilitada - AuthApp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #232F3E;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .logo {
+            display: inline-block;
+            border: 2px solid #FF9900;
+            padding: 10px 20px;
+            border-radius: 4px;
+            color: #FF9900;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .icon-wrapper {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .icon {
+            width: 80px;
+            height: 80px;
+            background-color: #E8F5E9;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        h1 {
+            color: #232F3E;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        p {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .success-banner {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 25px 0;
+        }
+        .success-banner h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        .success-banner p {
+            margin: 0;
+            font-size: 15px;
+        }
+        .feature-list {
+            background-color: #f8f9fa;
+            border-left: 4px solid #4CAF50;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .feature-list h3 {
+            color: #232F3E;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            gap: 12px;
+        }
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+        .feature-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .feature-text {
+            flex: 1;
+        }
+        .feature-text strong {
+            display: block;
+            color: #232F3E;
+            margin-bottom: 4px;
+        }
+        .feature-text span {
+            color: #666;
+            font-size: 14px;
+        }
+        .info-box {
+            background-color: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .info-box h4 {
+            color: #1565C0;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .info-box p {
+            color: #0D47A1;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .backup-codes-note {
+            background-color: #FFF3CD;
+            border-left: 4px solid #FFC107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .backup-codes-note p {
+            color: #856404;
+            font-size: 14px;
+            margin: 0;
+        }
+        .cta-button {
+            display: block;
+            width: 100%;
+            max-width: 350px;
+            margin: 30px auto;
+            padding: 16px 32px;
+            background-color: #FF9900;
+            color: #232F3E;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .footer {
+            background-color: #f8f8f8;
+            padding: 30px;
+            text-align: center;
+        }
+        .footer p {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        .footer-links {
+            margin-top: 20px;
+        }
+        .footer-links a {
+            color: #0066c0;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 13px;
+        }
+        @media only screen and (max-width: 600px) {
+            .content {
+                padding: 30px 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">AuthApp</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="icon-wrapper">
+                <div class="icon">🛡️</div>
+            </div>
+
+            <h1>2FA Habilitada</h1>
+
+            <div class="success-banner">
+                <h2>¡Tu Cuenta Está Más Segura!</h2>
+                <p>La autenticación de dos factores ha sido activada correctamente</p>
+            </div>
+
+            <p>¡Hola {{firstName}}!</p>
+
+            <p>Te confirmamos que la autenticación de dos factores (2FA) ha sido habilitada exitosamente en tu cuenta de AuthApp.</p>
+
+            <div class="feature-list">
+                <h3>🎯 Beneficios de la Autenticación de Dos Factores</h3>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">🔐</div>
+                    <div class="feature-text">
+                        <strong>Seguridad Mejorada</strong>
+                        <span>Una capa adicional de protección para tu cuenta</span>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">🚫</div>
+                    <div class="feature-text">
+                        <strong>Prevención de Accesos No Autorizados</strong>
+                        <span>Incluso si alguien conoce tu contraseña, no podrá acceder</span>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-text">
+                        <strong>Códigos Temporales</strong>
+                        <span>Códigos únicos que cambian cada 30 segundos</span>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">🔔</div>
+                    <div class="feature-text">
+                        <strong>Alertas de Actividad</strong>
+                        <span>Notificaciones inmediatas de intentos de acceso</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>📲 Cómo Funciona</h4>
+                <p>A partir de ahora, cada vez que inicies sesión necesitarás:</p>
+                <p><strong>1.</strong> Tu contraseña (lo que sabes)</p>
+                <p><strong>2.</strong> Un código de 6 dígitos de tu aplicación de autenticación (lo que tienes)</p>
+            </div>
+
+            <div class="backup-codes-note">
+                <p><strong>💾 Importante:</strong> Asegúrate de guardar tus códigos de respaldo en un lugar seguro. Puedes usarlos si pierdes acceso a tu aplicación de autenticación.</p>
+            </div>
+
+            <a href="{{baseUrl}}/profile/security" class="cta-button">Ver Configuración de Seguridad</a>
+
+            <p style="margin-top: 30px; text-align: center; color: #888; font-size: 14px;">Si no activaste la autenticación de dos factores, contacta inmediatamente con soporte.</p>
+
+            <p style="color: #888; font-size: 14px;">Saludos,<br><strong>El equipo de AuthApp</strong></p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Este es un correo electrónico automático, por favor no respondas a este mensaje.</p>
+            <p>© {{year}} AuthApp, Inc. Todos los derechos reservados.</p>
+            
+            <div class="footer-links">
+                <a href="{{baseUrl}}/profile/security">Configuración de Seguridad</a>
+                <a href="{{baseUrl}}/help/2fa">Ayuda con 2FA</a>
+                <a href="{{baseUrl}}/support">Soporte</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

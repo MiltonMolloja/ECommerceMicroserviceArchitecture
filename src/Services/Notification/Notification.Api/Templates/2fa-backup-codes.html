@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Códigos de Respaldo 2FA - AuthApp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #232F3E;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .logo {
+            display: inline-block;
+            border: 2px solid #FF9900;
+            padding: 10px 20px;
+            border-radius: 4px;
+            color: #FF9900;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .icon-wrapper {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .icon {
+            width: 80px;
+            height: 80px;
+            background-color: #FFF3E0;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        h1 {
+            color: #232F3E;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        p {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .warning-banner {
+            background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%);
+            color: #232F3E;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 25px 0;
+        }
+        .warning-banner .icon-large {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+        .warning-banner h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        .warning-banner p {
+            font-size: 14px;
+            margin: 0;
+        }
+        .codes-container {
+            background: linear-gradient(135deg, #232F3E 0%, #2d3e50 100%);
+            padding: 30px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        .codes-header {
+            text-align: center;
+            color: #FF9900;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .codes-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .code-item {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            border: 2px solid #FF9900;
+        }
+        .code-number {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .code-value {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #232F3E;
+            letter-spacing: 2px;
+        }
+        .instructions {
+            background-color: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .instructions h3 {
+            color: #1565C0;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        .instructions ol {
+            margin-left: 20px;
+            color: #0D47A1;
+        }
+        .instructions li {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .security-tips {
+            background-color: #FFEBEE;
+            border-left: 4px solid #F44336;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .security-tips h3 {
+            color: #C62828;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        .security-tips ul {
+            margin-left: 20px;
+            color: #B71C1C;
+        }
+        .security-tips li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .cta-button {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 30px auto;
+            padding: 16px 32px;
+            background-color: #FF9900;
+            color: #232F3E;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .footer {
+            background-color: #f8f8f8;
+            padding: 30px;
+            text-align: center;
+        }
+        .footer p {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        .footer-links {
+            margin-top: 20px;
+        }
+        .footer-links a {
+            color: #0066c0;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 13px;
+        }
+        @media only screen and (max-width: 600px) {
+            .content {
+                padding: 30px 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .codes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">AuthApp</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="icon-wrapper">
+                <div class="icon">🔑</div>
+            </div>
+
+            <h1>Códigos de Respaldo 2FA</h1>
+
+            <p>¡Hola {{firstName}}!</p>
+
+            <p>Aquí están tus códigos de respaldo para la autenticación de dos factores. Estos códigos te permitirán acceder a tu cuenta si pierdes acceso a tu aplicación de autenticación.</p>
+
+            <div class="warning-banner">
+                <div class="icon-large">⚠️</div>
+                <h2>¡Guarda estos códigos en un lugar seguro!</h2>
+                <p>Cada código solo puede usarse una vez</p>
+            </div>
+
+            <div class="codes-container">
+                <div class="codes-header">
+                    <span>🔐</span>
+                    <span>TUS CÓDIGOS DE RESPALDO</span>
+                </div>
+                <div class="codes-grid">
+                    {{#each backupCodes}}
+                    <div class="code-item">
+                        <div class="code-number">Código {{@index}}</div>
+                        <div class="code-value">{{this}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+
+            <div class="instructions">
+                <h3>📋 Cómo Usar los Códigos de Respaldo</h3>
+                <ol>
+                    <li><strong>Guárdalos de forma segura:</strong> Imprime este correo o guarda los códigos en un gestor de contraseñas</li>
+                    <li><strong>Úsalos en caso de emergencia:</strong> Si pierdes tu dispositivo o aplicación de autenticación</li>
+                    <li><strong>Un solo uso:</strong> Cada código solo funciona una vez, táchalo después de usarlo</li>
+                    <li><strong>Genera nuevos:</strong> Puedes generar nuevos códigos desde tu configuración de seguridad</li>
+                </ol>
+            </div>
+
+            <div class="security-tips">
+                <h3>🔒 Consejos de Seguridad Importantes</h3>
+                <ul>
+                    <li>NO compartas estos códigos con nadie</li>
+                    <li>NO los guardes en capturas de pantalla sin protección</li>
+                    <li>NO los envíes por mensajes o redes sociales</li>
+                    <li>Guárdalos en un lugar físicamente seguro o encriptado</li>
+                    <li>Si crees que están comprometidos, genera nuevos inmediatamente</li>
+                </ul>
+            </div>
+
+            <a href="{{baseUrl}}/profile/security" class="cta-button">Ver Configuración</a>
+
+            <p style="margin-top: 30px; text-align: center; color: #888; font-size: 14px;">Puedes generar nuevos códigos de respaldo en cualquier momento desde tu configuración de seguridad</p>
+
+            <p style="color: #888; font-size: 14px;">Saludos,<br><strong>El equipo de AuthApp</strong></p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Este es un correo electrónico automático, por favor no respondas a este mensaje.</p>
+            <p>© {{year}} AuthApp, Inc. Todos los derechos reservados.</p>
+            
+            <div class="footer-links">
+                <a href="{{baseUrl}}/profile/security">Configuración de Seguridad</a>
+                <a href="{{baseUrl}}/help/backup-codes">Ayuda con Códigos</a>
+                <a href="{{baseUrl}}/support">Soporte</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

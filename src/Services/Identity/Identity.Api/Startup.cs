@@ -108,6 +108,7 @@ namespace Identity.Api
             services.AddTransient<IUserQueryService, UserQueryService>();
             services.AddTransient<ISessionQueryService, SessionQueryService>();
             services.AddTransient<IAuditLogQueryService, AuditLogQueryService>();
+            services.AddTransient<IAccountActivityQueryService, AccountActivityQueryService>();
 
             // Event Handler Services
             services.AddScoped<Identity.Service.EventHandlers.Services.IRefreshTokenService, Identity.Service.EventHandlers.Services.RefreshTokenService>();

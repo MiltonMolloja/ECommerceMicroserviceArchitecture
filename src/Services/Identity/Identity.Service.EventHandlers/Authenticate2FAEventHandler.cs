@@ -99,7 +99,9 @@ namespace Identity.Service.EventHandlers
                     new Claim(ClaimTypes.NameIdentifier, user.Id),
                     new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.Name, user.FirstName),
-                    new Claim(ClaimTypes.Surname, user.LastName)
+                    new Claim(ClaimTypes.Surname, user.LastName),
+                    new Claim("EmailConfirmed", user.EmailConfirmed.ToString().ToLower()),
+                    new Claim("PasswordChangedAt", user.PasswordChangedAt?.ToString("o") ?? string.Empty)
                 };
 
                 foreach (var role in roles)
@@ -129,7 +131,8 @@ namespace Identity.Service.EventHandlers
                     UserId = user.Id,
                     CreatedAt = DateTime.UtcNow,
                     ExpiresAt = DateTime.UtcNow.AddDays(7),
-                    CreatedByIp = ipAddress
+                    CreatedByIp = ipAddress,
+                    UserAgent = userAgent
                 };
 
                 _context.RefreshTokens.Add(refreshToken);

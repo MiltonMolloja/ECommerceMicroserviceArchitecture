@@ -8,10 +8,10 @@ namespace Notification.Domain
 
         public int TemplateId { get; set; }
         public NotificationType Type { get; set; }
-        public string TemplateKey { get; set; } // order_placed, order_shipped, etc.
+        public required string TemplateKey { get; set; } // order_placed, order_shipped, etc.
 
-        public string TitleTemplate { get; set; } // "Your order #{{orderNumber}} has been placed!"
-        public string MessageTemplate { get; set; } // "Thank you {{customerName}}, your order..."
+        public required string TitleTemplate { get; set; } // "Your order #{{orderNumber}} has been placed!"
+        public required string MessageTemplate { get; set; } // "Thank you {{customerName}}, your order..."
 
         public NotificationChannel Channel { get; set; }
         public bool IsActive { get; set; }

@@ -17,7 +17,7 @@ namespace Identity.Service.EventHandlers.Services
             _context = context;
         }
 
-        public async Task<RefreshToken> GenerateRefreshTokenAsync(string userId, string ipAddress)
+        public async Task<RefreshToken> GenerateRefreshTokenAsync(string userId, string ipAddress, string userAgent = null)
         {
             var refreshToken = new RefreshToken
             {
@@ -26,6 +26,7 @@ namespace Identity.Service.EventHandlers.Services
                 CreatedAt = DateTime.UtcNow,
                 ExpiresAt = DateTime.UtcNow.AddDays(7), // Refresh token válido por 7 días
                 CreatedByIp = ipAddress,
+                UserAgent = userAgent,
                 IsRevoked = false
             };
 
@@ -75,7 +76,7 @@ namespace Identity.Service.EventHandlers.Services
         public async Task RevokeAllUserTokensAsync(string userId, string ipAddress)
         {
             var userTokens = await _context.RefreshTokens
-                .Where(rt => rt.UserId == userId && rt.IsActive)
+                .Where(rt => rt.UserId == userId && !rt.IsRevoked && rt.ExpiresAt > DateTime.UtcNow)
                 .ToListAsync();
 
             foreach (var token in userTokens)

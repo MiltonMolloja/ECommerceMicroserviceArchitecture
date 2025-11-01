@@ -27,6 +27,7 @@ namespace Identity.Api.Controllers
         private readonly IMediator _mediator;
         private readonly ICacheService _cacheService;
         private readonly ISessionQueryService _sessionQueryService;
+        private readonly IAccountActivityQueryService _accountActivityQueryService;
 
         public IdentityController(
             ILogger<IdentityController> logger,
@@ -34,6 +35,7 @@ namespace Identity.Api.Controllers
             IMediator mediator,
             ICacheService cacheService,
             ISessionQueryService sessionQueryService,
+            IAccountActivityQueryService accountActivityQueryService,
             IOptions<CacheSettings> cacheSettings)
         {
             _logger = logger;
@@ -41,6 +43,7 @@ namespace Identity.Api.Controllers
             _mediator = mediator;
             _cacheService = cacheService;
             _sessionQueryService = sessionQueryService;
+            _accountActivityQueryService = accountActivityQueryService;
         }
 
         #region User Registration
@@ -207,6 +210,37 @@ namespace Identity.Api.Controllers
 
         #endregion
 
+        #region Profile Management
+
+        /// <summary>
+        /// Update user profile (FirstName and LastName only)
+        /// </summary>
+        [HttpPut("profile")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [EnableRateLimiting("write")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserProfileCommand command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Get userId from JWT claims
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            command.UserId = userId;
+
+            var result = await _mediator.Send(command);
+
+            if (!result)
+            {
+                return BadRequest(new { message = "Failed to update profile." });
+            }
+
+            return Ok(new { message = "Profile updated successfully." });
+        }
+
+        #endregion
+
         #region Password Management
 
         [HttpPost("change-password")]
@@ -216,7 +250,7 @@ namespace Identity.Api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             // Get userId from JWT claims
@@ -254,7 +288,7 @@ namespace Identity.Api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var result = await _mediator.Send(command);
@@ -288,6 +322,65 @@ namespace Identity.Api.Controllers
             }
 
             return Ok(new { message = "Email confirmed successfully." });
+        }
+
+        /// <summary>
+        /// Endpoint GET para confirmar email desde enlace de correo
+        /// </summary>
+        [HttpGet("confirm-email")]
+        [EnableRateLimiting("write")]
+        public async Task<IActionResult> ConfirmEmailViaLink([FromQuery] string userId, [FromQuery] string token)
+        {
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+            {
+                return BadRequest(new { message = "UserId and Token are required." });
+            }
+
+            _logger.LogInformation($"Email confirmation attempt - UserId: {userId}, Token length: {token.Length}");
+
+            var command = new ConfirmEmailCommand
+            {
+                UserId = userId,
+                Token = token
+            };
+
+            var result = await _mediator.Send(command);
+
+            if (!result)
+            {
+                return BadRequest(new { message = "Failed to confirm email. Invalid or expired token." });
+            }
+
+            // Retornar una página HTML simple de confirmación exitosa
+            var htmlResponse = @"
+<!DOCTYPE html>
+<html lang='es'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Email Confirmado</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background-color: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
+        .icon { font-size: 64px; margin-bottom: 20px; }
+        h1 { color: #232F3E; margin-bottom: 20px; }
+        p { color: #555; line-height: 1.6; }
+        .button { display: inline-block; margin-top: 20px; padding: 12px 24px; background-color: #FF9900; color: #232F3E; text-decoration: none; border-radius: 4px; font-weight: bold; }
+        .button:hover { background-color: #FFA500; }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='icon'>✅</div>
+        <h1>¡Email Confirmado Exitosamente!</h1>
+        <p>Tu dirección de correo electrónico ha sido verificada correctamente.</p>
+        <p>Ya puedes iniciar sesión en tu cuenta.</p>
+        <a href='http://localhost:4400/auth/login?returnUrl=http:%2F%2Flocalhost:4200%2Fauth%2Fcallback%3Fnext%3D%252F' class='button'>Ir a Iniciar Sesión</a>
+    </div>
+</body>
+</html>";
+
+            return Content(htmlResponse, "text/html");
         }
 
         [HttpPost("resend-email-confirmation")]
@@ -482,6 +575,30 @@ namespace Identity.Api.Controllers
             }
 
             return Ok(new { message = "All sessions revoked successfully (except current)" });
+        }
+
+        #endregion
+
+        #region Account Activity
+
+        /// <summary>
+        /// Get recent account activity
+        /// </summary>
+        [HttpGet("activity")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [EnableRateLimiting("read")]
+        public async Task<IActionResult> GetAccountActivity([FromQuery] int limit = 20)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (limit > 100)
+            {
+                limit = 100; // Limitar a máximo 100 registros
+            }
+
+            var activities = await _accountActivityQueryService.GetRecentActivityAsync(userId, limit);
+
+            return Ok(new { activities });
         }
 
         #endregion

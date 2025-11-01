@@ -14,6 +14,7 @@ namespace Identity.Domain
         public string ReplacedByToken { get; set; }
         public string CreatedByIp { get; set; }
         public string RevokedByIp { get; set; }
+        public string UserAgent { get; set; }
 
         // Navigation property
         public ApplicationUser User { get; set; }

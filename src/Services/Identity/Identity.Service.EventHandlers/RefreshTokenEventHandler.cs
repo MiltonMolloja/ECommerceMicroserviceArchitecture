@@ -63,7 +63,7 @@ namespace Identity.Service.EventHandlers
                 result.RefreshToken = newRefreshToken.Token;
                 result.ExpiresAt = newRefreshToken.ExpiresAt;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 result.Succeeded = false;
                 // Log the error here if needed
@@ -82,7 +82,9 @@ namespace Identity.Service.EventHandlers
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.FirstName),
-                new Claim(ClaimTypes.Surname, user.LastName)
+                new Claim(ClaimTypes.Surname, user.LastName),
+                new Claim("EmailConfirmed", user.EmailConfirmed.ToString().ToLower()),
+                new Claim("PasswordChangedAt", user.PasswordChangedAt?.ToString("o") ?? string.Empty)
             };
 
             var roles = await _context.Roles

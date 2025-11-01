@@ -1,0 +1,6 @@
+@echo off
+echo Agregando columna UserAgent a la tabla RefreshTokens...
+sqlcmd -S localhost -d ECommerceDb -E -i add-useragent-column.sql
+echo.
+echo Presiona cualquier tecla para salir...
+pause > nul

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Identity.Service.EventHandlers.Commands
 {
-    public class ChangePasswordCommand : IRequest<bool>
+    public class UpdateUserProfileCommand : IRequest<bool>
     {
         /// <summary>
         /// UserId obtenido del JWT token - No se envía en el body
@@ -13,14 +13,9 @@ namespace Identity.Service.EventHandlers.Commands
         public string UserId { get; set; }
 
         [Required]
-        public string CurrentPassword { get; set; }
+        public string FirstName { get; set; }
 
         [Required]
-        [MinLength(6)]
-        public string NewPassword { get; set; }
-
-        [Required]
-        [Compare(nameof(NewPassword), ErrorMessage = "Passwords do not match")]
-        public string ConfirmPassword { get; set; }
+        public string LastName { get; set; }
     }
 }

@@ -36,7 +36,7 @@ namespace Identity.Service.EventHandlers
             try
             {
                 var sessions = await _context.RefreshTokens
-                    .Where(rt => rt.UserId == request.UserId && rt.IsActive)
+                    .Where(rt => rt.UserId == request.UserId && !rt.IsRevoked && rt.ExpiresAt > DateTime.UtcNow)
                     .ToListAsync(cancellationToken);
 
                 var ipAddress = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();

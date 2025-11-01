@@ -31,6 +31,7 @@ namespace Identity.Service.EventHandlers
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly IAuditService _auditService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly INotificationClient _notificationClient;
         private readonly ILogger<UserLoginEventHandler> _logger;
 
         public UserLoginEventHandler(
@@ -41,6 +42,7 @@ namespace Identity.Service.EventHandlers
             IRefreshTokenService refreshTokenService,
             IAuditService auditService,
             IHttpContextAccessor httpContextAccessor,
+            INotificationClient notificationClient,
             ILogger<UserLoginEventHandler> logger)
         {
             _signInManager = signInManager;
@@ -50,6 +52,7 @@ namespace Identity.Service.EventHandlers
             _refreshTokenService = refreshTokenService;
             _auditService = auditService;
             _httpContextAccessor = httpContextAccessor;
+            _notificationClient = notificationClient;
             _logger = logger;
         }
 
@@ -97,7 +100,8 @@ namespace Identity.Service.EventHandlers
                 // Generar refresh token
                 var refreshToken = await _refreshTokenService.GenerateRefreshTokenAsync(
                     user.Id,
-                    ipAddress
+                    ipAddress,
+                    userAgent
                 );
 
                 result.RefreshToken = refreshToken.Token;
@@ -109,6 +113,9 @@ namespace Identity.Service.EventHandlers
                     true,
                     ipAddress,
                     userAgent);
+
+                // Send new session alert email
+                await SendNewSessionAlertAsync(user, ipAddress, userAgent);
 
                 _logger.LogInformation($"Login successful for {user.Email}");
             }
@@ -138,7 +145,9 @@ namespace Identity.Service.EventHandlers
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.FirstName),
-                new Claim(ClaimTypes.Surname, user.LastName)
+                new Claim(ClaimTypes.Surname, user.LastName),
+                new Claim("EmailConfirmed", user.EmailConfirmed.ToString().ToLower()),
+                new Claim("PasswordChangedAt", user.PasswordChangedAt?.ToString("o") ?? string.Empty)
             };
 
             var roles = await _context.Roles
@@ -166,6 +175,148 @@ namespace Identity.Service.EventHandlers
             var createdToken = tokenHandler.CreateToken(tokenDescriptor);
 
             identity.AccessToken = tokenHandler.WriteToken(createdToken);
+        }
+
+        private async Task SendNewSessionAlertAsync(ApplicationUser user, string ipAddress, string userAgent)
+        {
+            try
+            {
+                var now = DateTime.UtcNow;
+
+                // Log UserAgent for debugging
+                _logger.LogInformation($"Processing login alert - IP: {ipAddress}, UserAgent: {userAgent ?? "null"}");
+
+                var device = ParseDevice(userAgent);
+                var browser = ParseBrowser(userAgent);
+                var location = GetLocationFromIp(ipAddress);
+                var formattedIp = FormatIpAddress(ipAddress);
+
+                await _notificationClient.SendEmailAsync(
+                    user.Email,
+                    "new-session-alert",
+                    new
+                    {
+                        FirstName = user.FirstName,
+                        Date = now.ToString("dd/MM/yyyy"),
+                        Time = now.ToString("HH:mm:ss"),
+                        Device = device,
+                        Browser = browser,
+                        Location = location,
+                        IpAddress = formattedIp,
+                        ConfirmLink = $"{_configuration.GetValue<string>("FrontendUrl") ?? "http://localhost:4400"}/profile/sessions",
+                        SecureLink = $"{_configuration.GetValue<string>("FrontendUrl") ?? "http://localhost:4400"}/profile/security"
+                    });
+
+                _logger.LogInformation($"New session alert email sent to {user.Email}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error sending new session alert email to {user.Email}");
+                // Don't throw - email failure shouldn't block login
+            }
+        }
+
+        private string FormatIpAddress(string ipAddress)
+        {
+            if (string.IsNullOrEmpty(ipAddress))
+                return "Unknown";
+
+            // Handle localhost
+            if (ipAddress == "::1" || ipAddress == "127.0.0.1")
+                return "Localhost (Development)";
+
+            return ipAddress;
+        }
+
+        private string GetLocationFromIp(string ipAddress)
+        {
+            if (string.IsNullOrEmpty(ipAddress))
+                return "Unknown";
+
+            // Handle localhost
+            if (ipAddress == "::1" || ipAddress == "127.0.0.1")
+                return "Local Machine (Development)";
+
+            // TODO: Implement IP geolocation service (e.g., MaxMind, ipapi.co)
+            return "Unknown";
+        }
+
+        private string ParseDevice(string userAgent)
+        {
+            if (string.IsNullOrEmpty(userAgent))
+                return "API Client / Testing Tool";
+
+            var ua = userAgent.ToLower();
+
+            // Mobile devices
+            if (ua.Contains("iphone"))
+                return "iPhone";
+            if (ua.Contains("ipad"))
+                return "iPad";
+            if (ua.Contains("android") && ua.Contains("mobile"))
+                return "Android Phone";
+            if (ua.Contains("android"))
+                return "Android Tablet";
+            if (ua.Contains("windows phone"))
+                return "Windows Phone";
+
+            // Desktop OS
+            if (ua.Contains("mac os x") || ua.Contains("macintosh"))
+                return "Mac";
+            if (ua.Contains("windows nt"))
+                return "Windows PC";
+            if (ua.Contains("linux") && !ua.Contains("android"))
+                return "Linux PC";
+
+            // API Clients / Testing tools
+            if (ua.Contains("postman"))
+                return "Postman (API Testing)";
+            if (ua.Contains("insomnia"))
+                return "Insomnia (API Testing)";
+            if (ua.Contains("swagger"))
+                return "Swagger UI (API Testing)";
+            if (ua.Contains("curl"))
+                return "cURL (Command Line)";
+
+            return "Unknown Device";
+        }
+
+        private string ParseBrowser(string userAgent)
+        {
+            if (string.IsNullOrEmpty(userAgent))
+                return "API Client / Testing Tool";
+
+            var ua = userAgent.ToLower();
+
+            // API Clients / Testing tools (check first)
+            if (ua.Contains("postman"))
+                return "Postman";
+            if (ua.Contains("insomnia"))
+                return "Insomnia";
+            if (ua.Contains("swagger"))
+                return "Swagger UI";
+            if (ua.Contains("curl"))
+                return "cURL";
+            if (ua.Contains("python-requests"))
+                return "Python Requests";
+            if (ua.Contains("java"))
+                return "Java HTTP Client";
+
+            // Real browsers (order matters!)
+            if (ua.Contains("edg/") || ua.Contains("edge/"))
+                return "Microsoft Edge";
+            if (ua.Contains("chrome/") && !ua.Contains("edg"))
+                return "Google Chrome";
+            if (ua.Contains("firefox/"))
+                return "Mozilla Firefox";
+            if (ua.Contains("safari/") && !ua.Contains("chrome") && !ua.Contains("chromium"))
+                return "Safari";
+            if (ua.Contains("opera/") || ua.Contains("opr/"))
+                return "Opera";
+            if (ua.Contains("msie") || ua.Contains("trident"))
+                return "Internet Explorer";
+
+            return "Unknown Browser";
         }
     }
 }

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Sesión Detectada - AuthApp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #232F3E;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .logo {
+            display: inline-block;
+            border: 2px solid #FF9900;
+            padding: 10px 20px;
+            border-radius: 4px;
+            color: #FF9900;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .alert-banner {
+            background: linear-gradient(135deg, #FF9900 0%, #FFA500 100%);
+            color: #232F3E;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .alert-banner .icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+        .alert-banner h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+        .alert-banner p {
+            font-size: 14px;
+            margin: 0;
+        }
+        h1 {
+            color: #232F3E;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        p {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .session-details {
+            background-color: #f8f9fa;
+            border: 2px solid #FF9900;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        .session-details h3 {
+            color: #232F3E;
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        .detail-item .label {
+            font-weight: 600;
+            color: #232F3E;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .detail-item .value {
+            color: #555;
+            text-align: right;
+        }
+        .icon-inline {
+            font-size: 18px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .btn {
+            flex: 1;
+            padding: 16px 24px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 15px;
+            display: block;
+        }
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-danger {
+            background-color: #F44336;
+            color: white;
+        }
+        .security-note {
+            background-color: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .security-note p {
+            color: #0D47A1;
+            font-size: 14px;
+            margin: 0;
+        }
+        .footer {
+            background-color: #f8f8f8;
+            padding: 30px;
+            text-align: center;
+        }
+        .footer p {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        .footer-links {
+            margin-top: 20px;
+        }
+        .footer-links a {
+            color: #0066c0;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 13px;
+        }
+        @media only screen and (max-width: 600px) {
+            .content {
+                padding: 30px 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">AuthApp</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="alert-banner">
+                <div class="icon">🔔</div>
+                <h2>Nueva Sesión Detectada</h2>
+                <p>Se ha iniciado sesión en tu cuenta desde un nuevo dispositivo</p>
+            </div>
+
+            <p>¡Hola {{firstName}}!</p>
+
+            <p>Hemos detectado un nuevo inicio de sesión en tu cuenta de AuthApp. Si fuiste tú, puedes ignorar este mensaje.</p>
+
+            <div class="session-details">
+                <h3>📱 Detalles de la Sesión</h3>
+                
+                <div class="detail-item">
+                    <div class="label">
+                        <span class="icon-inline">📅</span>
+                        <span>Fecha y Hora</span>
+                    </div>
+                    <div class="value">{{date}} a las {{time}}</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="label">
+                        <span class="icon-inline">💻</span>
+                        <span>Dispositivo</span>
+                    </div>
+                    <div class="value">{{device}}</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="label">
+                        <span class="icon-inline">🌐</span>
+                        <span>Navegador</span>
+                    </div>
+                    <div class="value">{{browser}}</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="label">
+                        <span class="icon-inline">📍</span>
+                        <span>Ubicación</span>
+                    </div>
+                    <div class="value">{{location}}</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="label">
+                        <span class="icon-inline">🔢</span>
+                        <span>Dirección IP</span>
+                    </div>
+                    <div class="value">{{ipAddress}}</div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{{confirmLink}}" class="btn btn-primary">✓ Fui Yo</a>
+                <a href="{{secureLink}}" class="btn btn-danger">⚠ No Fui Yo</a>
+            </div>
+
+            <div class="security-note">
+                <p><strong>💡 ¿No reconoces esta actividad?</strong> Haz clic en "No Fui Yo" para cerrar esta sesión inmediatamente y proteger tu cuenta. Te recomendamos cambiar tu contraseña y habilitar la autenticación de dos factores.</p>
+            </div>
+
+            <p style="margin-top: 30px;">Puedes revisar todas tus sesiones activas desde la configuración de tu cuenta en cualquier momento.</p>
+
+            <p style="color: #888; font-size: 14px;">Saludos,<br><strong>El equipo de AuthApp</strong></p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Este es un correo electrónico automático, por favor no respondas a este mensaje.</p>
+            <p>© {{year}} AuthApp, Inc. Todos los derechos reservados.</p>
+            
+            <div class="footer-links">
+                <a href="{{baseUrl}}/profile/sessions">Ver Sesiones</a>
+                <a href="{{baseUrl}}/profile/security">Configuración de Seguridad</a>
+                <a href="{{baseUrl}}/support">Soporte</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

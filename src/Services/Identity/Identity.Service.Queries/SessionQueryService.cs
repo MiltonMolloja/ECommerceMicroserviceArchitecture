@@ -20,13 +20,13 @@ namespace Identity.Service.Queries
         public async Task<List<SessionDto>> GetActiveSessionsAsync(string userId, string currentRefreshToken = null)
         {
             var sessions = await _context.RefreshTokens
-                .Where(rt => rt.UserId == userId && rt.IsActive)
+                .Where(rt => rt.UserId == userId && !rt.IsRevoked && rt.ExpiresAt > DateTime.UtcNow)
                 .OrderByDescending(rt => rt.CreatedAt)
                 .Select(rt => new SessionDto
                 {
                     Id = rt.Id,
-                    DeviceInfo = rt.CreatedByIp ?? "Unknown",
-                    IpAddress = rt.CreatedByIp,
+                    DeviceInfo = rt.UserAgent ?? "Unknown",
+                    IpAddress = rt.CreatedByIp ?? "Unknown",
                     CreatedAt = rt.CreatedAt,
                     ExpiresAt = rt.ExpiresAt,
                     IsCurrent = !string.IsNullOrEmpty(currentRefreshToken) && rt.Token == currentRefreshToken

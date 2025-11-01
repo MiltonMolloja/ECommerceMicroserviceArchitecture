@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 
 namespace Identity.Domain
@@ -7,6 +8,7 @@ namespace Identity.Domain
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public DateTime? PasswordChangedAt { get; set; }
         public ICollection<ApplicationUserRole> UserRoles { get; set; }
         public ICollection<RefreshToken> RefreshTokens { get; set; }
         public ICollection<UserBackupCode> BackupCodes { get; set; }

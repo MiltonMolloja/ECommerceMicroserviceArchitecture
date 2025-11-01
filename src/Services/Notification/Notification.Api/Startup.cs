@@ -82,6 +82,11 @@ namespace Notification.Api
             // Query services
             services.AddTransient<INotificationQueryService, NotificationQueryService>();
 
+            // Email Services
+            services.Configure<Models.SmtpSettings>(Configuration.GetSection("SmtpSettings"));
+            services.AddTransient<Services.IEmailTemplateService, Services.EmailTemplateServiceV2>();
+            services.AddTransient<Services.IEmailService, Services.MailKitEmailService>();
+
             // CORS
             services.AddCors(options =>
             {

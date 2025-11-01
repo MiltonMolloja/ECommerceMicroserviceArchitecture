@@ -72,9 +72,13 @@ namespace Identity.Service.EventHandlers
                     return false;
                 }
 
+                // Update PasswordChangedAt timestamp
+                user.PasswordChangedAt = DateTime.UtcNow;
+                await _userManager.UpdateAsync(user);
+
                 // Invalidate all refresh tokens (logout from all sessions)
                 var refreshTokens = await _context.RefreshTokens
-                    .Where(rt => rt.UserId == user.Id && rt.IsActive)
+                    .Where(rt => rt.UserId == user.Id && !rt.IsRevoked && rt.ExpiresAt > DateTime.UtcNow)
                     .ToListAsync(cancellationToken);
 
                 foreach (var token in refreshTokens)
