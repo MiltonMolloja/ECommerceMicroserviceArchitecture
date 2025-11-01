@@ -29,6 +29,7 @@ namespace Identity.Service.EventHandlers
         private readonly IConfiguration _configuration;
         private readonly IAuditService _auditService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly INotificationClient _notificationClient;
         private readonly ILogger<Authenticate2FAEventHandler> _logger;
 
         public Authenticate2FAEventHandler(
@@ -39,6 +40,7 @@ namespace Identity.Service.EventHandlers
             IConfiguration configuration,
             IAuditService auditService,
             IHttpContextAccessor httpContextAccessor,
+            INotificationClient notificationClient,
             ILogger<Authenticate2FAEventHandler> logger)
         {
             _userManager = userManager;
@@ -48,6 +50,7 @@ namespace Identity.Service.EventHandlers
             _configuration = configuration;
             _auditService = auditService;
             _httpContextAccessor = httpContextAccessor;
+            _notificationClient = notificationClient;
             _logger = logger;
         }
 
@@ -146,6 +149,9 @@ namespace Identity.Service.EventHandlers
                     ipAddress,
                     userAgent);
 
+                // Send new session alert email
+                await SendNewSessionAlertAsync(user, ipAddress, userAgent);
+
                 _logger.LogInformation($"2FA authentication successful for {user.Email}");
 
                 return new IdentityAccess
@@ -161,6 +167,137 @@ namespace Identity.Service.EventHandlers
                 _logger.LogError(ex, $"Error during 2FA authentication for user {request.UserId}");
                 throw;
             }
+        }
+
+        private async Task SendNewSessionAlertAsync(ApplicationUser user, string ipAddress, string userAgent)
+        {
+            try
+            {
+                var now = DateTime.UtcNow;
+
+                var device = ParseDevice(userAgent);
+                var browser = ParseBrowser(userAgent);
+                var location = GetLocationFromIp(ipAddress);
+                var formattedIp = FormatIpAddress(ipAddress);
+
+                await _notificationClient.SendEmailAsync(
+                    user.Email,
+                    "new-session-alert",
+                    new
+                    {
+                        FirstName = user.FirstName,
+                        Date = now.ToString("dd/MM/yyyy"),
+                        Time = now.ToString("HH:mm:ss"),
+                        Device = device,
+                        Browser = browser,
+                        Location = location,
+                        IpAddress = formattedIp,
+                        ConfirmLink = $"{_configuration.GetValue<string>("FrontendUrl") ?? "http://localhost:4400"}/profile/sessions",
+                        SecureLink = $"{_configuration.GetValue<string>("FrontendUrl") ?? "http://localhost:4400"}/profile/security"
+                    });
+
+                _logger.LogInformation($"New session alert email sent to {user.Email} after 2FA");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error sending new session alert email to {user.Email}");
+                // Don't throw - email failure shouldn't block authentication
+            }
+        }
+
+        private string FormatIpAddress(string ipAddress)
+        {
+            if (string.IsNullOrEmpty(ipAddress))
+                return "Unknown";
+
+            if (ipAddress == "::1" || ipAddress == "127.0.0.1")
+                return "Localhost (Development)";
+
+            return ipAddress;
+        }
+
+        private string GetLocationFromIp(string ipAddress)
+        {
+            if (string.IsNullOrEmpty(ipAddress))
+                return "Unknown";
+
+            if (ipAddress == "::1" || ipAddress == "127.0.0.1")
+                return "Local Machine (Development)";
+
+            return "Unknown";
+        }
+
+        private string ParseDevice(string userAgent)
+        {
+            if (string.IsNullOrEmpty(userAgent))
+                return "API Client / Testing Tool";
+
+            var ua = userAgent.ToLower();
+
+            if (ua.Contains("iphone"))
+                return "iPhone";
+            if (ua.Contains("ipad"))
+                return "iPad";
+            if (ua.Contains("android") && ua.Contains("mobile"))
+                return "Android Phone";
+            if (ua.Contains("android"))
+                return "Android Tablet";
+            if (ua.Contains("windows phone"))
+                return "Windows Phone";
+
+            if (ua.Contains("mac os x") || ua.Contains("macintosh"))
+                return "Mac";
+            if (ua.Contains("windows nt"))
+                return "Windows PC";
+            if (ua.Contains("linux") && !ua.Contains("android"))
+                return "Linux PC";
+
+            if (ua.Contains("postman"))
+                return "Postman (API Testing)";
+            if (ua.Contains("insomnia"))
+                return "Insomnia (API Testing)";
+            if (ua.Contains("swagger"))
+                return "Swagger UI (API Testing)";
+            if (ua.Contains("curl"))
+                return "cURL (Command Line)";
+
+            return "Unknown Device";
+        }
+
+        private string ParseBrowser(string userAgent)
+        {
+            if (string.IsNullOrEmpty(userAgent))
+                return "API Client / Testing Tool";
+
+            var ua = userAgent.ToLower();
+
+            if (ua.Contains("postman"))
+                return "Postman";
+            if (ua.Contains("insomnia"))
+                return "Insomnia";
+            if (ua.Contains("swagger"))
+                return "Swagger UI";
+            if (ua.Contains("curl"))
+                return "cURL";
+            if (ua.Contains("python-requests"))
+                return "Python Requests";
+            if (ua.Contains("java"))
+                return "Java HTTP Client";
+
+            if (ua.Contains("edg/") || ua.Contains("edge/"))
+                return "Microsoft Edge";
+            if (ua.Contains("chrome/") && !ua.Contains("edg"))
+                return "Google Chrome";
+            if (ua.Contains("firefox/"))
+                return "Mozilla Firefox";
+            if (ua.Contains("safari/") && !ua.Contains("chrome") && !ua.Contains("chromium"))
+                return "Safari";
+            if (ua.Contains("opera/") || ua.Contains("opr/"))
+                return "Opera";
+            if (ua.Contains("msie") || ua.Contains("trident"))
+                return "Internet Explorer";
+
+            return "Unknown Browser";
         }
     }
 }
