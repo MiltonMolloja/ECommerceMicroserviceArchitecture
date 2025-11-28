@@ -91,7 +91,12 @@
       "Bash(where:*)",
       "Bash(openssl req:*)",
       "Bash(npm start)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(npx ng lint)",
+      "Bash(npx ng lint --fix)",
+      "Bash(npm run lint)",
+      "Bash(npx ng build:*)",
+      "Bash(tee:*)"
     ],
     "deny": [],
     "ask": []

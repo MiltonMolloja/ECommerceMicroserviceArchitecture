@@ -18,7 +18,8 @@ namespace Catalog.Domain
 
         // Identificación
         public string SKU { get; set; }
-        public string Brand { get; set; }
+        public string Brand { get; set; } // Mantener por compatibilidad
+        public int? BrandId { get; set; } // Nueva relación con tabla Brands
         public string Slug { get; set; }
 
         // Pricing
@@ -45,6 +46,7 @@ namespace Catalog.Domain
 
         // Navegación
         public ProductInStock Stock { get; set; }
+        public Brand BrandNavigation { get; set; }
         public ICollection<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
 
         #endregion
