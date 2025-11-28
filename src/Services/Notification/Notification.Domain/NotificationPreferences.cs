@@ -35,7 +35,7 @@ namespace Notification.Domain
         {
             return channel switch
             {
-                NotificationChannel.Email => EmailNotifications,
+                NotificationChannel.Email => true,
                 NotificationChannel.Push => PushNotifications,
                 NotificationChannel.SMS => SMSNotifications,
                 NotificationChannel.InApp => true, // In-App siempre permitido

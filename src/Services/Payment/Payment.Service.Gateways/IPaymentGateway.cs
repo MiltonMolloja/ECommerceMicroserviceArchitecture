@@ -13,7 +13,10 @@ namespace Payment.Service.Gateways
         public decimal Amount { get; set; }
         public string Currency { get; set; }
         public string PaymentToken { get; set; }
+        public string PaymentMethodId { get; set; }  // MercadoPago payment method ID (e.g., "master", "visa")
+        public int Installments { get; set; }
         public string Description { get; set; }
+        public string PayerEmail { get; set; }       // Payer's email
     }
 
     public class PaymentResult
@@ -24,6 +27,7 @@ namespace Payment.Service.Gateways
         public string CardLast4 { get; set; }
         public string CardBrand { get; set; }
         public string ErrorMessage { get; set; }
+        public string ErrorCode { get; set; }
     }
 
     public class RefundRequest

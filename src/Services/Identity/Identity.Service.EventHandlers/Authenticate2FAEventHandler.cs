@@ -13,6 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text;
 using System.Threading;
@@ -31,6 +33,7 @@ namespace Identity.Service.EventHandlers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotificationClient _notificationClient;
         private readonly ILogger<Authenticate2FAEventHandler> _logger;
+        private readonly IHttpClientFactory _httpClientFactory;
 
         public Authenticate2FAEventHandler(
             UserManager<ApplicationUser> userManager,
@@ -41,7 +44,8 @@ namespace Identity.Service.EventHandlers
             IAuditService auditService,
             IHttpContextAccessor httpContextAccessor,
             INotificationClient notificationClient,
-            ILogger<Authenticate2FAEventHandler> logger)
+            ILogger<Authenticate2FAEventHandler> logger,
+            IHttpClientFactory httpClientFactory)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -52,6 +56,7 @@ namespace Identity.Service.EventHandlers
             _httpContextAccessor = httpContextAccessor;
             _notificationClient = notificationClient;
             _logger = logger;
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<IdentityAccess> Handle(Authenticate2FACommand request, CancellationToken cancellationToken)
@@ -104,8 +109,16 @@ namespace Identity.Service.EventHandlers
                     new Claim(ClaimTypes.Name, user.FirstName),
                     new Claim(ClaimTypes.Surname, user.LastName),
                     new Claim("EmailConfirmed", user.EmailConfirmed.ToString().ToLower()),
-                    new Claim("PasswordChangedAt", user.PasswordChangedAt?.ToString("o") ?? string.Empty)
+                    new Claim("PasswordChangedAt", user.PasswordChangedAt?.ToString("o") ?? string.Empty),
+                    new Claim("TwoFactorEnabled", user.TwoFactorEnabled.ToString().ToLower())
                 };
+
+                // Obtener ClientId desde Customer service
+                var clientId = await GetClientIdByUserIdAsync(user.Id);
+                if (clientId.HasValue)
+                {
+                    claims.Add(new Claim("ClientId", clientId.Value.ToString()));
+                }
 
                 foreach (var role in roles)
                 {
@@ -298,6 +311,39 @@ namespace Identity.Service.EventHandlers
                 return "Internet Explorer";
 
             return "Unknown Browser";
+        }
+
+        private async Task<int?> GetClientIdByUserIdAsync(string userId)
+        {
+            try
+            {
+                var customerUrl = _configuration.GetValue<string>("ApiUrls:CustomerUrl");
+                var httpClient = _httpClientFactory.CreateClient();
+                httpClient.DefaultRequestHeaders.Add("X-API-Key", "identity-api-key-2025-secure-ecommerce-service-communication");
+
+                var response = await httpClient.GetAsync($"{customerUrl}/v1/clients/by-user/{userId}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var clientData = await response.Content.ReadFromJsonAsync<ClientResponse>();
+                    return clientData?.ClientId;
+                }
+                else
+                {
+                    _logger.LogWarning($"Failed to get ClientId for UserId {userId}. Status: {response.StatusCode}");
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting ClientId for UserId {userId}");
+                return null;
+            }
+        }
+
+        private class ClientResponse
+        {
+            public int ClientId { get; set; }
         }
     }
 }

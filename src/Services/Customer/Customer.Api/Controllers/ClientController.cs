@@ -99,6 +99,40 @@ namespace Customer.Api.Controllers
             return client;
         }
 
+        [HttpGet("by-user/{userId}")]
+        public async Task<IActionResult> GetByUserId(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest(new { message = "UserId is required" });
+            }
+
+            var cacheKey = $"clients:userid:{userId}";
+
+            // Intentar obtener del caché
+            var cachedClient = await _cacheService.GetAsync<ClientDto>(cacheKey);
+            if (cachedClient != null)
+            {
+                _logger.LogInformation($"Client retrieved from cache by userId: {cacheKey}");
+                return Ok(cachedClient);
+            }
+
+            // Si no está en caché, obtener de la base de datos
+            var client = await _clientQuerService.GetByUserIdAsync(userId);
+
+            if (client == null)
+            {
+                _logger.LogWarning($"Client not found for userId: {userId}");
+                return NotFound(new { message = $"Client not found for userId: {userId}" });
+            }
+
+            // Guardar en caché usando configuración de appsettings
+            await _cacheService.SetAsync(cacheKey, client, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
+            _logger.LogInformation($"Client cached by userId: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+
+            return Ok(client);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(ClientCreateCommand notification)
         {

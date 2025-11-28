@@ -5,7 +5,7 @@ namespace Payment.Service.Proxies.Order
     public interface IOrderProxy
     {
         Task<OrderDto> GetOrderByIdAsync(int orderId);
-        Task UpdateOrderPaymentStatusAsync(int orderId, string status);
+        Task UpdateOrderPaymentStatusAsync(int orderId, string status, string transactionId = null, string gateway = null);
     }
 
     public class OrderDto

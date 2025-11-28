@@ -1,0 +1,33 @@
+### Test Order Placed Notification Email
+POST http://localhost:45000/api/notifications/order-placed
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJtZm1vbGxvamFAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW4iLCJleHAiOjIwMDAwMDAwMDAsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MTAwMDAiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjEwMDAwIn0.xyz123
+
+{
+  "userId": 1,
+  "userEmail": "mfmolloja@gmail.com",
+  "customerName": "Milton Molloja",
+  "orderNumber": "#ORD-00000123",
+  "items": [
+    {
+      "productName": "ASUS ROG Gaming Laptop",
+      "quantity": 1,
+      "unitPrice": "$899.99"
+    },
+    {
+      "productName": "Lenovo IdeaPad Gaming 16",
+      "quantity": 1,
+      "unitPrice": "$599.99"
+    },
+    {
+      "productName": "HP Victus 15 Gaming Laptop",
+      "quantity": 2,
+      "unitPrice": "$1,199.98"
+    }
+  ],
+  "subtotal": "$2,699.96",
+  "shippingCost": "Gratis",
+  "tax": "$143.96",
+  "total": "$2,843.92",
+  "estimatedDelivery": "3-5 días hábiles"
+}

@@ -44,8 +44,8 @@ namespace Catalog.Service.EventHandlers
                 {
                     if (entry == null || item.Stock > entry.Stock)
                     {
-                        _logger.LogError($"--- Product {entry.ProductId} -doens't have enough stock");
-                        throw new ProductInStockUpdateStockCommandException($"Product {entry.ProductId} - doens't have enough stock");
+                        _logger.LogError($"--- Product {item.ProductId} -doens't have enough stock");
+                        throw new ProductInStockUpdateStockCommandException($"Product {item.ProductId} - doens't have enough stock");
                     }
 
                     entry.Stock -= item.Stock;

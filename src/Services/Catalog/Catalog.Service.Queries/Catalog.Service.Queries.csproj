@@ -11,4 +11,8 @@
     <ProjectReference Include="..\Catalog.Common\Catalog.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.0" />
+  </ItemGroup>
+
 </Project>

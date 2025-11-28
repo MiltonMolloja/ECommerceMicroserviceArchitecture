@@ -9,9 +9,7 @@ namespace Api.Gateway.WebClient.Validators
     {
         public OrderCreateCommandValidator()
         {
-            RuleFor(x => x.ClientId)
-                .GreaterThan(0)
-                .WithMessage("Client ID must be greater than zero");
+            // ClientId ya no se valida aquí - se extrae del JWT token en el controller del servicio Order
 
             RuleFor(x => x.PaymentType)
                 .IsInEnum()

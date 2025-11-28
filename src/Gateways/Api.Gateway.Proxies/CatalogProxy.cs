@@ -16,6 +16,7 @@ namespace Api.Gateway.Proxies
     {
         Task<DataCollection<ProductDto>> GetAllAsync(int page, int take, IEnumerable<int> clients = null);
         Task<ProductDto> GetAsync(int id);
+        Task<ProductSearchResponse> SearchAsync(ProductSearchRequest request);
     }
 
     public class CatalogProxy : ICatalogProxy
@@ -74,6 +75,60 @@ namespace Api.Gateway.Proxies
             request.EnsureSuccessStatusCode();
 
             return JsonSerializer.Deserialize<ProductDto>(
+                await request.Content.ReadAsStringAsync(),
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }
+            );
+        }
+
+        public async Task<ProductSearchResponse> SearchAsync(ProductSearchRequest searchRequest)
+        {
+            AddAcceptLanguageHeader();
+
+            // Construir query string
+            var queryParams = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(searchRequest.Query))
+                queryParams.Add($"query={System.Uri.EscapeDataString(searchRequest.Query)}");
+
+            queryParams.Add($"page={searchRequest.Page}");
+            queryParams.Add($"pageSize={searchRequest.PageSize}");
+            queryParams.Add($"sortBy={searchRequest.SortBy}");
+            queryParams.Add($"sortOrder={searchRequest.SortOrder}");
+
+            if (searchRequest.CategoryId.HasValue)
+                queryParams.Add($"categoryId={searchRequest.CategoryId.Value}");
+
+            if (!string.IsNullOrWhiteSpace(searchRequest.BrandIds))
+                queryParams.Add($"brandIds={System.Uri.EscapeDataString(searchRequest.BrandIds)}");
+
+            if (searchRequest.MinPrice.HasValue)
+                queryParams.Add($"minPrice={searchRequest.MinPrice.Value}");
+
+            if (searchRequest.MaxPrice.HasValue)
+                queryParams.Add($"maxPrice={searchRequest.MaxPrice.Value}");
+
+            if (searchRequest.InStock.HasValue)
+                queryParams.Add($"inStock={searchRequest.InStock.Value}");
+
+            if (searchRequest.IsFeatured.HasValue)
+                queryParams.Add($"isFeatured={searchRequest.IsFeatured.Value}");
+
+            if (searchRequest.HasDiscount.HasValue)
+                queryParams.Add($"hasDiscount={searchRequest.HasDiscount.Value}");
+
+            if (searchRequest.MinRating.HasValue)
+                queryParams.Add($"minRating={searchRequest.MinRating.Value}");
+
+            var queryString = string.Join("&", queryParams);
+            var url = $"{_apiUrls.CatalogUrl}v1/products/search?{queryString}";
+
+            var request = await _httpClient.GetAsync(url);
+            request.EnsureSuccessStatusCode();
+
+            return JsonSerializer.Deserialize<ProductSearchResponse>(
                 await request.Content.ReadAsStringAsync(),
                 new JsonSerializerOptions
                 {

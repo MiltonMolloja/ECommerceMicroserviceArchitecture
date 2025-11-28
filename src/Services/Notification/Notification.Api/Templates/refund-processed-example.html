@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reembolso Procesado - ECommerce</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: #232F3E;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .logo {
+            display: inline-block;
+            border: 2px solid #FF9900;
+            padding: 10px 20px;
+            border-radius: 4px;
+            color: #FF9900;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .icon-wrapper {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .icon {
+            width: 80px;
+            height: 80px;
+            background-color: #E8F5E9;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        h1 {
+            color: #232F3E;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        p {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .alert-box {
+            background-color: #E8F5E9;
+            border-left: 4px solid #4CAF50;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .alert-box p {
+            color: #2E7D32;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .refund-details-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #4CAF50;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .refund-details-header {
+            color: #232F3E;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .refund-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            font-size: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .refund-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .refund-label {
+            color: #555;
+        }
+
+        .refund-value {
+            color: #232F3E;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .refund-amount {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0 0 0;
+            margin-top: 15px;
+            border-top: 2px solid #4CAF50;
+            font-size: 18px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .order-info {
+            background-color: #FFF3E0;
+            border-left: 4px solid #FF9900;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .order-info h4 {
+            color: #232F3E;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .order-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .order-info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .order-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .order-value {
+            color: #232F3E;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .refund-items-box {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin: 25px 0;
+            overflow: hidden;
+        }
+
+        .items-header {
+            background-color: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: bold;
+            color: #232F3E;
+            font-size: 15px;
+        }
+
+        .item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            color: #232F3E;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .item-qty {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .item-price {
+            color: #232F3E;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .timeline {
+            margin: 25px 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-marker {
+            min-width: 30px;
+            height: 30px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .timeline-content {
+            padding-top: 3px;
+            flex: 1;
+        }
+
+        .timeline-label {
+            font-weight: bold;
+            color: #232F3E;
+            margin-bottom: 5px;
+        }
+
+        .timeline-desc {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .cta-button {
+            flex: 1;
+            padding: 16px 32px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        .cta-button-secondary {
+            flex: 1;
+            padding: 16px 32px;
+            background-color: #232F3E;
+            color: #ffffff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        .divider {
+            border-top: 1px solid #e0e0e0;
+            margin: 30px 0;
+        }
+
+        .footer {
+            background-color: #f8f8f8;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .footer p {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .footer-links {
+            margin-top: 20px;
+        }
+
+        .footer-links a {
+            color: #0066c0;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 13px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            body {
+                padding: 0;
+            }
+
+            .email-container {
+                border-radius: 0;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .refund-detail-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .refund-value {
+                text-align: left;
+            }
+
+            .order-info-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .timeline-item {
+                margin-bottom: 25px;
+            }
+
+            .item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .item-price {
+                text-align: left;
+                margin-top: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">ECommerce</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Icon -->
+            <div class="icon-wrapper">
+                <div class="icon">💰</div>
+            </div>
+
+            <h1>¡Reembolso Procesado!</h1>
+            <div class="subtitle">Tu dinero está de camino a tu cuenta</div>
+
+            <!-- Greeting -->
+            <p>¡Hola Milton Rodriguez!</p>
+
+            <p>Nos complace informarte que tu reembolso ha sido procesado exitosamente. El dinero será depositado en tu cuenta dentro de 3-5 días hábiles, dependiendo de tu banco.</p>
+
+            <!-- Alert Box -->
+            <div class="alert-box">
+                <p><strong>ℹ️ Información importante:</strong> El reembolso ha sido iniciado desde nuestro extremo. El tiempo exacto de llegada dependerá de tu institución financiera.</p>
+            </div>
+
+            <!-- Refund Details -->
+            <div class="refund-details-box">
+                <div class="refund-details-header">📋 Detalles del Reembolso</div>
+
+                <div class="refund-detail-row">
+                    <span class="refund-label">Número de Reembolso</span>
+                    <span class="refund-value">#REF-2025-87491</span>
+                </div>
+
+                <div class="refund-detail-row">
+                    <span class="refund-label">Razón del Reembolso</span>
+                    <span class="refund-value">Producto Defectuoso</span>
+                </div>
+
+                <div class="refund-detail-row">
+                    <span class="refund-label">Fecha de Procesamiento</span>
+                    <span class="refund-value">26/11/2025 - 14:32:18</span>
+                </div>
+
+                <div class="refund-detail-row">
+                    <span class="refund-label">Método de Reembolso</span>
+                    <span class="refund-value">Tarjeta de Crédito (**** 4532)</span>
+                </div>
+
+                <div class="refund-amount">
+                    <span>Monto Reembolsado</span>
+                    <span>AR$ 899.999,00</span>
+                </div>
+            </div>
+
+            <!-- Original Order Info -->
+            <div class="order-info">
+                <h4>📦 Información del Pedido Original</h4>
+                <div class="order-info-row">
+                    <span class="order-label">Número de Pedido:</span>
+                    <span class="order-value">#ORD-2025-112601</span>
+                </div>
+                <div class="order-info-row">
+                    <span class="order-label">Fecha de Compra:</span>
+                    <span class="order-value">15/11/2025</span>
+                </div>
+            </div>
+
+            <!-- Items Refunded -->
+            <div class="refund-items-box">
+                <div class="items-header">Artículos Reembolsados</div>
+
+                <div class="item">
+                    <div class="item-info">
+                        <div class="item-name">ASUS ROG Strix Gaming Laptop 15.6" FHD 144Hz</div>
+                        <div class="item-qty">Cantidad: 1</div>
+                    </div>
+                    <div class="item-price">AR$ 899.999,00</div>
+                </div>
+
+                <div class="item">
+                    <div class="item-info">
+                        <div class="item-name">Corsair Vengeance RGB DDR5 32GB (2x16GB)</div>
+                        <div class="item-qty">Cantidad: 2</div>
+                    </div>
+                    <div class="item-price">AR$ 45.500,00</div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <h3 style="color: #232F3E; font-size: 18px; margin-bottom: 20px;">📅 Cronología del Reembolso</h3>
+            <ul class="timeline">
+                <li class="timeline-item">
+                    <div class="timeline-marker">✓</div>
+                    <div class="timeline-content">
+                        <div class="timeline-label">Devolución Recibida</div>
+                        <div class="timeline-desc">24/11/2025 - Tu producto fue recibido en nuestro almacén</div>
+                    </div>
+                </li>
+
+                <li class="timeline-item">
+                    <div class="timeline-marker">✓</div>
+                    <div class="timeline-content">
+                        <div class="timeline-label">Producto Verificado</div>
+                        <div class="timeline-desc">25/11/2025 - Confirmamos que el producto reúne criterios de devolución</div>
+                    </div>
+                </li>
+
+                <li class="timeline-item">
+                    <div class="timeline-marker">✓</div>
+                    <div class="timeline-content">
+                        <div class="timeline-label">Reembolso Procesado</div>
+                        <div class="timeline-desc">26/11/2025 - Tu reembolso ha sido iniciado hacia tu banco</div>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <a href="#" class="cta-button">Ver Detalles Completos</a>
+                <a href="#" class="cta-button-secondary">Contactar Soporte</a>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Closing Message -->
+            <p>Si no reconoces este reembolso o tienes dudas, contáctate con nuestro equipo de soporte inmediatamente. Estamos disponibles 24/7 para ayudarte.</p>
+
+            <p style="color: #888; font-size: 14px;">Saludos,<br><strong>El equipo de ECommerce</strong></p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Este es un correo electrónico automático, por favor no respondas a este mensaje.</p>
+            <p>© 2025 ECommerce, Inc. Todos los derechos reservados.</p>
+
+            <div class="footer-links">
+                <a href="#">Mi Cuenta</a>
+                <a href="#">Mis Devoluciones</a>
+                <a href="#">Soporte</a>
+                <a href="#">Preguntas Frecuentes</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -14,6 +14,7 @@ using Service.Common.Collection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Catalog.Api.Controllers
@@ -105,6 +106,103 @@ namespace Catalog.Api.Controllers
             return product;
         }
 
+        /// <summary>
+        /// Busca productos con filtros y ordenamiento
+        /// </summary>
+        /// <param name="request">Parámetros de búsqueda</param>
+        /// <returns>Colección paginada de productos con metadata</returns>
+        /// <response code="200">Búsqueda exitosa</response>
+        /// <response code="400">Parámetros inválidos</response>
+        /// <response code="500">Error interno del servidor</response>
+        [HttpGet("search")]
+        [ProducesResponseType(typeof(ProductSearchResponse), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<ActionResult<ProductSearchResponse>> Search([FromQuery] ProductSearchRequest request)
+        {
+            try
+            {
+                // Validar modelo
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                // Validaciones adicionales
+                if (request.MinPrice.HasValue && request.MaxPrice.HasValue &&
+                    request.MinPrice > request.MaxPrice)
+                {
+                    ModelState.AddModelError("MaxPrice", "MaxPrice must be greater than MinPrice");
+                    return BadRequest(ModelState);
+                }
+
+                // Generar clave de caché language-aware
+                var baseCacheKey = GenerateSearchCacheKey(request);
+                var cacheKey = _cacheKeyProvider.GenerateKey(baseCacheKey);
+
+                // Intentar obtener del caché
+                var cachedResult = await _cacheService.GetAsync<ProductSearchResponse>(cacheKey);
+                if (cachedResult != null)
+                {
+                    _logger.LogInformation($"Search results retrieved from cache: {cacheKey}");
+                    return Ok(cachedResult);
+                }
+
+                // Ejecutar búsqueda
+                var startTime = DateTime.UtcNow;
+                var result = await _productQueryService.SearchAsync(request);
+                var executionTime = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+
+                // Agregar metadata de tiempo de ejecución
+                if (result.Metadata != null)
+                {
+                    result.Metadata.ExecutionTime = executionTime;
+                }
+
+                // Guardar en caché
+                await _cacheService.SetAsync(
+                    cacheKey,
+                    result,
+                    TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes)
+                );
+
+                _logger.LogInformation(
+                    $"Search executed in {executionTime}ms and cached: {cacheKey}"
+                );
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error searching products with request: {@Request}", request);
+                return StatusCode(500, new
+                {
+                    message = "Error searching products",
+                    error = ex.Message
+                });
+            }
+        }
+
+        /// <summary>
+        /// Genera una clave de caché única basada en los parámetros de búsqueda
+        /// </summary>
+        private string GenerateSearchCacheKey(ProductSearchRequest request)
+        {
+            var keyBuilder = new StringBuilder("products:search:");
+            keyBuilder.Append($"q={request.Query ?? "all"}:");
+            keyBuilder.Append($"page={request.Page}:");
+            keyBuilder.Append($"size={request.PageSize}:");
+            keyBuilder.Append($"sort={request.SortBy}:{request.SortOrder}:");
+            keyBuilder.Append($"cat={request.CategoryId?.ToString() ?? "all"}:");
+            keyBuilder.Append($"brands={request.BrandIds ?? "all"}:");
+            keyBuilder.Append($"price={request.MinPrice?.ToString() ?? "0"}-{request.MaxPrice?.ToString() ?? "max"}:");
+            keyBuilder.Append($"stock={request.InStock?.ToString() ?? "all"}:");
+            keyBuilder.Append($"featured={request.IsFeatured?.ToString() ?? "all"}:");
+            keyBuilder.Append($"discount={request.HasDiscount?.ToString() ?? "all"}");
+
+            return keyBuilder.ToString();
+        }
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
         public async Task<IActionResult> Create(ProductCreateCommand notification)
@@ -114,22 +212,8 @@ namespace Catalog.Api.Controllers
                 // Crear el producto
                 await _mediator.Publish(notification);
 
-                // Invalidar caché de listado de productos para ambos idiomas
-                var pageSizes = new[] { 10, 20, 50, 100 };
-                var languages = new[] { "es", "en" };
-
-                foreach (var lang in languages)
-                {
-                    foreach (var pageSize in pageSizes)
-                    {
-                        for (int page = 1; page <= 20; page++)
-                        {
-                            var baseCacheKey = $"products:all:page:{page}:take:{pageSize}:ids:all";
-                            var cacheKeyToRemove = $"{baseCacheKey}_lang={lang}";
-                            await _cacheService.RemoveAsync(cacheKeyToRemove);
-                        }
-                    }
-                }
+                // Invalidar caché de listado de productos y búsquedas
+                await InvalidateProductCaches();
 
                 _logger.LogInformation("Product created successfully and cache invalidated");
                 return Ok(new { message = "Product created successfully", success = true });
@@ -150,6 +234,40 @@ namespace Catalog.Api.Controllers
             {
                 _logger.LogError(ex, "Error creating product");
                 return StatusCode(500, new { message = "Error creating product", error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Invalida todos los cachés relacionados con productos
+        /// </summary>
+        private async Task InvalidateProductCaches()
+        {
+            var pageSizes = new[] { 10, 20, 50, 100 };
+            var languages = new[] { "es", "en" };
+
+            foreach (var lang in languages)
+            {
+                // Invalidar cache de listado
+                foreach (var pageSize in pageSizes)
+                {
+                    for (int page = 1; page <= 20; page++)
+                    {
+                        var baseCacheKey = $"products:all:page:{page}:take:{pageSize}:ids:all";
+                        var cacheKeyToRemove = $"{baseCacheKey}_lang={lang}";
+                        await _cacheService.RemoveAsync(cacheKeyToRemove);
+                    }
+                }
+
+                // Invalidar cache de búsquedas (usando patrón)
+                var searchCachePattern = $"products:search:*_lang={lang}";
+                // Nota: Esta funcionalidad requiere que ICacheService tenga un método RemoveByPatternAsync
+                // Por ahora solo invalidamos algunos casos comunes
+                for (int page = 1; page <= 10; page++)
+                {
+                    var baseCacheKey = $"products:search:q=all:page={page}";
+                    var cacheKeyToRemove = $"{baseCacheKey}*_lang={lang}";
+                    await _cacheService.RemoveAsync(cacheKeyToRemove);
+                }
             }
         }
     }

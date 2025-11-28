@@ -1,4 +1,6 @@
-﻿namespace Catalog.Domain
+﻿using System.Text.Json.Serialization;
+
+namespace Catalog.Domain
 {
     public class ProductInStock
     {
@@ -10,6 +12,7 @@
         public int MaxStock { get; set; }
 
         // Navegación
+        [JsonIgnore]
         public Product Product { get; set; }
 
         // Computed properties

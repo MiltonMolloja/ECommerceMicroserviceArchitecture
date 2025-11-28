@@ -98,6 +98,24 @@ namespace Identity.Service.EventHandlers.Services
             }
         }
 
+        public async Task<object> ValidateBackupCodeExistsAsync(string userId, string codeHash)
+        {
+            try
+            {
+                var backupCode = await _context.UserBackupCodes
+                    .FirstOrDefaultAsync(bc => bc.UserId == userId
+                                            && bc.CodeHash == codeHash
+                                            && !bc.IsUsed);
+
+                return backupCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error checking backup code existence for user {userId}");
+                return null;
+            }
+        }
+
         public async Task InvalidateBackupCodesAsync(string userId)
         {
             try

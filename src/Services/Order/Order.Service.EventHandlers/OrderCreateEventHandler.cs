@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Order.Service.EventHandlers
 {
     public class OrderCreateEventHandler :
-        INotificationHandler<OrderCreateCommand>
+        IRequestHandler<OrderCreateCommand, int>
     {
         private readonly ApplicationDbContext _context;
         private readonly ICatalogProxy _catalogProxy;
@@ -29,7 +29,7 @@ namespace Order.Service.EventHandlers
             _logger = logger;
         }
 
-        public async Task Handle(OrderCreateCommand notification, CancellationToken cancellationToken)
+        public async Task<int> Handle(OrderCreateCommand notification, CancellationToken cancellationToken)
         {
             _logger.LogInformation("--- New order creation started");
             var entry = new Domain.Order();
@@ -67,6 +67,7 @@ namespace Order.Service.EventHandlers
             }
 
             _logger.LogInformation("--- New order creation ended");
+            return entry.OrderId;
         }
 
         private void PrepareDetail(Domain.Order entry, OrderCreateCommand notification) 
@@ -83,10 +84,35 @@ namespace Order.Service.EventHandlers
         private void PrepareHeader(Domain.Order entry, OrderCreateCommand notification)
         {
             // Header information
-            entry.Status = Common.Enums.OrderStatus.Pending;
+            entry.Status = Common.Enums.OrderStatus.AwaitingPayment;  // Nuevo: Orden creada esperando pago
             entry.PaymentType = notification.PaymentType;
-            entry.ClientId = notification.ClientId;
+            entry.ClientId = notification.ClientId.Value; // ClientId is guaranteed to have a value by the controller
             entry.CreatedAt = DateTime.UtcNow;
+
+            // Shipping Address
+            entry.ShippingRecipientName = notification.ShippingRecipientName;
+            entry.ShippingPhone = notification.ShippingPhone;
+            entry.ShippingAddressLine1 = notification.ShippingAddressLine1;
+            entry.ShippingAddressLine2 = notification.ShippingAddressLine2;
+            entry.ShippingCity = notification.ShippingCity;
+            entry.ShippingState = notification.ShippingState;
+            entry.ShippingPostalCode = notification.ShippingPostalCode;
+            entry.ShippingCountry = notification.ShippingCountry;
+
+            // Billing Address
+            entry.BillingAddressLine1 = notification.BillingSameAsShipping
+                ? notification.ShippingAddressLine1
+                : notification.BillingAddressLine1;
+            entry.BillingCity = notification.BillingSameAsShipping
+                ? notification.ShippingCity
+                : notification.BillingCity;
+            entry.BillingPostalCode = notification.BillingSameAsShipping
+                ? notification.ShippingPostalCode
+                : notification.BillingPostalCode;
+            entry.BillingCountry = notification.BillingSameAsShipping
+                ? notification.ShippingCountry
+                : notification.BillingCountry;
+            entry.BillingSameAsShipping = notification.BillingSameAsShipping;
 
             // Sum
             entry.Total = entry.Items.Sum(x => x.Total);

@@ -46,14 +46,45 @@ namespace Payment.Api.Controllers
                     command.UserId = userId;
                 }
 
-                await _mediator.Publish(command);
+                // Obtener Email del token JWT
+                var emailClaim = User.FindFirst(ClaimTypes.Email) ?? User.FindFirst("email");
+                if (emailClaim != null)
+                {
+                    command.UserEmail = emailClaim.Value;
+                }
 
-                return Ok(new { message = "Payment processing started" });
+                var result = await _mediator.Send(command);
+
+                if (result.Success)
+                {
+                    return Ok(new
+                    {
+                        success = true,
+                        message = result.Message,
+                        paymentId = result.PaymentId,
+                        transactionId = result.TransactionId
+                    });
+                }
+                else
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = result.Message,
+                        error = result.ErrorMessage,
+                        errorCode = result.ErrorCode,
+                        paymentId = result.PaymentId
+                    });
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing payment");
-                return BadRequest(new { error = ex.Message });
+                return BadRequest(new
+                {
+                    success = false,
+                    error = ex.Message
+                });
             }
         }
 

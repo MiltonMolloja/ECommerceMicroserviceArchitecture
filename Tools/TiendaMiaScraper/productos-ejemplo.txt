@@ -1,0 +1,8 @@
+# Ejemplo de archivo de productos para scraping por lotes
+# Una URL por línea
+# Líneas que comienzan con # son ignoradas
+
+# Laptops
+https://tiendamia.com/ar/p/amz/b0cfwxw85v/lenovo-thinkpad-e16-gen-2-business-laptop-16-0-wuxga-ips
+
+# Agregar más URLs aquí...

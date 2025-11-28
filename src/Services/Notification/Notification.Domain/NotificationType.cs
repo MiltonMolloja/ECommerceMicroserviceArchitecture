@@ -13,6 +13,7 @@ namespace Notification.Domain
         PriceDrop = 9,
         Newsletter = 10,
         WelcomeEmail = 11,
-        PasswordReset = 12
+        PasswordReset = 12,
+        PaymentRefunded = 13
     }
 }

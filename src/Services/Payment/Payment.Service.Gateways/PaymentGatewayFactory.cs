@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Payment.Domain;
 using Payment.Service.Gateways.Mock;
 using Payment.Service.Gateways.Stripe;
+using Payment.Service.Gateways.MercadoPago;
 using System;
 
 namespace Payment.Service.Gateways
@@ -41,7 +42,19 @@ namespace Payment.Service.Gateways
                 };
             }
 
-            throw new NotSupportedException($"Payment gateway provider '{provider}' is not supported. Use 'Mock' or 'Stripe'.");
+            // Si está configurado como MercadoPago, usar lógica basada en el método de pago
+            if (provider.Equals("MercadoPago", StringComparison.OrdinalIgnoreCase))
+            {
+                return method switch
+                {
+                    PaymentMethod.CreditCard => _serviceProvider.GetRequiredService<MercadoPagoGateway>(),
+                    PaymentMethod.DebitCard => _serviceProvider.GetRequiredService<MercadoPagoGateway>(),
+                    PaymentMethod.MercadoPago => _serviceProvider.GetRequiredService<MercadoPagoGateway>(),
+                    _ => throw new NotSupportedException($"Payment method {method} is not supported with MercadoPago gateway")
+                };
+            }
+
+            throw new NotSupportedException($"Payment gateway provider '{provider}' is not supported. Use 'Mock', 'Stripe', or 'MercadoPago'.");
         }
     }
 }

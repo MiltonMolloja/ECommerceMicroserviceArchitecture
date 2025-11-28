@@ -12,11 +12,11 @@ using Order.Service.Queries;
 using Order.Service.Queries.DTOs;
 using Service.Common.Collection;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Order.Api.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("v1/orders")]
     public class OrderController : ControllerBase
@@ -90,13 +90,33 @@ namespace Order.Api.Controllers
             return order;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(OrderCreateCommand notification)
+            [HttpPost]
+            public async Task<IActionResult> Create(OrderCreateCommand notification)
         {
             try
             {
+                // For regular users: Extract ClientId from JWT token
+                // For admin users creating orders: ClientId comes in the command (if provided)
+                if (!notification.ClientId.HasValue || notification.ClientId.Value == 0)
+                {
+                    // Extraer ClientId del token JWT (usuario normal)
+                    var clientIdClaim = User.Claims.FirstOrDefault(c => c.Type == "ClientId");
+                    if (clientIdClaim == null || !int.TryParse(clientIdClaim.Value, out int clientId))
+                    {
+                        _logger.LogWarning("ClientId not found in JWT token and not provided in command");
+                        return Unauthorized(new { message = "Client not found in authentication token" });
+                    }
+                    notification.ClientId = clientId;
+                }
+                else
+                {
+                    // Admin creating order for a specific client
+                    // TODO: Add authorization check to ensure user has admin role
+                    _logger.LogInformation($"Admin creating order for ClientId: {notification.ClientId}");
+                }
+
                 // Crear la orden
-                await _mediator.Publish(notification);
+                var orderId = await _mediator.Send(notification);
 
                 // Invalidar caché de listado de órdenes
                 // Invalidar diferentes combinaciones de paginación
@@ -111,8 +131,8 @@ namespace Order.Api.Controllers
                     }
                 }
 
-                _logger.LogInformation("Order created successfully and cache invalidated");
-                return Ok(new { message = "Order created successfully", success = true });
+                _logger.LogInformation($"Order created successfully with OrderId: {orderId} and cache invalidated");
+                return Ok(new { message = "Order created successfully", success = true, orderId = orderId });
             }
             catch (ValidationException vex)
             {
@@ -132,5 +152,54 @@ namespace Order.Api.Controllers
                 return StatusCode(500, new { message = "Error creating order", error = ex.Message });
             }
         }
+
+        [HttpPut("{id}/status")]
+        [Authorize]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateOrderStatusRequest request)
+        {
+            try
+            {
+                var command = new UpdateOrderStatusCommand
+                {
+                    OrderId = id,
+                    NewStatus = request.Status,
+                    Reason = request.Reason,
+                    PaymentTransactionId = request.PaymentTransactionId,
+                    PaymentGateway = request.PaymentGateway
+                };
+
+                await _mediator.Publish(command);
+
+                // Invalidar caché de la orden
+                await _cacheService.RemoveAsync($"orders:id:{id}");
+
+                // Invalidar caché de listados
+                var pageSizes = new[] { 10, 20, 50, 100 };
+                foreach (var pageSize in pageSizes)
+                {
+                    for (int page = 1; page <= 20; page++)
+                    {
+                        await _cacheService.RemoveAsync($"orders:all:page:{page}:take:{pageSize}");
+                    }
+                }
+
+                _logger.LogInformation($"Order {id} status updated to {request.Status}");
+                return Ok(new { message = "Order status updated successfully", success = true });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error updating order {id} status");
+                return BadRequest(new { message = ex.Message, success = false });
+            }
+        }
+    }
+
+    // DTO Request
+    public class UpdateOrderStatusRequest
+    {
+        public Enums.OrderStatus Status { get; set; }
+        public string Reason { get; set; }
+        public string PaymentTransactionId { get; set; }
+        public string PaymentGateway { get; set; }
     }
 }

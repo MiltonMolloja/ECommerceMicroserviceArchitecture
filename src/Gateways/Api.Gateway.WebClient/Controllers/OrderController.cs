@@ -158,7 +158,7 @@ namespace Api.Gateway.WebClient.Controllers
                     });
                 }
 
-                await _orderProxy.CreateAsync(command);
+                var result = await _orderProxy.CreateAsync(command);
 
                 // Invalidar caché de listado de órdenes
                 var pageSizes = new[] { 10, 20, 50, 100 };
@@ -172,8 +172,8 @@ namespace Api.Gateway.WebClient.Controllers
                     }
                 }
 
-                _logger.LogInformation("Order created successfully and cache invalidated");
-                return Ok(new { message = "Order created successfully", success = true });
+                _logger.LogInformation($"Order created successfully with OrderId: {result.OrderId} and cache invalidated");
+                return Ok(new { message = result.Message, success = result.Success, orderId = result.OrderId });
             }
             catch (Exception ex)
             {

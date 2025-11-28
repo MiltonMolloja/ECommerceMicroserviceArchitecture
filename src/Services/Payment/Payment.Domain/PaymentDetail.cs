@@ -8,7 +8,6 @@ namespace Payment.Domain
         // Solo últimos 4 dígitos (PCI DSS compliance)
         public string CardLast4Digits { get; set; }
         public string CardBrand { get; set; }
-        public string CardHolderName { get; set; }
 
         public int? ExpiryMonth { get; set; }
         public int? ExpiryYear { get; set; }

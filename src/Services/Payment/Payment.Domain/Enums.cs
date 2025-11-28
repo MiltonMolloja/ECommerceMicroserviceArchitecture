@@ -17,7 +17,8 @@ namespace Payment.Domain
         PayPal = 3,
         Stripe = 4,
         BankTransfer = 5,
-        CashOnDelivery = 6
+        CashOnDelivery = 6,
+        MercadoPago = 7
     }
 
     public enum TransactionType

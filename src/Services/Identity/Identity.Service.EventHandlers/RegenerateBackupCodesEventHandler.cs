@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -53,11 +55,19 @@ namespace Identity.Service.EventHandlers
                     return new RegenerateBackupCodesResponse { Succeeded = false };
                 }
 
-                // Verify 2FA code
+                // Verify 2FA code (accept both authenticator TOTP and backup codes)
                 var codeValid = await _userManager.VerifyTwoFactorTokenAsync(
                     user,
                     _userManager.Options.Tokens.AuthenticatorTokenProvider,
                     request.Code);
+
+                // If authenticator code fails, try backup code (but don't mark as used)
+                if (!codeValid)
+                {
+                    var backupCodeHash = HashCode(request.Code);
+                    var backupCode = await _twoFactorService.ValidateBackupCodeExistsAsync(user.Id, backupCodeHash);
+                    codeValid = backupCode != null;
+                }
 
                 if (!codeValid)
                 {
@@ -91,6 +101,16 @@ namespace Identity.Service.EventHandlers
             {
                 _logger.LogError(ex, $"Error regenerating backup codes for user {request.UserId}");
                 throw;
+            }
+        }
+
+        private string HashCode(string code)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(code);
+                var hash = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hash);
             }
         }
     }

@@ -4,7 +4,9 @@ using Microsoft.Extensions.Logging;
 using Notification.Domain;
 using Notification.Persistence.Database;
 using Notification.Service.EventHandlers.Commands;
+using Notification.Service.EventHandlers.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -15,13 +17,16 @@ namespace Notification.Service.EventHandlers.Handlers
     public class SendNotificationEventHandler : INotificationHandler<SendNotificationCommand>
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailNotificationService _emailService;
         private readonly ILogger<SendNotificationEventHandler> _logger;
 
         public SendNotificationEventHandler(
             ApplicationDbContext context,
+            IEmailNotificationService emailService,
             ILogger<SendNotificationEventHandler> logger)
         {
             _context = context;
+            _emailService = emailService;
             _logger = logger;
         }
 
@@ -116,12 +121,20 @@ namespace Notification.Service.EventHandlers.Handlers
 
                 _logger.LogInformation($"In-App notification {inAppNotification.NotificationId} created successfully");
 
-                // TODO: 6. Enviar por otros canales (Email, Push, SMS)
-                // Esto lo implementaremos cuando tengamos los Providers
+                // 6. Enviar por otros canales (Email, Push, SMS)
                 foreach (var channel in allowedChannels.Where(c => c != NotificationChannel.InApp))
                 {
-                    _logger.LogInformation($"TODO: Send notification via {channel} (Provider not implemented yet)");
-                    // await _providerFactory.GetProvider(channel).SendAsync(...);
+                    _logger.LogInformation($"Sending notification via {channel}");
+
+                    if (channel == NotificationChannel.Email)
+                    {
+                        await SendEmailNotificationAsync(notification, template);
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"TODO: Send notification via {channel} (Provider not implemented yet)");
+                        // TODO: Implementar Push y SMS
+                    }
                 }
             }
             catch (Exception ex)
@@ -129,6 +142,71 @@ namespace Notification.Service.EventHandlers.Handlers
                 _logger.LogError(ex, $"Error sending notification to user {notification.UserId}");
                 throw;
             }
+        }
+
+        private async Task SendEmailNotificationAsync(
+            SendNotificationCommand notification,
+            NotificationTemplate template)
+        {
+            try
+            {
+                // Obtener el email del usuario desde las variables
+                var userEmail = GetVariableValue(notification.Variables, "Email")
+                    ?? GetVariableValue(notification.Variables, "UserEmail")
+                    ?? GetVariableValue(notification.Variables, "email");
+
+                if (string.IsNullOrEmpty(userEmail))
+                {
+                    _logger.LogWarning($"Cannot send email to user {notification.UserId}: Email not provided in variables");
+                    return;
+                }
+
+                // Determinar el template a usar basado en el tipo de notificación
+                string templateName = DetermineEmailTemplate(notification.Type);
+
+                _logger.LogInformation($"Sending email to {userEmail} using template {templateName}");
+
+                // Enviar el email con todas las variables
+                await _emailService.SendTemplatedEmailAsync(userEmail, templateName, notification.Variables);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error sending email notification to user {notification.UserId}");
+                // No lanzar excepción para no interrumpir el flujo
+            }
+        }
+
+        private string GetVariableValue(Dictionary<string, object> variables, string key)
+        {
+            if (variables == null) return null;
+
+            // Try exact match first
+            if (variables.ContainsKey(key))
+                return variables[key]?.ToString();
+
+            // Try case-insensitive search
+            var foundKey = variables.Keys.FirstOrDefault(k => k.Equals(key, StringComparison.OrdinalIgnoreCase));
+            if (foundKey != null)
+                return variables[foundKey]?.ToString();
+
+            return null;
+        }
+
+        private string DetermineEmailTemplate(NotificationType type)
+        {
+            return type switch
+            {
+                NotificationType.OrderPlaced => "purchase-confirmation",
+                NotificationType.OrderShipped => "order-shipped",
+                NotificationType.OrderDelivered => "order-delivered",
+                NotificationType.OrderCancelled => "order-cancelled",
+                NotificationType.PaymentCompleted => "payment-completed",
+                NotificationType.PaymentFailed => "payment-failed",
+                NotificationType.PaymentRefunded => "refund-processed",
+                NotificationType.WelcomeEmail => "welcome",
+                NotificationType.PasswordReset => "password-reset",
+                _ => "default"
+            };
         }
     }
 }

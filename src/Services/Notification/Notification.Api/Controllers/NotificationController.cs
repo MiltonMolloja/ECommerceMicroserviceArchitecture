@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Notification.Domain;
 using Notification.Service.EventHandlers.Commands;
 using Notification.Service.Queries;
 using Notification.Service.Queries.DTOs;
@@ -232,5 +233,211 @@ namespace Notification.Api.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Enviar notificación de confirmación de pago (usado por Payment Service)
+        /// </summary>
+        [HttpPost("payment-confirmation")]
+        [Authorize]
+        public async Task<IActionResult> SendPaymentConfirmation([FromBody] PaymentNotificationRequest request)
+        {
+            try
+            {
+                var command = new SendNotificationCommand
+                {
+                    UserId = request.UserId,
+                    Type = NotificationType.PaymentCompleted,
+                    Priority = NotificationPriority.High,
+                    Variables = new Dictionary<string, object>
+                    {
+                        { "paymentId", request.PaymentId }
+                    },
+                    Channels = new List<NotificationChannel>
+                    {
+                        NotificationChannel.InApp,
+                        NotificationChannel.Email
+                    }
+                };
+
+                await _mediator.Publish(command);
+
+                _logger.LogInformation($"Payment confirmation notification sent for payment {request.PaymentId}, user {request.UserId}");
+                return Ok(new { message = "Payment confirmation notification sent successfully" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error sending payment confirmation notification for payment {request.PaymentId}");
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Enviar notificación de pago fallido (usado por Payment Service)
+        /// </summary>
+        [HttpPost("payment-failed")]
+        [Authorize]
+        public async Task<IActionResult> SendPaymentFailed([FromBody] PaymentFailedNotificationRequest request)
+        {
+            try
+            {
+                var command = new SendNotificationCommand
+                {
+                    UserId = request.UserId,
+                    Type = NotificationType.PaymentFailed,
+                    Priority = NotificationPriority.High,
+                    Variables = new Dictionary<string, object>
+                    {
+                        { "paymentId", request.PaymentId },
+                        { "reason", request.Reason },
+                        { "Email", request.Email },
+                        { "CustomerName", request.CustomerName },
+                        { "OrderNumber", request.OrderNumber },
+                        { "AttemptDate", request.AttemptDate ?? DateTime.Now.ToString("dd/MM/yyyy HH:mm") },
+                        { "Amount", request.Amount },
+                        { "PaymentMethod", request.PaymentMethod },
+                        { "FailureReason", request.FailureReason ?? request.Reason }
+                    },
+                    Channels = new List<NotificationChannel>
+                    {
+                        NotificationChannel.InApp,
+                        NotificationChannel.Email
+                    }
+                };
+
+                await _mediator.Publish(command);
+
+                _logger.LogInformation($"Payment failed notification sent for payment {request.PaymentId}, user {request.UserId}");
+                return Ok(new { message = "Payment failed notification sent successfully" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error sending payment failed notification for payment {request.PaymentId}");
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Enviar notificación de reembolso procesado (usado por Payment Service)
+        /// </summary>
+        [HttpPost("refund-processed")]
+        [Authorize]
+        public async Task<IActionResult> SendRefundProcessed([FromBody] PaymentNotificationRequest request)
+        {
+            try
+            {
+                var command = new SendNotificationCommand
+                {
+                    UserId = request.UserId,
+                    Type = NotificationType.PaymentRefunded,
+                    Priority = NotificationPriority.High,
+                    Variables = new Dictionary<string, object>
+                    {
+                        { "paymentId", request.PaymentId }
+                    },
+                    Channels = new List<NotificationChannel>
+                    {
+                        NotificationChannel.InApp,
+                        NotificationChannel.Email
+                    }
+                };
+
+                await _mediator.Publish(command);
+
+                _logger.LogInformation($"Refund processed notification sent for payment {request.PaymentId}, user {request.UserId}");
+                return Ok(new { message = "Refund processed notification sent successfully" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error sending refund processed notification for payment {request.PaymentId}");
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Enviar notificación de orden creada con email de confirmación de compra (usado por Payment Service)
+        /// </summary>
+        [HttpPost("order-placed")]
+        [Authorize]
+        public async Task<IActionResult> SendOrderPlacedNotification([FromBody] OrderPlacedNotificationRequest request)
+        {
+            try
+            {
+                var command = new SendNotificationCommand
+                {
+                    UserId = request.UserId,
+                    Type = NotificationType.OrderPlaced,
+                    Priority = NotificationPriority.High,
+                    Variables = new Dictionary<string, object>
+                    {
+                        { "Email", request.UserEmail },
+                        { "CustomerName", request.CustomerName },
+                        { "OrderNumber", request.OrderNumber },
+                        { "Items", request.Items },
+                        { "Subtotal", request.Subtotal },
+                        { "ShippingCost", request.ShippingCost },
+                        { "Tax", request.Tax },
+                        { "Total", request.Total },
+                        { "EstimatedDelivery", request.EstimatedDelivery }
+                    },
+                    Channels = new List<NotificationChannel>
+                    {
+                        NotificationChannel.InApp,
+                        NotificationChannel.Email
+                    }
+                };
+
+                await _mediator.Publish(command);
+
+                _logger.LogInformation($"Order placed notification sent for order {request.OrderNumber}, user {request.UserId}");
+                return Ok(new { message = "Order placed notification sent successfully" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error sending order placed notification for order {request.OrderNumber}");
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+    }
+
+    // DTOs para las notificaciones de pago
+    public class PaymentNotificationRequest
+    {
+        public int UserId { get; set; }
+        public int PaymentId { get; set; }
+    }
+
+    public class PaymentFailedNotificationRequest
+    {
+        public int UserId { get; set; }
+        public int PaymentId { get; set; }
+        public string Reason { get; set; }
+        public string Email { get; set; }
+        public string CustomerName { get; set; }
+        public string OrderNumber { get; set; }
+        public string AttemptDate { get; set; }
+        public string Amount { get; set; }
+        public string PaymentMethod { get; set; }
+        public string FailureReason { get; set; }
+    }
+
+    public class OrderPlacedNotificationRequest
+    {
+        public int UserId { get; set; }
+        public string UserEmail { get; set; }
+        public string CustomerName { get; set; }
+        public string OrderNumber { get; set; }
+        public List<OrderItemDto> Items { get; set; }
+        public string Subtotal { get; set; }
+        public string ShippingCost { get; set; }
+        public string Tax { get; set; }
+        public string Total { get; set; }
+        public string EstimatedDelivery { get; set; }
+    }
+
+    public class OrderItemDto
+    {
+        public string ProductName { get; set; }
+        public int Quantity { get; set; }
+        public string UnitPrice { get; set; }
     }
 }

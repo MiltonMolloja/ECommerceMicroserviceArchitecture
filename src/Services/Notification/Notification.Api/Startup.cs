@@ -19,6 +19,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Notification.Persistence.Database;
+using Notification.Service.EventHandlers.Services;
 using Notification.Service.Queries;
 using System.Reflection;
 using System.Text;
@@ -86,6 +87,10 @@ namespace Notification.Api
             services.Configure<Models.SmtpSettings>(Configuration.GetSection("SmtpSettings"));
             services.AddTransient<Services.IEmailTemplateService, Services.EmailTemplateServiceV2>();
             services.AddTransient<Services.IEmailService, Services.MailKitEmailService>();
+
+            // HttpClient for EmailNotificationService
+            services.AddHttpClient<IEmailNotificationService, EmailNotificationService>();
+            services.AddTransient<IEmailNotificationService, EmailNotificationService>();
 
             // CORS
             services.AddCors(options =>

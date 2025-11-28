@@ -1,18 +1,17 @@
 using MediatR;
-using Payment.Domain;
 
 namespace Payment.Service.EventHandlers.Commands
 {
-    public class ProcessPaymentCommand : INotification
+    public class ProcessPaymentCommand : IRequest<PaymentProcessingResult>
     {
         public int OrderId { get; set; }
         public int UserId { get; set; }
-        public decimal Amount { get; set; }
-        public string Currency { get; set; }
-        public PaymentMethod PaymentMethod { get; set; }
+        public string UserEmail { get; set; }  // Email del usuario desde el token JWT
 
-        // Para tarjeta de crédito (tokenizada)
-        public string PaymentToken { get; set; }
+        // Información de pago de MercadoPago
+        public string PaymentMethodId { get; set; }  // ej: "master", "visa", "amex"
+        public string Token { get; set; }             // Token de MercadoPago
+        public int Installments { get; set; }         // Número de cuotas
 
         // Dirección de facturación
         public string BillingAddress { get; set; }

@@ -86,6 +86,25 @@ namespace Notification.Api.Services
                         textBody = $"Hola {GetValue(dataDict, "FirstName")}, la autenticación de dos factores ha sido desactivada.";
                         break;
 
+                    case "purchase-confirmation":
+                    case "order-confirmation":
+                        subject = $"Confirmación de Compra - Pedido {GetValue(dataDict, "OrderNumber")} - ECommerce";
+                        htmlBody = RenderPurchaseConfirmationTemplate(dataDict);
+                        textBody = $"Hola {GetValue(dataDict, "CustomerName")}, tu pedido {GetValue(dataDict, "OrderNumber")} ha sido confirmado.";
+                        break;
+
+                    case "payment-failed":
+                        subject = $"Pago Rechazado - Pedido {GetValue(dataDict, "OrderNumber")} - Acción Requerida";
+                        htmlBody = RenderPaymentFailedTemplate(dataDict);
+                        textBody = $"Hola {GetValue(dataDict, "CustomerName")}, tu pago para el pedido {GetValue(dataDict, "OrderNumber")} fue rechazado.";
+                        break;
+
+                    case "refund-processed":
+                        subject = $"Reembolso Procesado - {GetValue(dataDict, "RefundNumber")} - ECommerce";
+                        htmlBody = RenderRefundProcessedTemplate(dataDict);
+                        textBody = $"Hola {GetValue(dataDict, "CustomerName")}, tu reembolso {GetValue(dataDict, "RefundNumber")} ha sido procesado.";
+                        break;
+
                     default:
                         _logger.LogWarning($"Template not found: {templateName}");
                         subject = "Notificación - ECommerce";
@@ -193,23 +212,7 @@ namespace Notification.Api.Services
         {
             var result = template;
 
-            // Find all {{variable}} patterns in the template
-            var variablePattern = @"\{\{(\w+)\}\}";
-            var matches = Regex.Matches(result, variablePattern);
-
-            // Replace each variable found
-            foreach (Match match in matches)
-            {
-                var variableName = match.Groups[1].Value;
-                var variableValue = GetValue(data, variableName);
-
-                if (!string.IsNullOrEmpty(variableValue))
-                {
-                    result = result.Replace($"{{{{{variableName}}}}}", variableValue);
-                }
-            }
-
-            // Handle {{#each}} blocks for arrays (simplified version)
+            // Handle {{#each}} blocks for arrays FIRST (before simple variable replacement)
             var eachPattern = @"\{\{#each\s+(\w+)\}\}(.*?)\{\{/each\}\}";
             var eachMatches = Regex.Matches(result, eachPattern, RegexOptions.Singleline);
 
@@ -227,14 +230,56 @@ namespace Notification.Api.Services
                     {
                         var blockData = new Dictionary<string, object>(data);
                         blockData["@index"] = (index + 1).ToString();
-                        blockData["this"] = item.ToString();
 
-                        var renderedBlock = RenderTemplateWithHandlebars(blockTemplate, blockData);
+                        // If item is a dictionary or has properties, add them to blockData
+                        if (item is Dictionary<string, object> itemDict)
+                        {
+                            foreach (var kvp in itemDict)
+                            {
+                                blockData[kvp.Key] = kvp.Value;
+                            }
+                        }
+                        else if (item != null)
+                        {
+                            // Try to extract properties from the object
+                            var properties = item.GetType().GetProperties();
+                            foreach (var prop in properties)
+                            {
+                                blockData[prop.Name] = prop.GetValue(item);
+                            }
+                            blockData["this"] = item.ToString();
+                        }
+
+                        var renderedBlock = RenderSimpleVariables(blockTemplate, blockData);
                         renderedBlocks.Append(renderedBlock);
                         index++;
                     }
 
                     result = result.Replace(match.Value, renderedBlocks.ToString());
+                }
+            }
+
+            // Find all {{variable}} patterns in the template
+            result = RenderSimpleVariables(result, data);
+
+            return result;
+        }
+
+        private string RenderSimpleVariables(string template, Dictionary<string, object> data)
+        {
+            var result = template;
+            var variablePattern = @"\{\{(\w+)\}\}";
+            var matches = Regex.Matches(result, variablePattern);
+
+            // Replace each variable found
+            foreach (Match match in matches)
+            {
+                var variableName = match.Groups[1].Value;
+                var variableValue = GetValue(data, variableName);
+
+                if (!string.IsNullOrEmpty(variableValue))
+                {
+                    result = result.Replace($"{{{{{variableName}}}}}", variableValue);
                 }
             }
 
@@ -517,6 +562,160 @@ namespace Notification.Api.Services
     </div>
 </body>
 </html>";
+        }
+
+        private string RenderPurchaseConfirmationTemplate(Dictionary<string, object> data)
+        {
+            // Prepare data with computed values
+            var customerName = GetValue(data, "CustomerName");
+            var orderNumber = GetValue(data, "OrderNumber");
+            var subtotal = GetValue(data, "Subtotal");
+            var shippingCost = GetValue(data, "ShippingCost");
+            var tax = GetValue(data, "Tax");
+            var total = GetValue(data, "Total");
+            var estimatedDelivery = GetValue(data, "EstimatedDelivery");
+            var baseUrl = GetValue(data, "baseUrl");
+
+            // Generate URLs
+            var frontendUrl = _configuration.GetValue<string>("FrontendUrl") ?? "http://localhost:4400";
+            var trackOrderUrl = $"{frontendUrl}/orders/{orderNumber}/track";
+            var receiptUrl = $"{frontendUrl}/orders/{orderNumber}/receipt";
+            var myAccountUrl = $"{frontendUrl}/account";
+            var myOrdersUrl = $"{frontendUrl}/orders";
+            var supportUrl = $"{frontendUrl}/support";
+            var returnsUrl = $"{frontendUrl}/returns";
+
+            // Try to load from file first
+            var template = LoadTemplateFromFile("purchase-confirmation.html");
+
+            if (template == null)
+            {
+                _logger.LogWarning("Could not load purchase-confirmation.html, using fallback template");
+                return $@"<html><body><h1>¡Compra Confirmada!</h1><p>Hola {customerName},</p><p>Tu pedido {orderNumber} ha sido confirmado.</p><p>Total: {total}</p></body></html>";
+            }
+
+            // Add computed values to data
+            data["CustomerName"] = customerName;
+            data["OrderNumber"] = orderNumber;
+            data["Subtotal"] = subtotal;
+            data["ShippingCost"] = shippingCost ?? "Gratis";
+            data["Tax"] = tax;
+            data["Total"] = total;
+            data["EstimatedDelivery"] = estimatedDelivery ?? "3-5 días hábiles";
+            data["TrackOrderUrl"] = trackOrderUrl;
+            data["ReceiptUrl"] = receiptUrl;
+            data["MyAccountUrl"] = myAccountUrl;
+            data["MyOrdersUrl"] = myOrdersUrl;
+            data["SupportUrl"] = supportUrl;
+            data["ReturnsUrl"] = returnsUrl;
+
+            // Render template with data
+            var renderedTemplate = RenderTemplateWithHandlebars(template, data);
+
+            return renderedTemplate;
+        }
+
+        private string RenderPaymentFailedTemplate(Dictionary<string, object> data)
+        {
+            // Prepare data with computed values
+            var customerName = GetValue(data, "CustomerName");
+            var orderNumber = GetValue(data, "OrderNumber");
+            var attemptDate = GetValue(data, "AttemptDate");
+            var amount = GetValue(data, "Amount");
+            var paymentMethod = GetValue(data, "PaymentMethod");
+            var failureReason = GetValue(data, "FailureReason");
+            var baseUrl = GetValue(data, "baseUrl");
+
+            // Generate URLs
+            var frontendUrl = _configuration.GetValue<string>("FrontendUrl") ?? "http://localhost:4400";
+            var retryPaymentUrl = $"{frontendUrl}/orders/{orderNumber}/payment";
+            var viewOrderUrl = $"{frontendUrl}/orders/{orderNumber}";
+            var myAccountUrl = $"{frontendUrl}/account";
+            var myOrdersUrl = $"{frontendUrl}/orders";
+            var supportUrl = $"{frontendUrl}/support";
+            var helpCenterUrl = $"{frontendUrl}/help";
+
+            // Try to load from file first
+            var template = LoadTemplateFromFile("payment-failed.html");
+
+            if (template == null)
+            {
+                _logger.LogWarning("Could not load payment-failed.html, using fallback template");
+                return $@"<html><body><h1>Pago Rechazado</h1><p>Hola {customerName},</p><p>Tu pago para el pedido {orderNumber} fue rechazado.</p><p>Razón: {failureReason}</p><p><a href=""{retryPaymentUrl}"">Reintentar Pago</a></p></body></html>";
+            }
+
+            // Add computed values to data
+            data["CustomerName"] = customerName;
+            data["OrderNumber"] = orderNumber;
+            data["AttemptDate"] = attemptDate ?? DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            data["Amount"] = amount;
+            data["PaymentMethod"] = paymentMethod;
+            data["FailureReason"] = failureReason ?? "No pudimos procesar el pago. Por favor intenta nuevamente o contacta con soporte.";
+            data["RetryPaymentUrl"] = retryPaymentUrl;
+            data["ViewOrderUrl"] = viewOrderUrl;
+            data["MyAccountUrl"] = myAccountUrl;
+            data["MyOrdersUrl"] = myOrdersUrl;
+            data["SupportUrl"] = supportUrl;
+            data["HelpCenterUrl"] = helpCenterUrl;
+
+            // Render template with data
+            var renderedTemplate = RenderTemplateWithHandlebars(template, data);
+
+            return renderedTemplate;
+        }
+
+        private string RenderRefundProcessedTemplate(Dictionary<string, object> data)
+        {
+            // Prepare data with computed values
+            var customerName = GetValue(data, "CustomerName");
+            var refundNumber = GetValue(data, "RefundNumber");
+            var refundReason = GetValue(data, "RefundReason");
+            var processedDate = GetValue(data, "ProcessedDate");
+            var refundMethod = GetValue(data, "RefundMethod");
+            var refundAmount = GetValue(data, "RefundAmount");
+            var orderNumber = GetValue(data, "OrderNumber");
+            var purchaseDate = GetValue(data, "PurchaseDate");
+            var baseUrl = GetValue(data, "baseUrl");
+
+            // Generate URLs
+            var frontendUrl = _configuration.GetValue<string>("FrontendUrl") ?? "http://localhost:4400";
+            var viewDetailsUrl = $"{frontendUrl}/refunds/{refundNumber}";
+            var myAccountUrl = $"{frontendUrl}/account";
+            var myReturnsUrl = $"{frontendUrl}/returns";
+            var supportUrl = $"{frontendUrl}/support";
+            var faqUrl = $"{frontendUrl}/faq";
+
+            // Try to load from file first
+            var template = LoadTemplateFromFile("refund-processed.html");
+
+            if (template == null)
+            {
+                _logger.LogWarning("Could not load refund-processed.html, using fallback template");
+                return $@"<html><body><h1>Reembolso Procesado</h1><p>Hola {customerName},</p><p>Tu reembolso {refundNumber} ha sido procesado exitosamente.</p><p>Monto: {refundAmount}</p></body></html>";
+            }
+
+            // Add computed values to data
+            data["CustomerName"] = customerName;
+            data["RefundNumber"] = refundNumber;
+            data["RefundReason"] = refundReason ?? "Producto Defectuoso";
+            data["ProcessedDate"] = processedDate ?? DateTime.Now.ToString("dd/MM/yyyy - HH:mm:ss");
+            data["RefundMethod"] = refundMethod;
+            data["RefundAmount"] = refundAmount;
+            data["OrderNumber"] = orderNumber;
+            data["PurchaseDate"] = purchaseDate;
+            data["ReturnReceivedDate"] = GetValue(data, "ReturnReceivedDate") ?? DateTime.Now.AddDays(-2).ToString("dd/MM/yyyy");
+            data["ProductVerifiedDate"] = GetValue(data, "ProductVerifiedDate") ?? DateTime.Now.AddDays(-1).ToString("dd/MM/yyyy");
+            data["RefundProcessedDate"] = GetValue(data, "RefundProcessedDate") ?? DateTime.Now.ToString("dd/MM/yyyy");
+            data["ViewDetailsUrl"] = viewDetailsUrl;
+            data["SupportUrl"] = supportUrl;
+            data["MyAccountUrl"] = myAccountUrl;
+            data["MyReturnsUrl"] = myReturnsUrl;
+            data["FaqUrl"] = faqUrl;
+
+            // Render template with data
+            var renderedTemplate = RenderTemplateWithHandlebars(template, data);
+
+            return renderedTemplate;
         }
 
         private string RenderDefaultTemplate(Dictionary<string, object> data)

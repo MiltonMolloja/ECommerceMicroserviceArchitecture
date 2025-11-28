@@ -36,7 +36,7 @@ namespace Payment.Service.Proxies.Notification
             {
                 SetAuthorizationHeader();
                 await _httpClient.PostAsJsonAsync(
-                    $"{_baseUrl}/api/notifications/payment-confirmation",
+                    $"{_baseUrl}/api/notification/payment-confirmation",
                     new { userId, paymentId });
             }
             catch
@@ -45,14 +45,14 @@ namespace Payment.Service.Proxies.Notification
             }
         }
 
-        public async Task SendPaymentFailedAsync(int userId, int paymentId, string reason)
+        public async Task SendPaymentFailedAsync(PaymentFailedNotification notification)
         {
             try
             {
                 SetAuthorizationHeader();
                 await _httpClient.PostAsJsonAsync(
-                    $"{_baseUrl}/api/notifications/payment-failed",
-                    new { userId, paymentId, reason });
+                    $"{_baseUrl}/api/notification/payment-failed",
+                    notification);
             }
             catch
             {
@@ -66,8 +66,23 @@ namespace Payment.Service.Proxies.Notification
             {
                 SetAuthorizationHeader();
                 await _httpClient.PostAsJsonAsync(
-                    $"{_baseUrl}/api/notifications/refund-processed",
+                    $"{_baseUrl}/api/notification/refund-processed",
                     new { userId, paymentId });
+            }
+            catch
+            {
+                // Log error but don't throw
+            }
+        }
+
+        public async Task SendOrderPlacedNotificationAsync(OrderPlacedNotification notification)
+        {
+            try
+            {
+                SetAuthorizationHeader();
+                await _httpClient.PostAsJsonAsync(
+                    $"{_baseUrl}/api/notification/order-placed",
+                    notification);
             }
             catch
             {

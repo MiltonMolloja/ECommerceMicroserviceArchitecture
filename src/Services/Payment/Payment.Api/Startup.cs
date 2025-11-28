@@ -90,6 +90,7 @@ namespace Payment.Api
             // Payment Gateways
             services.AddScoped<StripeGateway>();
             services.AddScoped<Payment.Service.Gateways.Mock.MockPaymentGateway>();
+            services.AddHttpClient<Payment.Service.Gateways.MercadoPago.MercadoPagoGateway>();
             services.AddScoped<IPaymentGatewayFactory, PaymentGatewayFactory>();
 
             // Proxies (HttpClient)
@@ -99,6 +100,11 @@ namespace Payment.Api
                     client.DefaultRequestHeaders.Add("X-API-Key", "payment-api-key-2025-secure-ecommerce-service-communication");
                 });
             services.AddHttpClient<INotificationProxy, NotificationProxy>()
+                .ConfigureHttpClient(client =>
+                {
+                    client.DefaultRequestHeaders.Add("X-API-Key", "payment-api-key-2025-secure-ecommerce-service-communication");
+                });
+            services.AddHttpClient<Service.Proxies.Customer.ICustomerProxy, Service.Proxies.Customer.CustomerProxy>()
                 .ConfigureHttpClient(client =>
                 {
                     client.DefaultRequestHeaders.Add("X-API-Key", "payment-api-key-2025-secure-ecommerce-service-communication");

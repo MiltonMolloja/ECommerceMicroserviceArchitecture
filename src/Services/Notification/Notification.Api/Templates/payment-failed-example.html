@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago Rechazado - ECommerce</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: #232F3E;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .logo {
+            display: inline-block;
+            border: 2px solid #FF9900;
+            padding: 10px 20px;
+            border-radius: 4px;
+            color: #FF9900;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .icon-wrapper {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .icon-table {
+            margin: 0 auto;
+        }
+
+        .icon-cell {
+            width: 80px;
+            height: 80px;
+            background-color: #FFEBEE;
+            border-radius: 50%;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 40px;
+            line-height: 80px;
+        }
+
+        h1 {
+            color: #D32F2F;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        p {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .alert-box {
+            background-color: #FFEBEE;
+            border-left: 4px solid #F44336;
+            padding: 12px 15px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .alert-box h4 {
+            color: #C62828;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .alert-box p {
+            color: #C62828;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .payment-details {
+            background-color: #f8f9fa;
+            border-left: 4px solid #FF9900;
+            padding: 15px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .payment-details h4 {
+            color: #232F3E;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #666;
+        }
+
+        .detail-value {
+            color: #232F3E;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .reason-box {
+            background-color: #FFF3E0;
+            border-left: 4px solid #FF9900;
+            padding: 12px 15px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .reason-box h4 {
+            color: #E65100;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .reason-box p {
+            color: #E65100;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .button-group {
+            width: 100%;
+            margin: 30px 0;
+        }
+
+        .button-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 15px 0;
+        }
+
+        .button-table td {
+            width: 50%;
+        }
+
+        .cta-button {
+            width: 100%;
+            padding: 16px 32px;
+            background-color: #F44336;
+            color: #ffffff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 16px;
+            display: block;
+            box-sizing: border-box;
+        }
+
+        .cta-button-secondary {
+            width: 100%;
+            padding: 16px 32px;
+            background-color: #232F3E;
+            color: #ffffff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 16px;
+            display: block;
+            box-sizing: border-box;
+        }
+
+        .help-section {
+            background-color: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            padding: 12px 15px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .help-section h4 {
+            color: #1565C0;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .help-section p {
+            color: #1565C0;
+            font-size: 14px;
+            margin: 0;
+            line-height: 1.8;
+        }
+
+        .divider {
+            border-top: 1px solid #e0e0e0;
+            margin: 30px 0;
+        }
+
+        .footer {
+            background-color: #f8f8f8;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .footer p {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .footer-links {
+            margin-top: 20px;
+        }
+
+        .footer-links a {
+            color: #0066c0;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 13px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            body {
+                padding: 0;
+            }
+
+            .email-container {
+                border-radius: 0;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .button-table {
+                border-spacing: 0;
+            }
+
+            .button-table td {
+                display: block;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .button-table td:last-child {
+                margin-bottom: 0;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .detail-value {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">ECommerce</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Icon -->
+            <div class="icon-wrapper">
+                <table class="icon-table" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td class="icon-cell" width="80" height="80" style="width: 80px; height: 80px; background-color: #FFEBEE; border-radius: 50%; text-align: center; vertical-align: middle; font-size: 40px; line-height: 80px;">❌</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h1>Pago Rechazado</h1>
+            <div class="subtitle">No pudimos procesar tu método de pago</div>
+
+            <!-- Greeting -->
+            <p>¡Hola Milton Rodriguez!</p>
+
+            <p>Hemos intentado procesar tu pago pero fue rechazado. Tu pedido está en espera. Por favor, actualiza tu método de pago para completar tu compra.</p>
+
+            <!-- Alert Box -->
+            <div class="alert-box">
+                <h4>⚠️ Acción Requerida</h4>
+                <p>Tu pedido expirará en 24 horas si no completas el pago. Reintentar ahora para continuar con tu compra.</p>
+            </div>
+
+            <!-- Payment Details -->
+            <div class="payment-details">
+                <h4>📋 Detalles del Intento de Pago</h4>
+
+                <div class="detail-row">
+                    <span class="detail-label">Número de Pedido</span>
+                    <span class="detail-value">#ORD-2025-112601</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Fecha del Intento</span>
+                    <span class="detail-value">26/11/2025 14:32</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Monto</span>
+                    <span class="detail-value">AR$ 2.843.920,00</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Método de Pago</span>
+                    <span class="detail-value">Visa terminada en 4242</span>
+                </div>
+            </div>
+
+            <!-- Reason Box -->
+            <div class="reason-box">
+                <h4>🔍 Motivo del Rechazo</h4>
+                <p>Fondos insuficientes. Verifica que tu tarjeta tenga saldo suficiente e intenta de nuevo. Si el problema persiste, contacta con tu banco.</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <table class="button-table" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td>
+                            <a href="#" class="cta-button">Reintentar Pago</a>
+                        </td>
+                        <td>
+                            <a href="#" class="cta-button-secondary">Ver Pedido</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Help Section -->
+            <div class="help-section">
+                <h4>💡 ¿Necesitas Ayuda?</h4>
+                <p>Si continúas teniendo problemas, puedes:<br>
+                • Intentar con otro método de pago<br>
+                • Contactar con tu entidad bancaria<br>
+                • Comunicarte con nuestro equipo de soporte</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Closing Message -->
+            <p>Estamos aquí para ayudarte. Si tienes preguntas, no dudes en contactarnos a través de nuestro formulario de soporte.</p>
+
+            <p style="color: #888; font-size: 14px;">Saludos,<br><strong>El equipo de ECommerce</strong></p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Este es un correo electrónico automático, por favor no respondas a este mensaje.</p>
+            <p>© 2025 ECommerce, Inc. Todos los derechos reservados.</p>
+
+            <div class="footer-links">
+                <a href="#">Mi Cuenta</a>
+                <a href="#">Mis Órdenes</a>
+                <a href="#">Soporte</a>
+                <a href="#">Centro de Ayuda</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

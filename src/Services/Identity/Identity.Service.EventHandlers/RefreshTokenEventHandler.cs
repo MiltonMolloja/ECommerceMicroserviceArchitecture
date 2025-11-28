@@ -84,7 +84,8 @@ namespace Identity.Service.EventHandlers
                 new Claim(ClaimTypes.Name, user.FirstName),
                 new Claim(ClaimTypes.Surname, user.LastName),
                 new Claim("EmailConfirmed", user.EmailConfirmed.ToString().ToLower()),
-                new Claim("PasswordChangedAt", user.PasswordChangedAt?.ToString("o") ?? string.Empty)
+                new Claim("PasswordChangedAt", user.PasswordChangedAt?.ToString("o") ?? string.Empty),
+                new Claim("TwoFactorEnabled", user.TwoFactorEnabled.ToString().ToLower())
             };
 
             var roles = await _context.Roles

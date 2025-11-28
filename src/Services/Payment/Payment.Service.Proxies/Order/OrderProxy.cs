@@ -43,7 +43,7 @@ namespace Payment.Service.Proxies.Order
             }
         }
 
-        public async Task UpdateOrderPaymentStatusAsync(int orderId, string status)
+        public async Task UpdateOrderPaymentStatusAsync(int orderId, string status, string transactionId = null, string gateway = null)
         {
             try
             {
@@ -55,9 +55,26 @@ namespace Payment.Service.Proxies.Order
                         new AuthenticationHeaderValue("Bearer", authHeader.Substring(7));
                 }
 
+                // Mapear status string a OrderStatus enum
+                int statusValue = status.ToLower() switch
+                {
+                    "paid" => 3,              // OrderStatus.Paid
+                    "paymentfailed" => 2,     // OrderStatus.PaymentFailed
+                    "paymentprocessing" => 1, // OrderStatus.PaymentProcessing
+                    "cancelled" => 10,        // OrderStatus.Cancelled
+                    _ => 1                    // Default: PaymentProcessing
+                };
+
+                var requestBody = new
+                {
+                    status = statusValue,
+                    paymentTransactionId = transactionId,
+                    paymentGateway = gateway
+                };
+
                 await _httpClient.PutAsJsonAsync(
-                    $"{_baseUrl}/api/orders/{orderId}/payment-status",
-                    new { status });
+                    $"{_baseUrl}/v1/orders/{orderId}/status",
+                    requestBody);
             }
             catch
             {

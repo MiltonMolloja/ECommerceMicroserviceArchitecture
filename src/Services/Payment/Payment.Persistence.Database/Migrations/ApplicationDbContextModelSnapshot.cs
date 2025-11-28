@@ -123,11 +123,6 @@ namespace Payment.Persistence.Database.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("CardHolderName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<string>("CardLast4Digits")
                         .IsRequired()
                         .HasMaxLength(4)

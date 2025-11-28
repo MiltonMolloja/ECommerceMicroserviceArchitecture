@@ -21,9 +21,6 @@ namespace Payment.Persistence.Database.Configuration
             builder.Property(d => d.CardBrand)
                 .HasMaxLength(20);
 
-            builder.Property(d => d.CardHolderName)
-                .HasMaxLength(100);
-
             builder.Property(d => d.BillingAddress)
                 .HasMaxLength(500);
 
