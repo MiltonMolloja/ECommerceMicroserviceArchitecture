@@ -935,7 +935,7 @@ src/
 | 30000 | Customer.Api | Gestión de clientes |
 | 40000 | Order.Api | Gestión de órdenes |
 | 5500 | Cart.Api | Carrito de compras |
-| 54000 | Payment.Api | Procesamiento de pagos |
+| 56000 | Payment.Api | Procesamiento de pagos |
 | 60001 | Clients.WebClient | Frontend Razor Pages (actual) |
 | **4200** | **Clients.AngularApp** | **Frontend Angular (futuro)** |
 
