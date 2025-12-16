@@ -1,0 +1,55 @@
+Changed database context to 'ECommerceDb'.
+=== VERIFICANDO CATEGORÍAS EXISTENTES ===
+CategoryId  NameSpanish                                                                                          Slug                                                                                                                                                                                                     ParentCategoryId TotalCategorias     
+----------- ---------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------- --------------------
+          1 Computadoras                                                                                         computadoras                                                                                                                                                                                                         NULL                    6
+          2 Perifericos                                                                                          perifericos                                                                                                                                                                                                          NULL                    6
+          3 Audio                                                                                                audio                                                                                                                                                                                                                NULL                    6
+          4 Componentes                                                                                          componentes                                                                                                                                                                                                          NULL                    6
+          5 Monitores                                                                                            monitores                                                                                                                                                                                                            NULL                    6
+          6 Mobiliario                                                                                           mobiliario                                                                                                                                                                                                           NULL                    6
+
+(6 rows affected)
+ 
+=== PRODUCTOS POR CATEGORÍA ACTUAL ===
+CategoryId  NameSpanish                                                                                          Slug                                                                                                                                                                                                     ProductCount
+----------- ---------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ------------
+          2 Perifericos                                                                                          perifericos                                                                                                                                                                                                         4
+          4 Componentes                                                                                          componentes                                                                                                                                                                                                         2
+          3 Audio                                                                                                audio                                                                                                                                                                                                               1
+          1 Computadoras                                                                                         computadoras                                                                                                                                                                                                        1
+          6 Mobiliario                                                                                           mobiliario                                                                                                                                                                                                          1
+          5 Monitores                                                                                            monitores                                                                                                                                                                                                           1
+
+(6 rows affected)
+ 
+=== CREANDO CATEGORÍAS BÁSICAS SI NO EXISTEN ===
+Las categorías ya existen. Continuando...
+ 
+=== ASIGNANDO PRODUCTOS A CATEGORÍAS ===
+Categoría Electrónica ID: NULL
+Categoría Computadoras ID: 1
+Categoría General ID: 1
+ 
+
+(104 rows affected)
+Productos asignados a Computadoras: 104
+
+(53 rows affected)
+Productos sin categoría asignados a General: 53
+ 
+=== RESULTADO FINAL ===
+CategoryId  NameSpanish                                                                                          Slug                                                                                                                                                                                                     IsActive ProductCount
+----------- ---------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -------- ------------
+          1 Computadoras                                                                                         computadoras                                                                                                                                                                                                    1          158
+          2 Perifericos                                                                                          perifericos                                                                                                                                                                                                     1            4
+          4 Componentes                                                                                          componentes                                                                                                                                                                                                     1            2
+          3 Audio                                                                                                audio                                                                                                                                                                                                           1            1
+          6 Mobiliario                                                                                           mobiliario                                                                                                                                                                                                      1            1
+          5 Monitores                                                                                            monitores                                                                                                                                                                                                       1            1
+
+(6 rows affected)
+ 
+============================================
+SCRIPT COMPLETADO EXITOSAMENTE
+============================================

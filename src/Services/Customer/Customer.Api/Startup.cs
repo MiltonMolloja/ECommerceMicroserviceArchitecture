@@ -5,7 +5,7 @@ using Common.Logging;
 using Common.RateLimiting;
 using Common.Validation;
 using FluentValidation;
-using Customer.Common;
+using Common.Caching;
 using Customer.Persistence.Database;
 using HealthChecks.UI.Client;
 using MediatR;

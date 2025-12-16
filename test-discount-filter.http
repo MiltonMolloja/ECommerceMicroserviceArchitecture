@@ -1,0 +1,17 @@
+### Test 1: Búsqueda SIN filtro de descuento (debe traer productos con y sin descuento)
+GET https://localhost:4200/api/products/search?Page=1&PageSize=5&Query=tv&SortBy=0&SortOrder=0
+
+### Test 2: Búsqueda CON filtro de descuento = true (solo productos con descuento)
+GET https://localhost:4200/api/products/search?Page=1&PageSize=5&Query=tv&SortBy=0&SortOrder=0&HasDiscount=true
+
+### Test 3: Búsqueda CON filtro de descuento = false (solo productos sin descuento)
+GET https://localhost:4200/api/products/search?Page=1&PageSize=5&Query=tv&SortBy=0&SortOrder=0&HasDiscount=false
+
+### Test 4: Verificar directamente en Catalog.Api SIN filtro
+GET https://localhost:20000/api/v1/products/search?Page=1&PageSize=5&Query=tv&SortBy=0&SortOrder=0
+
+### Test 5: Verificar directamente en Catalog.Api CON filtro de descuento = true
+GET https://localhost:20000/api/v1/products/search?Page=1&PageSize=5&Query=tv&SortBy=0&SortOrder=0&HasDiscount=true
+
+### Test 6: Verificar directamente en Catalog.Api CON filtro de descuento = false
+GET https://localhost:20000/api/v1/products/search?Page=1&PageSize=5&Query=tv&SortBy=0&SortOrder=0&HasDiscount=false

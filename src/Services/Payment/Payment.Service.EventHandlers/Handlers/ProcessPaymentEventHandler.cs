@@ -109,6 +109,9 @@ namespace Payment.Service.EventHandlers.Handlers
                     PaymentMethodId = notification.PaymentMethodId,
                     Installments = notification.Installments,
                     PayerEmail = userEmail,
+                    CardholderName = notification.CardholderName,
+                    IdentificationType = notification.IdentificationType,
+                    IdentificationNumber = notification.IdentificationNumber,
                     Description = $"Order {notification.OrderId}"
                 });
 

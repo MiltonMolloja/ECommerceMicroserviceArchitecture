@@ -19,7 +19,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Order.Common;
+using Common.Caching;
 using Order.Persistence.Database;
 using Order.Service.Proxies;
 using Order.Service.Proxies.Catalog;

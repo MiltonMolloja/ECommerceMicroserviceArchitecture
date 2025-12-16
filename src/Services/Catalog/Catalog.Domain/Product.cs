@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -40,6 +40,12 @@ namespace Catalog.Domain
         public bool IsActive { get; set; }
         public bool IsFeatured { get; set; }
 
+        // Ventas
+        /// <summary>
+        /// Cantidad total vendida (para ordenamiento por bestseller)
+        /// </summary>
+        public int TotalSold { get; set; }
+
         // Auditoría
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -47,7 +53,10 @@ namespace Catalog.Domain
         // Navegación
         public ProductInStock Stock { get; set; }
         public Brand BrandNavigation { get; set; }
+        public ProductRating ProductRating { get; set; }
         public ICollection<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
+        public ICollection<ProductAttributeValue> ProductAttributeValues { get; set; } = new List<ProductAttributeValue>();
+        public ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
 
         #endregion
 

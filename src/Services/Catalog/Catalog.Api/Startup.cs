@@ -2,6 +2,7 @@ using Catalog.Api.Swagger;
 using Catalog.Common;
 using Catalog.Persistence.Database;
 using Catalog.Service.Queries;
+using Catalog.Service.Queries.Services;
 using Common.ApiKey;
 using Common.Caching;
 using Common.CorrelationId;
@@ -43,6 +44,12 @@ namespace Catalog.Api
         {
             // HttpContextAccessor
             services.AddHttpContextAccessor();
+
+            // Memory Cache (para facetas)
+            services.AddMemoryCache();
+
+            // Response Caching (para [ResponseCache] attribute)
+            services.AddResponseCaching();
 
             // Redis Cache
             services.AddRedisCache(Configuration);
@@ -96,6 +103,10 @@ namespace Catalog.Api
             // Query services
             services.AddTransient<IProductQueryService, ProductQueryService>();
             services.AddTransient<IProductInStockQueryService, ProductInStockQueryService>();
+            services.AddTransient<IProductReviewQueryService, ProductReviewQueryService>();
+            services.AddTransient<ICategoryQueryService, CategoryQueryService>();
+            services.AddTransient<IFacetService, FacetService>();
+            services.AddTransient<IHomeQueryService, HomeQueryService>();
 
             // CORS
             services.AddCors(options =>
@@ -216,6 +227,9 @@ namespace Catalog.Api
 
             // CORS debe ir antes de UseRouting
             app.UseCors("AllowAll");
+
+            // Response Caching (debe ir antes de UseRouting)
+            app.UseResponseCaching();
 
             app.UseRouting();
 

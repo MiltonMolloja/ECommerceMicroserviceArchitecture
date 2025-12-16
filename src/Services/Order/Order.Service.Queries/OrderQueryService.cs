@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Order.Persistence.Database;
 using Order.Service.Queries.DTOs;
 using Service.Common.Collection;
@@ -28,6 +28,7 @@ namespace Order.Service.Queries
         public async Task<DataCollection<OrderDto>> GetAllAsync(int page, int take) 
         {
             var collection = await _context.Orders
+                .AsNoTracking()
                 .Include(x => x.Items)
                 .OrderByDescending(x => x.OrderId)
                 .GetPagedAsync(page, take);
@@ -37,7 +38,10 @@ namespace Order.Service.Queries
 
         public async Task<OrderDto> GetAsync(int id)
         {
-            return (await _context.Orders.Include(x => x.Items).SingleAsync(x => x.OrderId == id)).MapTo<OrderDto>();
+            return (await _context.Orders
+                .AsNoTracking()
+                .Include(x => x.Items)
+                .SingleAsync(x => x.OrderId == id)).MapTo<OrderDto>();
         }
     }
 }

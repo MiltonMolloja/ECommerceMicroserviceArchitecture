@@ -96,7 +96,21 @@
       "Bash(npx ng lint --fix)",
       "Bash(npm run lint)",
       "Bash(npx ng build:*)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Bash(if exist nul del nul)",
+      "Bash(if exist null del null)",
+      "Bash(del \"C:\\Source\\ECommerceFrontend\\nul\")",
+      "Bash(Select-String -Pattern \"error|warning CS0246|warning CS0618|Build FAILED|Build succeeded\")",
+      "Bash(npx tsc:*)",
+      "Bash(tree:*)",
+      "Bash(find:*)",
+      "Bash(npx -y @modelcontextprotocol/inspector)",
+      "Bash(set AUTH_HEADER=Bearer APP_USR-7042459443700073-112423-4bb1a8090342cf9027d36711c748ad84-3015028966)",
+      "Bash(npx -y mcp-remote https://mcp.mercadopago.com/mcp --header \"Authorization:%AUTH_HEADER%\" list-tools)",
+      "Bash(npx -y @upshiftone/context7 --help)",
+      "Bash(npx:*)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": []

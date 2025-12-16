@@ -17,6 +17,9 @@ namespace Payment.Service.Gateways
         public int Installments { get; set; }
         public string Description { get; set; }
         public string PayerEmail { get; set; }       // Payer's email
+        public string CardholderName { get; set; }   // Cardholder name (used for test simulations: APRO, CALL, FUND, etc.)
+        public string IdentificationType { get; set; } // Identification type (DNI, CUIL, etc.)
+        public string IdentificationNumber { get; set; } // Identification number
     }
 
     public class PaymentResult

@@ -1,4 +1,4 @@
-﻿using Api.Gateway.Proxies;
+using Api.Gateway.Proxies;
 using Api.Gateway.Proxy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -26,8 +26,10 @@ namespace Api.Gateway.WebClient.Config
             service.AddHttpClient<IOrderProxy, OrderProxy>();
             service.AddHttpClient<ICustomerProxy, CustomerProxy>();
             service.AddHttpClient<ICatalogProxy, CatalogProxy>();
+            service.AddHttpClient<ICategoryProxy, CategoryProxy>();
             service.AddHttpClient<ICartProxy, CartProxy>();
             service.AddHttpClient<IPaymentProxy, PaymentProxy>();
+            service.AddHttpClient<IHomeProxy, HomeProxy>();
 
             return service;
         }

@@ -1,14 +1,16 @@
-﻿using Catalog.Common;
+using Catalog.Common;
 using Catalog.Domain;
 using Catalog.Persistence.Database;
 using Catalog.Service.Queries.DTOs;
 using Catalog.Service.Queries.Extensions;
+using Catalog.Service.Queries.Services;
 using Microsoft.EntityFrameworkCore;
 using Service.Common.Collection;
 using Service.Common.Mapping;
 using Service.Common.Paging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,24 +25,37 @@ namespace Catalog.Service.Queries
         /// Busca productos con filtros avanzados
         /// </summary>
         Task<ProductSearchResponse> SearchAsync(ProductSearchRequest request);
+
+        /// <summary>
+        /// Busca productos con filtros avanzados, facetas y Full-Text Search
+        /// </summary>
+        Task<ProductAdvancedSearchResponse> SearchAdvancedAsync(ProductAdvancedSearchRequest request);
     }
 
     public class ProductQueryService : IProductQueryService
     {
         private readonly ApplicationDbContext _context;
         private readonly ILanguageContext _languageContext;
+        private readonly IFacetService _facetService;
 
         public ProductQueryService(
             ApplicationDbContext context,
-            ILanguageContext languageContext)
+            ILanguageContext languageContext,
+            IFacetService facetService)
         {
             _context = context;
             _languageContext = languageContext;
+            _facetService = facetService;
         }
 
         public async Task<DataCollection<ProductDto>> GetAllAsync(int page, int take, IEnumerable<int> products = null)
         {
             var collection = await _context.Products
+                .Include(p => p.Stock)
+                .Include(p => p.ProductRating)
+                .Include(p => p.ProductCategories)
+                    .ThenInclude(pc => pc.Category)
+                .Include(p => p.BrandNavigation)
                 .Where(x => products == null || products.Contains(x.ProductId))
                 .OrderBy(x => x.NameSpanish) // Ordenar por nombre en español por defecto
                 .GetPagedAsync(page, take);
@@ -59,7 +74,13 @@ namespace Catalog.Service.Queries
 
         public async Task<ProductDto> GetAsync(int id)
         {
-            var product = await _context.Products.SingleAsync(x => x.ProductId == id);
+            var product = await _context.Products
+                .Include(p => p.ProductRating)  // Include ratings for product detail
+                .Include(p => p.Stock)          // Include stock information
+                .Include(p => p.ProductCategories)  // Include categories
+                    .ThenInclude(pc => pc.Category)  // Include category details
+                .Include(p => p.BrandNavigation)    // Include brand information
+                .SingleAsync(x => x.ProductId == id);
 
             // Map to localized DTO directly from domain entity
             return product.ToLocalizedDto(_languageContext);
@@ -73,6 +94,7 @@ namespace Catalog.Service.Queries
             // Iniciar query base
             var query = _context.Products
                 .Include(p => p.Stock)
+                .Include(p => p.ProductRating)
                 .Include(p => p.ProductCategories)
                     .ThenInclude(pc => pc.Category)
                 .AsQueryable();
@@ -198,6 +220,15 @@ namespace Catalog.Service.Queries
                 }
             }
 
+            // Filtro por rating mínimo
+            if (request.MinRating.HasValue)
+            {
+                query = query.Where(p =>
+                    p.ProductRating != null &&
+                    p.ProductRating.AverageRating >= request.MinRating.Value
+                );
+            }
+
             // Solo productos activos
             query = query.Where(p => p.IsActive);
 
@@ -245,8 +276,8 @@ namespace Catalog.Service.Queries
                     : query.OrderByDescending(p => p.IsFeatured)
                            .ThenByDescending(p => p.CreatedAt),
 
-                // Bestseller y Rating (para implementación futura)
-                ProductSortField.Bestseller => query.OrderByDescending(p => p.IsFeatured)
+                // Bestseller - Ordenar por ventas reales (TotalSold)
+                ProductSortField.Bestseller => query.OrderByDescending(p => p.TotalSold)
                                                      .ThenByDescending(p => p.CreatedAt),
 
                 ProductSortField.Rating => query.OrderByDescending(p => p.IsFeatured)
@@ -324,6 +355,281 @@ namespace Catalog.Service.Queries
             metadata.RelatedSearches = new List<string>();
 
             return metadata;
+        }
+
+        /// <summary>
+        /// Búsqueda avanzada con Full-Text Search, facetas dinámicas y filtros de atributos
+        /// </summary>
+        public async Task<ProductAdvancedSearchResponse> SearchAdvancedAsync(ProductAdvancedSearchRequest request)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var queryStopwatch = Stopwatch.StartNew();
+
+            // Iniciar query base con includes necesarios
+            // NOTA: NO incluimos ProductAttributeValues aquí porque causa ciclos de referencia
+            // Los filtros de atributos usan subconsultas SQL (Any/Contains) que no requieren Include
+            var query = _context.Products
+                .Include(p => p.Stock)
+                .Include(p => p.BrandNavigation)
+                .Include(p => p.ProductCategories)
+                    .ThenInclude(pc => pc.Category)
+                .Include(p => p.ProductRating)
+                .AsQueryable();
+
+            // Aplicar filtros avanzados
+            query = ApplyAdvancedSearchFilters(query, request);
+
+            queryStopwatch.Stop();
+            var queryTime = queryStopwatch.ElapsedMilliseconds;
+
+            // IMPORTANTE: No usar Task.WhenAll con DbContext compartido
+            // Ejecutar operaciones secuencialmente para evitar threading issues
+            
+            // 1. Contar total de resultados primero
+            var total = await query.CountAsync();
+
+            // 2. Aplicar ordenamiento
+            query = ApplyAdvancedSorting(query, request);
+
+            // 3. Aplicar paginación y obtener productos
+            var skip = (request.Page - 1) * request.PageSize;
+            var products = await query
+                .Skip(skip)
+                .Take(request.PageSize)
+                .ToListAsync();
+
+            // 4. Calcular facetas (usa el mismo DbContext, debe ser secuencial)
+            var facetStopwatch = Stopwatch.StartNew();
+            var facets = await _facetService.CalculateFacetsAsync(query, request);
+            facetStopwatch.Stop();
+            var facetTime = facetStopwatch.ElapsedMilliseconds;
+
+            // Convertir a DTOs localizados
+            var localizedDtos = products.ToLocalizedDtos(_languageContext).ToList();
+
+            // Calcular metadata
+            var pageCount = (int)Math.Ceiling((double)total / request.PageSize);
+
+            stopwatch.Stop();
+
+            return new ProductAdvancedSearchResponse
+            {
+                Items = localizedDtos,
+                Total = total,
+                Page = request.Page,
+                PageSize = request.PageSize,
+                PageCount = pageCount,
+                HasMore = request.Page < pageCount,
+                Facets = facets,
+                Metadata = new SearchMetadataDto
+                {
+                    Query = request.Query,
+                    Performance = new SearchPerformanceMetricsDto
+                    {
+                        QueryExecutionTime = queryTime,
+                        FacetCalculationTime = facetTime,
+                        TotalExecutionTime = stopwatch.ElapsedMilliseconds,
+                        TotalFilteredResults = total,
+                        CacheHit = false
+                    },
+                    DidYouMean = null, // TODO: Implementar spell checking
+                    RelatedSearches = new List<string>() // TODO: Implementar búsquedas relacionadas
+                }
+            };
+        }
+
+        /// <summary>
+        /// Aplica filtros avanzados incluyendo Full-Text Search, atributos y ratings
+        /// </summary>
+        private IQueryable<Product> ApplyAdvancedSearchFilters(
+            IQueryable<Product> query,
+            ProductAdvancedSearchRequest request)
+        {
+            // Búsqueda de texto usando LIKE (sin Full-Text Search)
+            // Para habilitar Full-Text Search ver: FULLTEXT-SEARCH-SETUP.md
+            if (!string.IsNullOrWhiteSpace(request.Query))
+            {
+                var searchTerm = request.Query.Trim().ToLower();
+
+                query = query.Where(p =>
+                    p.NameSpanish.ToLower().Contains(searchTerm) ||
+                    p.NameEnglish.ToLower().Contains(searchTerm) ||
+                    p.DescriptionSpanish.ToLower().Contains(searchTerm) ||
+                    p.DescriptionEnglish.ToLower().Contains(searchTerm) ||
+                    p.SKU.ToLower().Contains(searchTerm)
+                );
+            }
+
+            // Filtro por categorías (múltiples)
+            if (request.CategoryIds != null && request.CategoryIds.Any())
+            {
+                query = query.Where(p =>
+                    p.ProductCategories.Any(pc => request.CategoryIds.Contains(pc.CategoryId))
+                );
+            }
+
+            // Filtro por marcas normalizadas (múltiples)
+            if (request.BrandIds != null && request.BrandIds.Any())
+            {
+                query = query.Where(p =>
+                    p.BrandId.HasValue && request.BrandIds.Contains((int)p.BrandId.Value)
+                );
+            }
+
+            // Filtro por rango de precio
+            if (request.MinPrice.HasValue)
+            {
+                query = query.Where(p => p.Price >= request.MinPrice.Value);
+            }
+
+            if (request.MaxPrice.HasValue)
+            {
+                query = query.Where(p => p.Price <= request.MaxPrice.Value);
+            }
+
+            // Filtro por rating mínimo
+            if (request.MinAverageRating.HasValue)
+            {
+                query = query.Where(p =>
+                    p.ProductRating != null &&
+                    p.ProductRating.AverageRating >= request.MinAverageRating.Value
+                );
+            }
+
+            // Filtro por cantidad mínima de reviews
+            if (request.MinReviewCount.HasValue)
+            {
+                query = query.Where(p =>
+                    p.ProductRating != null &&
+                    p.ProductRating.TotalReviews >= request.MinReviewCount.Value
+                );
+            }
+
+            // Filtro por atributos de selección
+            if (request.Attributes != null && request.Attributes.Any())
+            {
+                foreach (var attributeFilter in request.Attributes)
+                {
+                    var attributeKey = attributeFilter.Key;
+                    var values = attributeFilter.Value;
+
+                    if (values != null && values.Any())
+                    {
+                        // Intentar parsear la clave como AttributeId (numérico) o AttributeName (string)
+                        if (int.TryParse(attributeKey, out var attributeId))
+                        {
+                            // Filtro por AttributeId (ej: "107" -> 107)
+                            query = query.Where(p =>
+                                p.ProductAttributeValues.Any(pav =>
+                                    pav.AttributeId == attributeId &&
+                                    pav.ValueId.HasValue &&
+                                    values.Contains(pav.ValueId.Value.ToString())
+                                )
+                            );
+                        }
+                        else
+                        {
+                            // Filtro por AttributeName (ej: "ScreenSize")
+                            query = query.Where(p =>
+                                p.ProductAttributeValues.Any(pav =>
+                                    pav.ProductAttribute.AttributeName == attributeKey &&
+                                    pav.ValueId.HasValue &&
+                                    values.Contains(pav.ValueId.Value.ToString())
+                                )
+                            );
+                        }
+                    }
+                }
+            }
+
+            // Filtro por rangos de atributos numéricos
+            if (request.AttributeRanges != null && request.AttributeRanges.Any())
+            {
+                foreach (var rangeFilter in request.AttributeRanges)
+                {
+                    var attributeName = rangeFilter.Key;
+                    var range = rangeFilter.Value;
+
+                    query = query.Where(p =>
+                        p.ProductAttributeValues.Any(pav =>
+                            pav.ProductAttribute.AttributeName == attributeName &&
+                            pav.NumericValue.HasValue &&
+                            pav.NumericValue.Value >= range.Min &&
+                            pav.NumericValue.Value <= range.Max
+                        )
+                    );
+                }
+            }
+
+            // Filtro por stock
+            if (request.InStock.HasValue && request.InStock.Value)
+            {
+                query = query.Where(p => p.Stock != null && p.Stock.Stock > 0);
+            }
+
+            // Filtro por productos destacados
+            if (request.IsFeatured.HasValue)
+            {
+                query = query.Where(p => p.IsFeatured == request.IsFeatured.Value);
+            }
+
+            // Filtro por descuento
+            if (request.HasDiscount.HasValue && request.HasDiscount.Value)
+            {
+                query = query.Where(p => p.DiscountPercentage > 0);
+            }
+
+            // Solo productos activos
+            query = query.Where(p => p.IsActive);
+
+            return query;
+        }
+
+        /// <summary>
+        /// Aplica ordenamiento avanzado con soporte para rating
+        /// </summary>
+        private IQueryable<Product> ApplyAdvancedSorting(
+            IQueryable<Product> query,
+            ProductAdvancedSearchRequest request)
+        {
+            var isSpanish = _languageContext.CurrentLanguage == "es";
+
+            var sortedQuery = request.SortBy switch
+            {
+                ProductSortField.Name => request.SortOrder == SortOrder.Ascending
+                    ? query.OrderBy(p => isSpanish ? p.NameSpanish : p.NameEnglish)
+                    : query.OrderByDescending(p => isSpanish ? p.NameSpanish : p.NameEnglish),
+
+                ProductSortField.Price => request.SortOrder == SortOrder.Ascending
+                    ? query.OrderBy(p => p.Price)
+                    : query.OrderByDescending(p => p.Price),
+
+                ProductSortField.Newest => request.SortOrder == SortOrder.Ascending
+                    ? query.OrderBy(p => p.CreatedAt)
+                    : query.OrderByDescending(p => p.CreatedAt),
+
+                ProductSortField.Discount => request.SortOrder == SortOrder.Ascending
+                    ? query.OrderBy(p => p.DiscountPercentage)
+                    : query.OrderByDescending(p => p.DiscountPercentage),
+
+                ProductSortField.Rating => request.SortOrder == SortOrder.Ascending
+                    ? query.OrderBy(p => p.ProductRating != null ? p.ProductRating.AverageRating : 0)
+                    : query.OrderByDescending(p => p.ProductRating != null ? p.ProductRating.AverageRating : 0),
+
+                // Relevance con Full-Text Search ranking
+                ProductSortField.Relevance => !string.IsNullOrWhiteSpace(request.Query)
+                    ? query.OrderByDescending(p => p.IsFeatured)
+                           .ThenByDescending(p => p.ProductRating != null ? p.ProductRating.AverageRating : 0)
+                    : query.OrderByDescending(p => p.IsFeatured)
+                           .ThenByDescending(p => p.CreatedAt),
+
+                ProductSortField.Bestseller => query.OrderByDescending(p => p.TotalSold)
+                                                     .ThenByDescending(p => p.ProductRating != null ? p.ProductRating.AverageRating : 0),
+
+                _ => query.OrderBy(p => isSpanish ? p.NameSpanish : p.NameEnglish)
+            };
+
+            return sortedQuery;
         }
     }
 }

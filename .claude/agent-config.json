@@ -1,0 +1,16 @@
+{
+  "mcp": {
+    "context7": {
+      "type": "local",
+      "command": ["npx", "-y", "@upstash/context7-mcp"],
+      "enabled": true
+    }
+  },
+  "agents": {
+    "angular-expert": {
+      "role": "assistant",
+      "model": "claude-sonnet-4-20250514",
+      "content": "Eres un experto en frontend que desarrolla en Angular con Angular Material como UI. Siempre consultas el MCP de Context7 PRIMERO para obtener información actualizada sobre versiones, mejores prácticas y patrones antes de comenzar cualquier trabajo. Te encargas de programar usando las mejores prácticas de Angular incluyendo: Standalone Components, Signals, RxJS, OnPush change detection, lazy loading, y testing con Jest/Jasmine. Aplicas principios de accesibilidad (a11y), diseño responsivo, y optimización de rendimiento en todas tus implementaciones."
+    }
+  }
+}

@@ -1,0 +1,36 @@
+### Test Advanced Search with BrandIds=6 (Apple)
+POST https://localhost:45000/catalog/v1/products/search/advanced
+Content-Type: application/json
+Accept-Language: es
+
+{
+  "query": "",
+  "brandIds": [6],
+  "page": 1,
+  "pageSize": 24,
+  "includeBrandFacets": true,
+  "includeCategoryFacets": true,
+  "includePriceFacets": true,
+  "includeRatingFacets": true,
+  "includeAttributeFacets": true
+}
+
+### Test Advanced Search without filters (should return all categories)
+POST https://localhost:45000/catalog/v1/products/search/advanced
+Content-Type: application/json
+Accept-Language: es
+
+{
+  "query": "",
+  "page": 1,
+  "pageSize": 24,
+  "includeBrandFacets": true,
+  "includeCategoryFacets": true,
+  "includePriceFacets": true,
+  "includeRatingFacets": true,
+  "includeAttributeFacets": true
+}
+
+### Test Get Product 140 (should have brandId)
+GET https://localhost:45000/catalog/v1/products/140
+Accept-Language: es

@@ -33,6 +33,55 @@ namespace Catalog.Service.Queries.Extensions
                 dto.Description = product.DescriptionSpanish;
             }
 
+            // Map ProductRating if available, otherwise default to 0
+            if (product.ProductRating != null)
+            {
+                dto.AverageRating = product.ProductRating.AverageRating;
+                dto.TotalReviews = product.ProductRating.TotalReviews;
+                dto.Rating5Star = product.ProductRating.Rating5Star;
+                dto.Rating4Star = product.ProductRating.Rating4Star;
+                dto.Rating3Star = product.ProductRating.Rating3Star;
+                dto.Rating2Star = product.ProductRating.Rating2Star;
+                dto.Rating1Star = product.ProductRating.Rating1Star;
+            }
+            else
+            {
+                // Products without ratings should have 0 instead of null
+                // This prevents unrated products from appearing in filtered results
+                dto.AverageRating = 0;
+                dto.TotalReviews = 0;
+                dto.Rating5Star = 0;
+                dto.Rating4Star = 0;
+                dto.Rating3Star = 0;
+                dto.Rating2Star = 0;
+                dto.Rating1Star = 0;
+            }
+
+            // Map Categories with localization
+            if (product.ProductCategories != null && product.ProductCategories.Any())
+            {
+                dto.Categories = product.ProductCategories
+                    .Select(pc => pc.Category?.ToLocalizedDto(languageContext))
+                    .Where(c => c != null)
+                    .ToList();
+
+                // Set primary category (first one, or you can add logic to determine primary)
+                dto.PrimaryCategory = dto.Categories.FirstOrDefault();
+            }
+
+            // Map Brand name and BrandId if BrandNavigation is available
+            if (product.BrandNavigation != null)
+            {
+                dto.BrandId = product.BrandNavigation.BrandId;
+                dto.Brand = product.BrandNavigation.Name;
+            }
+            else if (product.BrandId.HasValue)
+            {
+                // If BrandNavigation is null but BrandId exists, keep the BrandId
+                dto.BrandId = product.BrandId;
+            }
+            // If BrandNavigation is null, Brand property already has the value from MapTo
+
             return dto;
         }
 

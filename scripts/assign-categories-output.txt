@@ -1,0 +1,26 @@
+Changed database context to 'ECommerceDb'.
+=== CATEGORÍAS EXISTENTES ===
+Msg 208, Level 16, State 1, Server Pc-Yo\SQLEXPRESS, Line 4
+Invalid object name 'Categories'.
+ 
+=== PRODUCTOS SIN CATEGORÍA ===
+Msg 208, Level 16, State 1, Server Pc-Yo\SQLEXPRESS, Line 5
+Invalid object name 'Products'.
+ 
+=== PRODUCTOS POR CATEGORÍA ===
+Msg 208, Level 16, State 1, Server Pc-Yo\SQLEXPRESS, Line 5
+Invalid object name 'Categories'.
+ 
+=== CREANDO CATEGORÍAS BÁSICAS ===
+Msg 208, Level 16, State 1, Server Pc-Yo\SQLEXPRESS, Line 7
+Invalid object name 'Categories'.
+ 
+=== ASIGNANDO PRODUCTOS A CATEGORÍAS ===
+Msg 208, Level 16, State 1, Server Pc-Yo\SQLEXPRESS, Line 6
+Invalid object name 'Categories'.
+ 
+=== RESULTADO FINAL ===
+Msg 208, Level 16, State 1, Server Pc-Yo\SQLEXPRESS, Line 5
+Invalid object name 'Categories'.
+ 
+=== SCRIPT COMPLETADO ===

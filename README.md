@@ -11,13 +11,14 @@ Proyecto de ejemplo en el cual veremos como crear órdenes de compra usando una 
 Actualicen las cadenas de conexión de cada Microservicio por la de ustedes.
 
 ### 2. Actualizar los puertos de los proyectos web
-* Clients.Authentication: localhost:60000
-* Clients.WebClient: localhost:60001
 * Api.Gateway.WebClient: localhost:45000
 * Identity.Api: localhost:10000
 * Catalog.Api: localhost:20000
 * Customer.Api: localhost:30000
 * Order.Api: localhost:40000
+* Cart.Api: localhost:50000
+* Payment.Api: localhost:60000
+* Notification.Api: localhost:70000
 
 ### 3. Ejecutar las migraciones
 ```

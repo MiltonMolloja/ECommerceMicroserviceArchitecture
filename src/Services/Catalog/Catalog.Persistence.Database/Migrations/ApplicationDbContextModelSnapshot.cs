@@ -23,6 +23,40 @@ namespace Catalog.Persistence.Database.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Catalog.Domain.AttributeValue", b =>
+                {
+                    b.Property<int>("ValueId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ValueId"));
+
+                    b.Property<int>("AttributeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DisplayOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("ValueText")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ValueTextEnglish")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("ValueId");
+
+                    b.HasIndex("AttributeId");
+
+                    b.HasIndex("AttributeId", "DisplayOrder");
+
+                    b.ToTable("AttributeValues", "Catalog");
+                });
+
             modelBuilder.Entity("Catalog.Domain.Brand", b =>
                 {
                     b.Property<int>("BrandId")
@@ -239,6 +273,94 @@ namespace Catalog.Persistence.Database.Migrations
                     b.ToTable("Products", "Catalog");
                 });
 
+            modelBuilder.Entity("Catalog.Domain.ProductAttribute", b =>
+                {
+                    b.Property<int>("AttributeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AttributeId"));
+
+                    b.Property<string>("AttributeName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("AttributeNameEnglish")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("AttributeType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DisplayOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<bool>("IsFilterable")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsSearchable")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Unit")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("AttributeId");
+
+                    b.HasIndex("AttributeName");
+
+                    b.HasIndex("CategoryId", "IsFilterable");
+
+                    b.ToTable("ProductAttributes", "Catalog");
+                });
+
+            modelBuilder.Entity("Catalog.Domain.ProductAttributeValue", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AttributeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ValueId")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("BooleanValue")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("NumericValue")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<string>("TextValue")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("ProductId", "AttributeId", "ValueId");
+
+                    b.HasIndex("ValueId");
+
+                    b.HasIndex("AttributeId", "NumericValue")
+                        .HasDatabaseName("IX_ProductAttributeValues_Attribute_Numeric")
+                        .HasFilter("[NumericValue] IS NOT NULL");
+
+                    b.HasIndex("AttributeId", "ValueId")
+                        .HasDatabaseName("IX_ProductAttributeValues_Attribute_Value");
+
+                    b.ToTable("ProductAttributeValues", "Catalog");
+                });
+
             modelBuilder.Entity("Catalog.Domain.ProductCategory", b =>
                 {
                     b.Property<int>("ProductId")
@@ -302,6 +424,142 @@ namespace Catalog.Persistence.Database.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Catalog.Domain.ProductRating", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("AverageRating")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(3,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<DateTime>("LastUpdated")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<int>("Rating1Star")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("Rating2Star")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("Rating3Star")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("Rating4Star")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("Rating5Star")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("TotalReviews")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.HasKey("ProductId");
+
+                    b.HasIndex("AverageRating")
+                        .IsDescending()
+                        .HasDatabaseName("IX_ProductRatings_Rating");
+
+                    b.ToTable("ProductRatings", "Catalog");
+                });
+
+            modelBuilder.Entity("Catalog.Domain.ProductReview", b =>
+                {
+                    b.Property<long>("ReviewId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ReviewId"));
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<int>("HelpfulCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<bool>("IsApproved")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsVerifiedPurchase")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("NotHelpfulCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Rating")
+                        .HasColumnType("decimal(2,1)");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReviewId");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_ProductReviews_CreatedAt");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_ProductReviews_User");
+
+                    b.HasIndex("ProductId", "Rating", "IsApproved")
+                        .HasDatabaseName("IX_ProductReviews_Product_Rating");
+
+                    b.ToTable("ProductReviews", "Catalog", t =>
+                        {
+                            t.HasCheckConstraint("CK_ProductReviews_Rating", "[Rating] >= 1.0 AND [Rating] <= 5.0");
+                        });
+                });
+
+            modelBuilder.Entity("Catalog.Domain.AttributeValue", b =>
+                {
+                    b.HasOne("Catalog.Domain.ProductAttribute", "ProductAttribute")
+                        .WithMany("AttributeValues")
+                        .HasForeignKey("AttributeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductAttribute");
+                });
+
             modelBuilder.Entity("Catalog.Domain.Category", b =>
                 {
                     b.HasOne("Catalog.Domain.Category", "ParentCategory")
@@ -320,6 +578,43 @@ namespace Catalog.Persistence.Database.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("BrandNavigation");
+                });
+
+            modelBuilder.Entity("Catalog.Domain.ProductAttribute", b =>
+                {
+                    b.HasOne("Catalog.Domain.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Catalog.Domain.ProductAttributeValue", b =>
+                {
+                    b.HasOne("Catalog.Domain.ProductAttribute", "ProductAttribute")
+                        .WithMany("ProductAttributeValues")
+                        .HasForeignKey("AttributeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Catalog.Domain.Product", "Product")
+                        .WithMany("ProductAttributeValues")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Catalog.Domain.AttributeValue", "AttributeValue")
+                        .WithMany("ProductAttributeValues")
+                        .HasForeignKey("ValueId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AttributeValue");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ProductAttribute");
                 });
 
             modelBuilder.Entity("Catalog.Domain.ProductCategory", b =>
@@ -352,6 +647,33 @@ namespace Catalog.Persistence.Database.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("Catalog.Domain.ProductRating", b =>
+                {
+                    b.HasOne("Catalog.Domain.Product", "Product")
+                        .WithOne("ProductRating")
+                        .HasForeignKey("Catalog.Domain.ProductRating", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Catalog.Domain.ProductReview", b =>
+                {
+                    b.HasOne("Catalog.Domain.Product", "Product")
+                        .WithMany("ProductReviews")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Catalog.Domain.AttributeValue", b =>
+                {
+                    b.Navigation("ProductAttributeValues");
+                });
+
             modelBuilder.Entity("Catalog.Domain.Brand", b =>
                 {
                     b.Navigation("Products");
@@ -366,9 +688,22 @@ namespace Catalog.Persistence.Database.Migrations
 
             modelBuilder.Entity("Catalog.Domain.Product", b =>
                 {
+                    b.Navigation("ProductAttributeValues");
+
                     b.Navigation("ProductCategories");
 
+                    b.Navigation("ProductRating");
+
+                    b.Navigation("ProductReviews");
+
                     b.Navigation("Stock");
+                });
+
+            modelBuilder.Entity("Catalog.Domain.ProductAttribute", b =>
+                {
+                    b.Navigation("AttributeValues");
+
+                    b.Navigation("ProductAttributeValues");
                 });
 #pragma warning restore 612, 618
         }

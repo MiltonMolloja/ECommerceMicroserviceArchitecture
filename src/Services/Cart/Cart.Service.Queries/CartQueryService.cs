@@ -26,6 +26,7 @@ namespace Cart.Service.Queries
         public async Task<CartDto> GetByClientIdAsync(int clientId)
         {
             var cart = await _context.ShoppingCarts
+                .AsNoTracking()
                 .Include(x => x.Items)
                 .Where(x => x.ClientId == clientId && x.Status == Domain.CartStatus.Active)
                 .FirstOrDefaultAsync();
@@ -36,6 +37,7 @@ namespace Cart.Service.Queries
         public async Task<CartDto> GetBySessionIdAsync(string sessionId)
         {
             var cart = await _context.ShoppingCarts
+                .AsNoTracking()
                 .Include(x => x.Items)
                 .Where(x => x.SessionId == sessionId && x.Status == Domain.CartStatus.Active)
                 .FirstOrDefaultAsync();
@@ -46,6 +48,7 @@ namespace Cart.Service.Queries
         public async Task<CartDto> GetByIdAsync(int cartId)
         {
             var cart = await _context.ShoppingCarts
+                .AsNoTracking()
                 .Include(x => x.Items)
                 .FirstOrDefaultAsync(x => x.CartId == cartId);
 

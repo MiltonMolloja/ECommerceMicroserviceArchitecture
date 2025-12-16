@@ -1,4 +1,4 @@
-using Cart.Common;
+using Common.Caching;
 using Cart.Persistence.Database;
 using Cart.Service.Queries;
 using Common.ApiKey;

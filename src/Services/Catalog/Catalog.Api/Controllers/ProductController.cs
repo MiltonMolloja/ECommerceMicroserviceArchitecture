@@ -1,4 +1,4 @@
-﻿using Catalog.Common;
+using Catalog.Common;
 using Catalog.Service.EventHandlers.Commands;
 using Catalog.Service.Queries;
 using Catalog.Service.Queries.DTOs;
@@ -184,6 +184,93 @@ namespace Catalog.Api.Controllers
         }
 
         /// <summary>
+        /// Busca productos con filtros avanzados, facetas dinámicas y Full-Text Search
+        /// </summary>
+        /// <param name="request">Parámetros de búsqueda avanzada</param>
+        /// <returns>Resultados de búsqueda con facetas y metadata</returns>
+        /// <response code="200">Búsqueda exitosa con facetas</response>
+        /// <response code="400">Parámetros inválidos</response>
+        /// <response code="500">Error interno del servidor</response>
+        [HttpPost("search/advanced")]
+        [ProducesResponseType(typeof(ProductAdvancedSearchResponse), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<ActionResult<ProductAdvancedSearchResponse>> SearchAdvanced([FromBody] ProductAdvancedSearchRequest request)
+        {
+            try
+            {
+                // Validar modelo
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                // Validaciones adicionales
+                if (request.MinPrice.HasValue && request.MaxPrice.HasValue &&
+                    request.MinPrice > request.MaxPrice)
+                {
+                    ModelState.AddModelError("MaxPrice", "MaxPrice must be greater than MinPrice");
+                    return BadRequest(ModelState);
+                }
+
+                if (request.MinAverageRating.HasValue &&
+                    (request.MinAverageRating < 0 || request.MinAverageRating > 5))
+                {
+                    ModelState.AddModelError("MinAverageRating", "MinAverageRating must be between 0 and 5");
+                    return BadRequest(ModelState);
+                }
+
+                // Generar clave de caché language-aware
+                var baseCacheKey = GenerateAdvancedSearchCacheKey(request);
+                var cacheKey = _cacheKeyProvider.GenerateKey(baseCacheKey);
+
+                // Intentar obtener del caché (solo si no se solicitan facetas, ya que pueden cambiar frecuentemente)
+                if (!request.IncludeBrandFacets && !request.IncludeCategoryFacets &&
+                    !request.IncludePriceFacets && !request.IncludeRatingFacets &&
+                    !request.IncludeAttributeFacets)
+                {
+                    var cachedResult = await _cacheService.GetAsync<ProductAdvancedSearchResponse>(cacheKey);
+                    if (cachedResult != null)
+                    {
+                        _logger.LogInformation($"Advanced search results retrieved from cache: {cacheKey}");
+                        cachedResult.Metadata.Performance.CacheHit = true;
+                        return Ok(cachedResult);
+                    }
+                }
+
+                // Ejecutar búsqueda avanzada
+                var result = await _productQueryService.SearchAdvancedAsync(request);
+
+                // Guardar en caché (con TTL más corto para búsquedas con facetas)
+                var cacheDuration = (request.IncludeBrandFacets || request.IncludeCategoryFacets ||
+                                    request.IncludePriceFacets || request.IncludeRatingFacets ||
+                                    request.IncludeAttributeFacets)
+                    ? TimeSpan.FromMinutes(2) // Facetas cambian más frecuentemente
+                    : TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes);
+
+                await _cacheService.SetAsync(cacheKey, result, cacheDuration);
+
+                _logger.LogInformation(
+                    $"Advanced search executed in {result.Metadata.Performance.TotalExecutionTime}ms " +
+                    $"(Query: {result.Metadata.Performance.QueryExecutionTime}ms, " +
+                    $"Facets: {result.Metadata.Performance.FacetCalculationTime}ms) " +
+                    $"and cached: {cacheKey}"
+                );
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in advanced search with request: {@Request}", request);
+                return StatusCode(500, new
+                {
+                    message = "Error executing advanced search",
+                    error = ex.Message
+                });
+            }
+        }
+
+        /// <summary>
         /// Genera una clave de caché única basada en los parámetros de búsqueda
         /// </summary>
         private string GenerateSearchCacheKey(ProductSearchRequest request)
@@ -198,7 +285,53 @@ namespace Catalog.Api.Controllers
             keyBuilder.Append($"price={request.MinPrice?.ToString() ?? "0"}-{request.MaxPrice?.ToString() ?? "max"}:");
             keyBuilder.Append($"stock={request.InStock?.ToString() ?? "all"}:");
             keyBuilder.Append($"featured={request.IsFeatured?.ToString() ?? "all"}:");
-            keyBuilder.Append($"discount={request.HasDiscount?.ToString() ?? "all"}");
+            keyBuilder.Append($"discount={request.HasDiscount?.ToString() ?? "all"}:");
+            keyBuilder.Append($"rating={request.MinRating?.ToString() ?? "all"}");
+
+            return keyBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Genera una clave de caché única para búsqueda avanzada
+        /// </summary>
+        private string GenerateAdvancedSearchCacheKey(ProductAdvancedSearchRequest request)
+        {
+            var keyBuilder = new StringBuilder("products:search:advanced:");
+            keyBuilder.Append($"q={request.Query ?? "all"}:");
+            keyBuilder.Append($"page={request.Page}:");
+            keyBuilder.Append($"size={request.PageSize}:");
+            keyBuilder.Append($"sort={request.SortBy}:{request.SortOrder}:");
+
+            // Categorías
+            keyBuilder.Append($"cats={(request.CategoryIds != null && request.CategoryIds.Any() ? string.Join("-", request.CategoryIds.OrderBy(x => x)) : "all")}:");
+
+            // Marcas
+            keyBuilder.Append($"brands={(request.BrandIds != null && request.BrandIds.Any() ? string.Join("-", request.BrandIds.OrderBy(x => x)) : "all")}:");
+
+            // Precio
+            keyBuilder.Append($"price={request.MinPrice?.ToString() ?? "0"}-{request.MaxPrice?.ToString() ?? "max"}:");
+
+            // Rating
+            keyBuilder.Append($"rating={request.MinAverageRating?.ToString() ?? "0"}:");
+            keyBuilder.Append($"reviews={request.MinReviewCount?.ToString() ?? "0"}:");
+
+            // Stock y flags
+            keyBuilder.Append($"stock={request.InStock?.ToString() ?? "all"}:");
+            keyBuilder.Append($"featured={request.IsFeatured?.ToString() ?? "all"}:");
+            keyBuilder.Append($"discount={request.HasDiscount?.ToString() ?? "all"}:");
+
+            // Atributos
+            if (request.Attributes != null && request.Attributes.Any())
+            {
+                keyBuilder.Append("attrs=");
+                foreach (var attr in request.Attributes.OrderBy(x => x.Key))
+                {
+                    keyBuilder.Append($"{attr.Key}:{string.Join(",", attr.Value.OrderBy(v => v))};");
+                }
+            }
+
+            // Facetas solicitadas
+            keyBuilder.Append($"facets={request.IncludeBrandFacets},{request.IncludeCategoryFacets},{request.IncludePriceFacets},{request.IncludeRatingFacets},{request.IncludeAttributeFacets}");
 
             return keyBuilder.ToString();
         }
@@ -268,6 +401,52 @@ namespace Catalog.Api.Controllers
                     var cacheKeyToRemove = $"{baseCacheKey}*_lang={lang}";
                     await _cacheService.RemoveAsync(cacheKeyToRemove);
                 }
+            }
+        }
+
+        /// <summary>
+        /// ENDPOINT TEMPORAL - Limpia todo el caché de búsquedas
+        /// </summary>
+        [HttpPost("admin/clear-search-cache")]
+        public async Task<IActionResult> ClearSearchCache()
+        {
+            try
+            {
+                _logger.LogInformation("🗑️ Limpiando caché de búsquedas...");
+
+                // Intentar limpiar cachés comunes
+                var languages = new[] { "en", "es" };
+                var cleared = 0;
+
+                foreach (var lang in languages)
+                {
+                    // Limpiar todas las páginas hasta 20
+                    for (int page = 1; page <= 20; page++)
+                    {
+                        for (int size = 1; size <= 100; size += 20)
+                        {
+                            // Sin rating
+                            var keyNoRating = $"products:search:q=tv:page={page}:size={size}:sort=0:0:cat=all:brands=all:price=0-max:stock=all:featured=all:discount=all:rating=all_lang={lang}";
+                            await _cacheService.RemoveAsync(keyNoRating);
+
+                            // Con rating 1-5
+                            for (int rating = 1; rating <= 5; rating++)
+                            {
+                                var keyWithRating = $"products:search:q=tv:page={page}:size={size}:sort=0:0:cat=all:brands=all:price=0-max:stock=all:featured=all:discount=all:rating={rating}_lang={lang}";
+                                await _cacheService.RemoveAsync(keyWithRating);
+                                cleared++;
+                            }
+                        }
+                    }
+                }
+
+                _logger.LogInformation($"✅ Caché limpiado. Intentos de limpieza: {cleared}");
+                return Ok(new { message = $"Cache cleared. Attempts: {cleared}" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error clearing search cache");
+                return StatusCode(500, new { message = "Error clearing cache", error = ex.Message });
             }
         }
     }

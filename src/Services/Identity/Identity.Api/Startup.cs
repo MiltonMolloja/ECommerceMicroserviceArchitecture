@@ -6,7 +6,7 @@ using Common.RateLimiting;
 using Common.Validation;
 using FluentValidation;
 using HealthChecks.UI.Client;
-using Identity.Common;
+using Common.Caching;
 using Identity.Domain;
 using Identity.Persistence.Database;
 using Identity.Service.Queries;

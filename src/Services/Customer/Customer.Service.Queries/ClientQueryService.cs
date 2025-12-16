@@ -1,4 +1,4 @@
-﻿using Customer.Persistence.Database;
+using Customer.Persistence.Database;
 using Customer.Service.Queries.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Service.Common.Collection;
@@ -37,6 +37,7 @@ namespace Order.Service.Queries
         public async Task<DataCollection<ClientDto>> GetAllAsync(int page, int take, IEnumerable<int> clients = null)
         {
             var collection = await _context.Clients
+                .AsNoTracking()
                 .Include(x => x.Addresses)
                 .Where(x => clients == null || clients.Contains(x.ClientId))
                 // NOTA: No podemos ordenar por FirstName/LastName ya que no están en esta tabla
@@ -60,6 +61,7 @@ namespace Order.Service.Queries
         public async Task<DataCollection<ClientSummaryDto>> GetAllSummaryAsync(int page, int take)
         {
             var collection = await _context.Clients
+                .AsNoTracking()
                 // NOTA: No podemos ordenar por FirstName/LastName ya que no están en esta tabla
                 .OrderBy(x => x.ClientId)
                 .GetPagedAsync(page, take);
@@ -73,6 +75,7 @@ namespace Order.Service.Queries
         public async Task<ClientDto> GetAsync(int id)
         {
             var client = await _context.Clients
+                .AsNoTracking()
                 .Include(x => x.Addresses)
                 .FirstOrDefaultAsync(x => x.ClientId == id);
 
@@ -99,6 +102,7 @@ namespace Order.Service.Queries
         public async Task<ClientDto> GetByUserIdAsync(string userId)
         {
             var client = await _context.Clients
+                .AsNoTracking()
                 .Include(x => x.Addresses)
                 .FirstOrDefaultAsync(x => x.UserId == userId);
 
@@ -113,6 +117,7 @@ namespace Order.Service.Queries
         public async Task<List<ClientAddressDto>> GetAddressesAsync(int clientId)
         {
             var addresses = await _context.ClientAddresses
+                .AsNoTracking()
                 .Where(x => x.ClientId == clientId && x.IsActive)
                 .OrderByDescending(x => x.IsDefaultShipping)
                 .ThenByDescending(x => x.IsDefaultBilling)
@@ -128,6 +133,7 @@ namespace Order.Service.Queries
         public async Task<ClientAddressDto> GetAddressAsync(int addressId)
         {
             var address = await _context.ClientAddresses
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.AddressId == addressId);
 
             return address?.MapTo<ClientAddressDto>();

@@ -1,4 +1,5 @@
 ﻿using Api.Gateway.Models;
+using Common.Caching;
 using Api.Gateway.Models.Order.DTOs;
 using Api.Gateway.Models.Orders.Commands;
 using Api.Gateway.Proxies;

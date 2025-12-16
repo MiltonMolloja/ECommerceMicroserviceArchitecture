@@ -1,4 +1,4 @@
-﻿using Common.Caching;
+using Common.Caching;
 using Common.Validation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

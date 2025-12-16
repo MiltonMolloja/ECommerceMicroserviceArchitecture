@@ -1,0 +1,250 @@
+### Test Advanced Search Endpoint - Gateway API
+### Buscar productos con filtros avanzados y facetas
+
+### 1. Búsqueda básica con facetas
+POST http://localhost:5011/products/search/advanced
+Content-Type: application/json
+
+{
+  "query": "laptop",
+  "page": 1,
+  "pageSize": 20,
+  "sortBy": 0,
+  "sortOrder": 0,
+  "includeBrandFacets": true,
+  "includeCategoryFacets": true,
+  "includePriceFacets": true,
+  "includeRatingFacets": true,
+  "includeAttributeFacets": true
+}
+
+### 2. Búsqueda con múltiples categorías y marcas
+POST http://localhost:5011/products/search/advanced
+Content-Type: application/json
+
+{
+  "query": "gaming",
+  "page": 1,
+  "pageSize": 24,
+  "sortBy": 2,
+  "sortOrder": 1,
+  "categoryIds": [1, 2, 3],
+  "brandIds": [1, 5, 10],
+  "includeBrandFacets": true,
+  "includeCategoryFacets": true,
+  "includePriceFacets": true
+}
+
+### 3. Búsqueda por rango de precio y rating
+POST http://localhost:5011/products/search/advanced
+Content-Type: application/json
+
+{
+  "query": "tv",
+  "page": 1,
+  "pageSize": 20,
+  "sortBy": 2,
+  "sortOrder": 0,
+  "minPrice": 500,
+  "maxPrice": 2000,
+  "minAverageRating": 4.0,
+  "minReviewCount": 10,
+  "inStock": true,
+  "includeBrandFacets": true,
+  "includePriceFacets": true,
+  "includeRatingFacets": true
+}
+
+### 4. Búsqueda con atributos dinámicos
+POST http://localhost:5011/products/search/advanced
+Content-Type: application/json
+
+{
+  "query": "monitor",
+  "page": 1,
+  "pageSize": 20,
+  "sortBy": 0,
+  "sortOrder": 0,
+  "attributes": {
+    "ScreenSize": ["27-32", "32-40"],
+    "Resolution": ["4K", "8K"],
+    "RefreshRate": ["120Hz", "144Hz"]
+  },
+  "includeAttributeFacets": true,
+  "includeBrandFacets": true,
+  "includePriceFacets": true
+}
+
+### 5. Búsqueda sin facetas (mejor para caché)
+POST http://localhost:5011/products/search/advanced
+Content-Type: application/json
+
+{
+  "query": "smartphone",
+  "page": 1,
+  "pageSize": 24,
+  "sortBy": 2,
+  "sortOrder": 1,
+  "minPrice": 300,
+  "maxPrice": 1500,
+  "inStock": true,
+  "includeBrandFacets": false,
+  "includeCategoryFacets": false,
+  "includePriceFacets": false,
+  "includeRatingFacets": false,
+  "includeAttributeFacets": false
+}
+
+### 6. Búsqueda con descuentos y productos destacados
+POST http://localhost:5011/products/search/advanced
+Content-Type: application/json
+
+{
+  "query": "",
+  "page": 1,
+  "pageSize": 20,
+  "sortBy": 6,
+  "sortOrder": 1,
+  "hasDiscount": true,
+  "minDiscountPercentage": 20,
+  "isFeatured": true,
+  "includeBrandFacets": true,
+  "includePriceFacets": true
+}
+
+### 7. Búsqueda con atributos numéricos (rangos)
+POST http://localhost:5011/products/search/advanced
+Content-Type: application/json
+
+{
+  "query": "laptop",
+  "page": 1,
+  "pageSize": 20,
+  "sortBy": 2,
+  "sortOrder": 0,
+  "attributeRanges": {
+    "RAM": {
+      "min": 8,
+      "max": 32
+    },
+    "Storage": {
+      "min": 256,
+      "max": 1024
+    }
+  },
+  "includeAttributeFacets": true,
+  "includeBrandFacets": true
+}
+
+### 8. Búsqueda con filtros de disponibilidad
+POST http://localhost:5011/products/search/advanced
+Content-Type: application/json
+
+{
+  "query": "console",
+  "page": 1,
+  "pageSize": 20,
+  "sortBy": 3,
+  "sortOrder": 1,
+  "isPreOrder": false,
+  "shipsInternational": true,
+  "inStock": true,
+  "includeBrandFacets": true,
+  "includePriceFacets": true
+}
+
+### 9. Búsqueda completa con todos los filtros
+POST http://localhost:5011/products/search/advanced
+Content-Type: application/json
+
+{
+  "query": "gaming laptop",
+  "page": 1,
+  "pageSize": 20,
+  "sortBy": 5,
+  "sortOrder": 1,
+  "categoryIds": [1, 2],
+  "brandIds": [1, 2, 3],
+  "minPrice": 800,
+  "maxPrice": 3000,
+  "minAverageRating": 4.5,
+  "minReviewCount": 50,
+  "inStock": true,
+  "isFeatured": false,
+  "hasDiscount": false,
+  "minDiscountPercentage": 10,
+  "isPreOrder": false,
+  "shipsInternational": true,
+  "attributes": {
+    "Processor": ["Intel i7", "Intel i9", "AMD Ryzen 7"],
+    "GPU": ["RTX 3070", "RTX 3080", "RTX 4070"]
+  },
+  "attributeRanges": {
+    "RAM": {
+      "min": 16,
+      "max": 64
+    },
+    "ScreenSize": {
+      "min": 15,
+      "max": 17
+    }
+  },
+  "includeBrandFacets": true,
+  "includeCategoryFacets": true,
+  "includePriceFacets": true,
+  "includeRatingFacets": true,
+  "includeAttributeFacets": true
+}
+
+### 10. Búsqueda con Accept-Language header (español)
+POST http://localhost:5011/products/search/advanced
+Content-Type: application/json
+Accept-Language: es
+
+{
+  "query": "auriculares",
+  "page": 1,
+  "pageSize": 20,
+  "sortBy": 0,
+  "sortOrder": 0,
+  "includeBrandFacets": true,
+  "includeCategoryFacets": true,
+  "includePriceFacets": true
+}
+
+### 11. Búsqueda con Accept-Language header (inglés)
+POST http://localhost:5011/products/search/advanced
+Content-Type: application/json
+Accept-Language: en
+
+{
+  "query": "headphones",
+  "page": 1,
+  "pageSize": 20,
+  "sortBy": 0,
+  "sortOrder": 0,
+  "includeBrandFacets": true,
+  "includeCategoryFacets": true,
+  "includePriceFacets": true
+}
+
+###
+### NOTAS:
+### - El endpoint es POST porque recibe un body complejo con objetos y listas
+### - Las facetas (facets) permiten al frontend mostrar filtros dinámicos
+### - El caché se aplica de forma diferente según si se solicitan facetas o no
+### - Los atributos dinámicos permiten filtrar por características específicas de cada categoría
+### - El sistema soporta múltiples idiomas con el header Accept-Language
+###
+### SortBy valores:
+### 0 = Relevance
+### 1 = Name
+### 2 = Price
+### 3 = Newest
+### 4 = Bestseller
+### 5 = Rating
+### 6 = Discount
+###
+### SortOrder valores:
+### 0 = Ascending
+### 1 = Descending

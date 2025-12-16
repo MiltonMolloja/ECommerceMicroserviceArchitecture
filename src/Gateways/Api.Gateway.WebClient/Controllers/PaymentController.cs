@@ -1,4 +1,5 @@
 using Api.Gateway.Models;
+using Common.Caching;
 using Api.Gateway.Models.Payment.Commands;
 using Api.Gateway.Models.Payment.DTOs;
 using Api.Gateway.Proxies;

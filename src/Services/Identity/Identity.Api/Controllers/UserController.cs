@@ -1,5 +1,5 @@
 ﻿using Common.Caching;
-using Identity.Common;
+using Common.Caching;
 using Identity.Service.Queries;
 using Identity.Service.Queries.DTOs;
 using MediatR;

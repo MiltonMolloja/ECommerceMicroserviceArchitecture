@@ -19,6 +19,7 @@ namespace Payment.Service.Queries
         public async Task<PaymentDto> GetPaymentByIdAsync(int paymentId)
         {
             return await _context.Payments
+                .AsNoTracking()
                 .Include(p => p.PaymentDetail)
                 .Include(p => p.Transactions)
                 .Where(p => p.PaymentId == paymentId)
@@ -48,6 +49,7 @@ namespace Payment.Service.Queries
         public async Task<PaymentDto> GetPaymentByOrderIdAsync(int orderId)
         {
             return await _context.Payments
+                .AsNoTracking()
                 .Include(p => p.PaymentDetail)
                 .Where(p => p.OrderId == orderId)
                 .OrderByDescending(p => p.CreatedAt)
@@ -65,6 +67,7 @@ namespace Payment.Service.Queries
         public async Task<List<PaymentDto>> GetUserPaymentHistoryAsync(int userId, int page = 1, int pageSize = 10)
         {
             return await _context.Payments
+                .AsNoTracking()
                 .Where(p => p.UserId == userId)
                 .OrderByDescending(p => p.CreatedAt)
                 .Skip((page - 1) * pageSize)
@@ -86,6 +89,7 @@ namespace Payment.Service.Queries
         public async Task<List<PaymentTransactionDto>> GetPaymentTransactionsAsync(int paymentId)
         {
             return await _context.PaymentTransactions
+                .AsNoTracking()
                 .Where(t => t.PaymentId == paymentId)
                 .OrderByDescending(t => t.TransactionDate)
                 .Select(t => new PaymentTransactionDto

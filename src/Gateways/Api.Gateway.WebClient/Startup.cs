@@ -1,4 +1,5 @@
 using Api.Gateway.Models;
+using Common.Caching;
 using Api.Gateway.WebClient.Config;
 using Api.Gateway.WebClient.Swagger;
 using Common.ApiKey;

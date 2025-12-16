@@ -55,6 +55,16 @@ namespace Catalog.Domain
         public int DisplayOrder { get; set; }
 
         /// <summary>
+        /// Indica si la categoría debe aparecer en la página de inicio
+        /// </summary>
+        public bool IsFeatured { get; set; }
+
+        /// <summary>
+        /// URL de la imagen representativa de la categoría (opcional)
+        /// </summary>
+        public string ImageUrl { get; set; }
+
+        /// <summary>
         /// Navegación a la categoría padre
         /// </summary>
         public Category ParentCategory { get; set; }

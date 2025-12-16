@@ -1,4 +1,4 @@
-using Cart.Common;
+using Common.Caching;
 using Cart.Service.EventHandlers.Commands;
 using Cart.Service.Queries;
 using Cart.Service.Queries.DTOs;

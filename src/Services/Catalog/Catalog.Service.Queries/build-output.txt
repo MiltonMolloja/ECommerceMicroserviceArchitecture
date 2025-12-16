@@ -1,0 +1,15 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Service.Common.Collection -> C:\Source\ECommerceMicroserviceArchitecture\src\Services\Service.Common.Collection\bin\Debug\net9.0\Service.Common.Collection.dll
+  Service.Common.Mapping -> C:\Source\ECommerceMicroserviceArchitecture\src\Services\Service.Common.Mapping\bin\Debug\net9.0\Service.Common.Mapping.dll
+  Catalog.Domain -> C:\Source\ECommerceMicroserviceArchitecture\src\Services\Catalog\Catalog.Domain\bin\Debug\net9.0\Catalog.Domain.dll
+  Service.Common.Paging -> C:\Source\ECommerceMicroserviceArchitecture\src\Services\Service.Common.Paging\bin\Debug\net9.0\Service.Common.Paging.dll
+  Catalog.Persistence.Database -> C:\Source\ECommerceMicroserviceArchitecture\src\Services\Catalog\Catalog.Persistence.Database\bin\Debug\net9.0\Catalog.Persistence.Database.dll
+  Catalog.Common -> C:\Source\ECommerceMicroserviceArchitecture\src\Services\Catalog\Catalog.Common\bin\Debug\net9.0\Catalog.Common.dll
+  Catalog.Service.Queries -> C:\Source\ECommerceMicroserviceArchitecture\src\Services\Catalog\Catalog.Service.Queries\bin\Debug\net9.0\Catalog.Service.Queries.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.34

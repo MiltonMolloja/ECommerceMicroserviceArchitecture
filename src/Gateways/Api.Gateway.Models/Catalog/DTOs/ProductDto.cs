@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Api.Gateway.Models.Catalog.DTOs
@@ -14,6 +14,7 @@ namespace Api.Gateway.Models.Catalog.DTOs
 
         // Identificación
         public string SKU { get; set; }
+        public int? BrandId { get; set; }
         public string Brand { get; set; }
         public string Slug { get; set; }
 
@@ -49,6 +50,15 @@ namespace Api.Gateway.Models.Catalog.DTOs
         // Stock (from ProductInStock)
         public ProductStockDto Stock { get; set; }
 
+        // Rating (from ProductRating)
+        public decimal? AverageRating { get; set; }
+        public int? TotalReviews { get; set; }
+        public int? Rating5Star { get; set; }
+        public int? Rating4Star { get; set; }
+        public int? Rating3Star { get; set; }
+        public int? Rating2Star { get; set; }
+        public int? Rating1Star { get; set; }
+
         // Categories
         public List<CategoryDto> Categories { get; set; }
         public CategoryDto PrimaryCategory { get; set; }
@@ -79,5 +89,10 @@ namespace Api.Gateway.Models.Catalog.DTOs
         public int? ParentCategoryId { get; set; }
         public bool IsActive { get; set; }
         public int DisplayOrder { get; set; }
+
+        // Home page fields
+        public string ImageUrl { get; set; }
+        public bool IsFeatured { get; set; }
+        public int ProductCount { get; set; }
     }
 }

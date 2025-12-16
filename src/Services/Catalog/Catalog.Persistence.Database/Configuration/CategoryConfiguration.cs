@@ -43,10 +43,19 @@ namespace Catalog.Persistence.Database.Configuration
                 .IsRequired()
                 .HasDefaultValue(0);
 
+            builder.Property(x => x.IsFeatured)
+                .IsRequired()
+                .HasDefaultValue(false);
+
+            // Home page
+            builder.Property(x => x.ImageUrl)
+                .HasMaxLength(500);
+
             // Índices
             builder.HasIndex(x => x.IsActive);
             builder.HasIndex(x => x.DisplayOrder);
             builder.HasIndex(x => x.ParentCategoryId);
+            builder.HasIndex(x => x.IsFeatured);
 
             // Auto-referencia para jerarquía
             builder.HasOne(x => x.ParentCategory)

@@ -1,4 +1,4 @@
-﻿using Api.Gateway.Models;
+using Api.Gateway.Models;
 using Api.Gateway.Models.Customer.DTOs;
 using Api.Gateway.WebClient.Proxy.Config;
 using Microsoft.AspNetCore.Http;

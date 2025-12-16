@@ -1,4 +1,4 @@
-﻿using Api.Gateway.Models;
+using Api.Gateway.Models;
 using Api.Gateway.Models.Order.DTOs;
 using Api.Gateway.Models.Orders.Commands;
 using Api.Gateway.WebClient.Proxy.Config;

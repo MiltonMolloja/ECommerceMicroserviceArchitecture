@@ -5,6 +5,7 @@
 
 # Custom paths
 healthchecks/
+src/Clients/
 
 # User-specific files
 *.suo
@@ -284,3 +285,4 @@ __pycache__/
 # Cake - Uncomment if you are using it
 # tools/**
 # !tools/packages.config
+nul

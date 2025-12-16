@@ -1,0 +1,5 @@
+Changed database context to 'ECommerceDb'.
+Msg 207, Level 16, State 1, Server Pc-Yo\SQLEXPRESS, Line 77
+Invalid column name 'AttributeValueId'.
+Msg 207, Level 16, State 1, Server Pc-Yo\SQLEXPRESS, Line 77
+Invalid column name 'AttributeValueId'.

@@ -7,6 +7,16 @@ namespace Common.Caching
     {
         public static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
         {
+            // Verificar si el cache está deshabilitado
+            var cacheDisabled = configuration.GetValue<bool>("CacheSettings:Disabled", false);
+            
+            if (cacheDisabled)
+            {
+                // Usar NoCacheService cuando está deshabilitado
+                services.AddSingleton<ICacheService, NoCacheService>();
+                return services;
+            }
+
             var redisConnection = configuration.GetValue<string>("Redis:ConnectionString");
 
             if (!string.IsNullOrEmpty(redisConnection))

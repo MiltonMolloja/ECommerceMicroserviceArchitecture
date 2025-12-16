@@ -1,0 +1,80 @@
+Changed database context to 'ECommerceDb'.
+=== Agregando atributo CondiciÃ³n ===
+ 
+1. Creando atributo "Condition"...
+
+(1 rows affected)
+   âœ… AttributeId creado: 112
+ 
+2. Creando valores del atributo...
+
+(1 rows affected)
+   âœ… Valor "Nuevo/New" creado: 1059
+
+(1 rows affected)
+   âœ… Valor "Usado/Used" creado: 1060
+ 
+3. Total de productos activos: 165
+ 
+4. Productos que serÃ¡n marcados como usados (25%): 41
+ 
+5. Asignando condiciÃ³n "Usado" a productos aleatorios...
+
+(41 rows affected)
+   âœ… Productos marcados como "Usado": 41
+ 
+6. Asignando condiciÃ³n "Nuevo" a productos restantes...
+
+(124 rows affected)
+   âœ… Productos marcados como "Nuevo": 124
+ 
+7. Verificando distribuciÃ³n final...
+ 
+Condicion                                                                                                                                                                                                Condition                                                                                                                                                                                                TotalProductos Porcentaje
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -------------- ----------
+Nuevo                                                                                                                                                                                                    New                                                                                                                                                                                                                 124      75.15
+Usado                                                                                                                                                                                                    Used                                                                                                                                                                                                                 41      24.85
+
+(2 rows affected)
+ 
+8. Listado de productos usados (primeros 20)...
+ 
+ProductId   NameSpanish                                                                                                                                                                                              Price                Condicion                                                                                                                                                                                               
+----------- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -------------------- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        266 15.6" Laptop Computer Portátil, 2025 Traditional Laptop Computers con 16GB Memoria RAM 512GB SSD, Intel N150 Procesador, Win 11 Pro, FHD 1080P, 180 Degree Angle, Lap top for Student Business Work                   1227.28 Usado                                                                                                                                                                                                   
+        116 Amazon Fire TV 40" 2-Series, HD smart TV con Fire TV Alexa Voice Remote, stream live TV conout cable                                                                                                                 37138.80 Usado                                                                                                                                                                                                   
+        120 Apple MacBook Air 2020 de 13.3 pulgadas (Chip M1 de Apple, 8GB de Memoria RAM, 256GB de almacenamiento SSD) - Gris espacial (Renovado)                                                                                 755.62 Usado                                                                                                                                                                                                   
+        121 Apple MacBook Pro 15" Retina Core i7 2.6GHz MLH32LL/A con Touch Bar, 16GB Memory, 512GB Solid State Drive Space Gray (Renewed)                                                                                        1191.59 Usado                                                                                                                                                                                                   
+        154 ASUS The SFF-Ready Prime GeForce RTX™ 5070 12GB GDDR7 Graphics Card (PCIe® 5.0, 12GB GDDR7, HDMI®/DP 2.1, 2.5-Slot, Axial-tech Fans, Dual BIOS)                                                                       1033.09 Usado                                                                                                                                                                                                   
+        156 ASUS Vivobook 16 WUXGA Slim Laptop, Intel Corei5 R5-5600H, Intel Iris Xe Graphics, 16GB Memory, 256GB SSD, Military Grade 810H, Fast Charging, Camera Shutter, Cool Silver-(Renewed)                                  1211.88 Usado                                                                                                                                                                                                   
+        160 ASUS Vivobook 17.3'' FHD Laptop, Intel Core i3-1215U, 36GB Memoria RAM, 1TB SSD, Webcam, Touchpad, HDMI, Wi-Fi, Windows 11 Home, Blue, Bundle con PCO Portátil Folding Radiator, Laptop Cooler                        1981.50 Usado                                                                                                                                                                                                   
+        159 ASUS Vivobook Go 15.6” Laptop delgado, AMD Ryzen 5 7520U, 8GB, 512GB, Windows 11 Home, Plata fría, Durabilidad de grado militar, Carga rápida, Protector de cámara web, E1504FA-AS54                                  1693.50 Usado                                                                                                                                                                                                   
+        165 Colorful GTX1660 Super 6GB graphics card,Tomahawk, eSports, gaming, Tomahawk graphics card(Renewed)                                                                                                                    673.31 Usado                                                                                                                                                                                                   
+        172 Dell Latitude 5490 14" FHD Laptop Empresarial, Intel i5-8350U Procesador, 16GB Memoria RAM, 512GB PCIe SSD, ?Intel UHD Graphics, Teclado Retroiluminado, HD Webcam, Win 11 Pro, Black(Renewed)                         760.67 Usado                                                                                                                                                                                                   
+        173 Dell Latitude 7490 Laptop Empresarial, 14" FHD (1920 x 1080) Laptop, Intel Core i5-8250U 1.7GHz, 16GB DDR4 Memoria RAM, 512GB SATA SSD, Webcam, Bluetooth, Windows 10 Pro (Renewed)                                    789.82 Usado                                                                                                                                                                                                   
+        178 Dowinx Gaming Chair Big y Tall, Ergonomic PC Gaming Chair con Footrest & Massage, Racing Style Reclining Computer Chair for Adults, 400LBS Capacity - Heavy Duty Gamer Chair (Brown)                                   761.25 Usado                                                                                                                                                                                                   
+        179 DuMemoria RAMont Ergonomic Office Chair - Adjustable Desk Chair con Lumbar Support y Rollerblade Wheels - High Back Chairs con Breathable Mesh - Thick Seat Cushion, Head, y Arm Rests - Reclines                     4297.53 Usado                                                                                                                                                                                                   
+        285 Gaming Chair con Pocket Spring Cushion, Video Game Computer Chair con Footrest for Adults, High Back Gamer Leather Chair con Headrest y Lumbar Support for Office Gaming 300LBS                                        449.13 Usado                                                                                                                                                                                                   
+        187 GIGABYTE Radeon RX 9060 XT Gaming OC 16G Graphics Card, PCIe 5.0, 16GB GDDR6, GV-R9060XTGAMING OC-16GD Video Card                                                                                                     1667.74 Usado                                                                                                                                                                                                   
+        190 GTPLAYER ACE-PRO Music Gaming Chairs – Built-in Speakers, App Support & Bluetooth Control, Computer Game Chairs con Footrest for Adults, Ergonomic Reclining Silla, Linkage Armrest, Ivory                             393.24 Usado                                                                                                                                                                                                   
+        199 Homall Gaming Chair, Office Chair High Back Computer Chair Leather Desk Chair Racing Executive Ergonomic Adjustable Swivel Task Chair con Headrest y Lumbar Support (White)                                            269.47 Usado                                                                                                                                                                                                   
+        200 Homall Gaming Chair, Video Game Chair con Footrest y Massage Lumbar Support, Ergonomic Computer Chair Height Adjustable con Swivel Seat y Headrest (White)                                                             284.00 Usado                                                                                                                                                                                                   
+        202 HP 14-dk1032 Laptop 14" FHD AMD Ryzen 3 3250U 2.6GHz 4GB Memoria RAM 128GB SSD W10H - Renovado                                                                                                                         412.92 Usado                                                                                                                                                                                                   
+        205 HP 15 Portátil Laptop, 15.6" Full HD Pantalla, Intel Core i5-1135G7 Procesador, 32GB DDR4 Memoria RAM, 1TB PCIe SSD, USB Type-C, Webcam, Wi-Fi, Windows 11 Home, Silver                                               2133.87 Usado                                                                                                                                                                                                   
+
+(20 rows affected)
+ 
+=== âœ… Proceso Completado ===
+ 
+Resumen:
+  - AttributeId: 112
+  - Valor "Nuevo": 1059
+  - Valor "Usado": 1060
+  - Total productos: 165
+  - Productos nuevos: 124
+  - Productos usados: 41
+ 
+Uso en filtros:
+  GET /products/search?filter_attr_112=1059  (Nuevos)
+  GET /products/search?filter_attr_112=1060  (Usados)
+ 

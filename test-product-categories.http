@@ -1,0 +1,11 @@
+### Test Product 232 - Should return categories
+GET https://localhost:4200/api/products/232
+Accept-Language: es
+
+### Test Product 235 - Should return categories
+GET https://localhost:4200/api/products/235
+Accept-Language: es
+
+### Test Product 1 - Should return categories
+GET https://localhost:4200/api/products/1
+Accept-Language: es

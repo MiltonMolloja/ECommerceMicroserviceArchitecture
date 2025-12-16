@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Catalog.Domain;
 
@@ -85,6 +85,11 @@ namespace Catalog.Persistence.Database.Configuration
                 .IsRequired()
                 .HasDefaultValue(false);
 
+            // Ventas
+            builder.Property(x => x.TotalSold)
+                .IsRequired()
+                .HasDefaultValue(0);
+
             // Auditoría
             builder.Property(x => x.CreatedAt)
                 .IsRequired()
@@ -99,6 +104,8 @@ namespace Catalog.Persistence.Database.Configuration
             builder.HasIndex(x => x.IsActive);
             builder.HasIndex(x => x.IsFeatured);
             builder.HasIndex(x => new { x.IsActive, x.IsFeatured });
+            builder.HasIndex(x => x.TotalSold)
+                .HasDatabaseName("IX_Products_TotalSold");
 
             // Query Filter Global (solo mostrar activos por defecto)
             builder.HasQueryFilter(p => p.IsActive);

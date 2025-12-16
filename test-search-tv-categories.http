@@ -1,0 +1,35 @@
+### Test Advanced Search with query "tv" - Should return category facets
+POST https://localhost:45000/catalog/v1/products/search/advanced
+Content-Type: application/json
+Accept-Language: es
+
+{
+  "query": "tv",
+  "page": 1,
+  "pageSize": 24,
+  "includeBrandFacets": true,
+  "includeCategoryFacets": true,
+  "includePriceFacets": true,
+  "includeRatingFacets": true,
+  "includeAttributeFacets": true
+}
+
+### Test Simple Search with query "tv" (for comparison)
+GET https://localhost:45000/catalog/v1/products/search?Page=1&PageSize=5&Query=tv&SortBy=0&SortOrder=0
+Accept-Language: es
+
+### Test Advanced Search without query - Should return all category facets
+POST https://localhost:45000/catalog/v1/products/search/advanced
+Content-Type: application/json
+Accept-Language: es
+
+{
+  "query": "",
+  "page": 1,
+  "pageSize": 24,
+  "includeBrandFacets": true,
+  "includeCategoryFacets": true,
+  "includePriceFacets": true,
+  "includeRatingFacets": true,
+  "includeAttributeFacets": true
+}

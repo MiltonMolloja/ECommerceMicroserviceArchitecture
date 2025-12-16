@@ -1,0 +1,59 @@
+### Test TV Search with Attributes
+### Verificar que los atributos de TVs se devuelven correctamente
+
+### 1. Búsqueda de TVs con facetas de atributos
+POST http://localhost:5011/products/search/advanced
+Content-Type: application/json
+Accept-Language: es
+
+{
+  "query": "tv",
+  "page": 1,
+  "pageSize": 24,
+  "sortBy": 0,
+  "sortOrder": 0,
+  "includeBrandFacets": true,
+  "includeCategoryFacets": true,
+  "includePriceFacets": true,
+  "includeRatingFacets": true,
+  "includeAttributeFacets": true
+}
+
+### 2. Búsqueda de TVs sin query (solo categoría si aplica)
+POST http://localhost:5011/products/search/advanced
+Content-Type: application/json
+Accept-Language: es
+
+{
+  "query": "",
+  "page": 1,
+  "pageSize": 24,
+  "sortBy": 0,
+  "sortOrder": 0,
+  "includeBrandFacets": true,
+  "includeCategoryFacets": true,
+  "includePriceFacets": true,
+  "includeRatingFacets": true,
+  "includeAttributeFacets": true
+}
+
+### 3. Búsqueda de TVs con filtro de marca
+POST http://localhost:5011/products/search/advanced
+Content-Type: application/json
+Accept-Language: es
+
+{
+  "query": "tv",
+  "page": 1,
+  "pageSize": 24,
+  "sortBy": 0,
+  "sortOrder": 0,
+  "brandIds": [1, 2, 3],
+  "includeBrandFacets": true,
+  "includeCategoryFacets": true,
+  "includePriceFacets": true,
+  "includeRatingFacets": true,
+  "includeAttributeFacets": true
+}
+
+###
