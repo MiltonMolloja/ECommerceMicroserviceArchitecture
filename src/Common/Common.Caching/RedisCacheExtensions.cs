@@ -13,6 +13,8 @@ namespace Common.Caching
             if (cacheDisabled)
             {
                 // Usar NoCacheService cuando está deshabilitado
+                // Pero siempre registrar IDistributedCache (en memoria) para servicios que lo necesiten
+                services.AddDistributedMemoryCache();
                 services.AddSingleton<ICacheService, NoCacheService>();
                 return services;
             }

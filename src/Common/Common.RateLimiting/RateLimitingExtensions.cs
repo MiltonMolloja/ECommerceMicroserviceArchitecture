@@ -10,6 +10,9 @@ namespace Common.RateLimiting
 {
     public static class RateLimitingExtensions
     {
+        // Flag estático para saber si el rate limiting está habilitado
+        private static bool _rateLimitingEnabled = false;
+
         public static IServiceCollection AddCustomRateLimiting(
             this IServiceCollection services,
             IConfiguration configuration)
@@ -19,8 +22,11 @@ namespace Common.RateLimiting
 
             if (!settings.EnableRateLimiting)
             {
+                _rateLimitingEnabled = false;
                 return services;
             }
+
+            _rateLimitingEnabled = true;
 
             services.AddRateLimiter(options =>
             {
@@ -124,7 +130,11 @@ namespace Common.RateLimiting
 
         public static IApplicationBuilder UseCustomRateLimiting(this IApplicationBuilder app)
         {
-            app.UseRateLimiter();
+            // Solo usar rate limiter si está habilitado
+            if (_rateLimitingEnabled)
+            {
+                app.UseRateLimiter();
+            }
             return app;
         }
     }
