@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="8.8.0" />
+    <PackageReference Include="MassTransit" Version="8.5.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.1" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="MSTest" Version="4.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Order.Domain\Order.Domain.csproj" />
+    <ProjectReference Include="..\Order.Persistence.Database\Order.Persistence.Database.csproj" />
+    <ProjectReference Include="..\Order.Service.EventHandlers\Order.Service.EventHandlers.csproj" />
+    <ProjectReference Include="..\Order.Api\Order.Api.csproj" />
+  </ItemGroup>
+
+</Project>
