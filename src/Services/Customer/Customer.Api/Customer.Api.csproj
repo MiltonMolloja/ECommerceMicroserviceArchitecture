@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Common.Logging\Common.Logging.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Messaging\Common.Messaging.csproj" />
     <ProjectReference Include="..\Customer.Common\Customer.Common.csproj" />
     <ProjectReference Include="..\Customer.Service.EventHandlers\Customer.Service.EventHandlers.csproj" />
     <ProjectReference Include="..\Customer.Service.Queries\Customer.Service.Queries.csproj" />

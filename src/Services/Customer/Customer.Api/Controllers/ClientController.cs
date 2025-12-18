@@ -1,6 +1,5 @@
-﻿using Common.Caching;
-using Common.Validation;
 using Common.Caching;
+using Common.Validation;
 using Customer.Service.EventHandlers.Commands;
 using Customer.Service.Queries.DTOs;
 using MediatR;

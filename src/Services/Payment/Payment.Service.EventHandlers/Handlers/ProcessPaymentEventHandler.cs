@@ -1,3 +1,4 @@
+using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using Payment.Service.Gateways;
 using Payment.Service.Proxies.Order;
 using Payment.Service.Proxies.Notification;
 using Payment.Service.Proxies.Customer;
+using Common.Messaging.Events.Payments;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -21,6 +23,7 @@ namespace Payment.Service.EventHandlers.Handlers
         private readonly IOrderProxy _orderProxy;
         private readonly INotificationProxy _notificationProxy;
         private readonly ICustomerProxy _customerProxy;
+        private readonly IPublishEndpoint _publishEndpoint;
         private readonly ILogger<ProcessPaymentEventHandler> _logger;
 
         public ProcessPaymentEventHandler(
@@ -29,6 +32,7 @@ namespace Payment.Service.EventHandlers.Handlers
             IOrderProxy orderProxy,
             INotificationProxy notificationProxy,
             ICustomerProxy customerProxy,
+            IPublishEndpoint publishEndpoint,
             ILogger<ProcessPaymentEventHandler> logger)
         {
             _context = context;
@@ -36,6 +40,7 @@ namespace Payment.Service.EventHandlers.Handlers
             _orderProxy = orderProxy;
             _notificationProxy = notificationProxy;
             _customerProxy = customerProxy;
+            _publishEndpoint = publishEndpoint;
             _logger = logger;
         }
 
@@ -132,36 +137,70 @@ namespace Payment.Service.EventHandlers.Handlers
                         BillingZipCode = notification.BillingZipCode
                     };
 
-                    // Notificar al OrderService con transaction ID y gateway
-                    await _orderProxy.UpdateOrderPaymentStatusAsync(
-                        notification.OrderId,
-                        "Paid",
-                        result.TransactionId,
-                        result.Gateway);
-
-                    // Enviar notificación de confirmación de compra con todos los detalles
-                    await _notificationProxy.SendOrderPlacedNotificationAsync(new Proxies.Notification.OrderPlacedNotification
+                    // ========================================
+                    // PUBLICAR EVENTO PaymentCompleted a RabbitMQ
+                    // Los consumidores (Order.Service, Notification.Service) procesarán el evento
+                    // ========================================
+                    var paymentCompletedEvent = new PaymentCompletedEvent
                     {
-                        UserId = notification.UserId,
-                        UserEmail = userEmail,
-                        CustomerName = customerName,
-                        OrderNumber = $"#ORD-{notification.OrderId:D8}",
-                        Items = new List<Proxies.Notification.OrderItemNotification>
+                        PaymentId = payment.PaymentId,
+                        OrderId = notification.OrderId,
+                        ClientId = order.ClientId,
+                        ClientEmail = userEmail,
+                        ClientName = customerName,
+                        Amount = order.Total,
+                        PaymentMethod = result.Gateway ?? "MercadoPago",
+                        TransactionId = result.TransactionId,
+                        PaidAt = DateTime.UtcNow
+                    };
+
+                    await _publishEndpoint.Publish(paymentCompletedEvent, cancellationToken);
+                    _logger.LogInformation("Published PaymentCompletedEvent for OrderId: {OrderId}, PaymentId: {PaymentId}", 
+                        notification.OrderId, payment.PaymentId);
+
+                    // ========================================
+                    // FALLBACK: Mantener llamadas HTTP síncronas por ahora
+                    // TODO: Remover cuando los consumidores estén funcionando correctamente
+                    // ========================================
+                    try
+                    {
+                        // Notificar al OrderService con transaction ID y gateway
+                        await _orderProxy.UpdateOrderPaymentStatusAsync(
+                            notification.OrderId,
+                            "Paid",
+                            result.TransactionId,
+                            result.Gateway);
+
+                        // Enviar notificación de confirmación de compra con todos los detalles
+                        await _notificationProxy.SendOrderPlacedNotificationAsync(new Proxies.Notification.OrderPlacedNotification
                         {
-                            // TODO: Obtener items reales de la orden
-                            new Proxies.Notification.OrderItemNotification
+                            UserId = notification.UserId,
+                            UserEmail = userEmail,
+                            CustomerName = customerName,
+                            OrderNumber = $"#ORD-{notification.OrderId:D8}",
+                            Items = new List<Proxies.Notification.OrderItemNotification>
                             {
-                                ProductName = "Producto de la orden",
-                                Quantity = 1,
-                                UnitPrice = FormatCurrency(order.Total)
-                            }
-                        },
-                        Subtotal = FormatCurrency(order.Total * 0.87m), // Aproximado
-                        ShippingCost = "Gratis",
-                        Tax = FormatCurrency(order.Total * 0.13m), // Aproximado
-                        Total = FormatCurrency(order.Total),
-                        EstimatedDelivery = "3-5 días hábiles"
-                    });
+                                // TODO: Obtener items reales de la orden
+                                new Proxies.Notification.OrderItemNotification
+                                {
+                                    ProductName = "Producto de la orden",
+                                    Quantity = 1,
+                                    UnitPrice = FormatCurrency(order.Total)
+                                }
+                            },
+                            Subtotal = FormatCurrency(order.Total * 0.87m), // Aproximado
+                            ShippingCost = "Gratis",
+                            Tax = FormatCurrency(order.Total * 0.13m), // Aproximado
+                            Total = FormatCurrency(order.Total),
+                            EstimatedDelivery = "3-5 días hábiles"
+                        });
+                    }
+                    catch (Exception httpEx)
+                    {
+                        // Si falla HTTP, el evento ya fue publicado en RabbitMQ
+                        // Los consumidores procesarán el evento de forma asíncrona
+                        _logger.LogWarning(httpEx, "HTTP fallback failed, but event was published to RabbitMQ");
+                    }
 
                     _logger.LogInformation($"Payment {payment.PaymentId} completed successfully");
 
@@ -179,28 +218,56 @@ namespace Payment.Service.EventHandlers.Handlers
                 {
                     payment.MarkAsFailed(result.ErrorMessage);
 
-                    // Notificar al OrderService que el pago falló
-                    await _orderProxy.UpdateOrderPaymentStatusAsync(notification.OrderId, "PaymentFailed");
-
-                    // Formatear método de pago
-                    var paymentMethodDisplay = result.CardBrand != null && result.CardLast4 != null
-                        ? $"{result.CardBrand} terminada en {result.CardLast4}"
-                        : "MercadoPago";
-
-                    // Notificar al usuario del fallo con todos los detalles
-                    await _notificationProxy.SendPaymentFailedAsync(new Proxies.Notification.PaymentFailedNotification
+                    // ========================================
+                    // PUBLICAR EVENTO PaymentFailed a RabbitMQ
+                    // ========================================
+                    var paymentFailedEvent = new PaymentFailedEvent
                     {
-                        UserId = notification.UserId,
                         PaymentId = payment.PaymentId,
-                        Reason = result.ErrorMessage,
-                        Email = userEmail,
-                        CustomerName = customerName,
-                        OrderNumber = $"#ORD-{notification.OrderId:D8}",
-                        AttemptDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm"),
-                        Amount = FormatCurrency(order.Total),
-                        PaymentMethod = paymentMethodDisplay,
-                        FailureReason = result.ErrorMessage ?? "No pudimos procesar el pago. Por favor intenta nuevamente o contacta con soporte."
-                    });
+                        OrderId = notification.OrderId,
+                        ClientId = order.ClientId,
+                        ClientEmail = userEmail,
+                        Amount = order.Total,
+                        ErrorCode = result.ErrorCode,
+                        ErrorMessage = result.ErrorMessage ?? "Payment processing failed",
+                        FailedAt = DateTime.UtcNow
+                    };
+
+                    await _publishEndpoint.Publish(paymentFailedEvent, cancellationToken);
+                    _logger.LogInformation("Published PaymentFailedEvent for OrderId: {OrderId}", notification.OrderId);
+
+                    // ========================================
+                    // FALLBACK: Mantener llamadas HTTP síncronas
+                    // ========================================
+                    try
+                    {
+                        // Notificar al OrderService que el pago falló
+                        await _orderProxy.UpdateOrderPaymentStatusAsync(notification.OrderId, "PaymentFailed");
+
+                        // Formatear método de pago
+                        var paymentMethodDisplay = result.CardBrand != null && result.CardLast4 != null
+                            ? $"{result.CardBrand} terminada en {result.CardLast4}"
+                            : "MercadoPago";
+
+                        // Notificar al usuario del fallo con todos los detalles
+                        await _notificationProxy.SendPaymentFailedAsync(new Proxies.Notification.PaymentFailedNotification
+                        {
+                            UserId = notification.UserId,
+                            PaymentId = payment.PaymentId,
+                            Reason = result.ErrorMessage,
+                            Email = userEmail,
+                            CustomerName = customerName,
+                            OrderNumber = $"#ORD-{notification.OrderId:D8}",
+                            AttemptDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm"),
+                            Amount = FormatCurrency(order.Total),
+                            PaymentMethod = paymentMethodDisplay,
+                            FailureReason = result.ErrorMessage ?? "No pudimos procesar el pago. Por favor intenta nuevamente o contacta con soporte."
+                        });
+                    }
+                    catch (Exception httpEx)
+                    {
+                        _logger.LogWarning(httpEx, "HTTP fallback failed, but event was published to RabbitMQ");
+                    }
 
                     _logger.LogWarning($"Payment failed: {result.ErrorMessage}");
 

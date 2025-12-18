@@ -74,6 +74,11 @@ namespace Cart.Domain
         /// </summary>
         public int? OrderId { get; set; }
 
+        /// <summary>
+        /// Fecha en que se envió notificación de carrito abandonado
+        /// </summary>
+        public DateTime? AbandonmentNotifiedAt { get; set; }
+
         // Navegación
         public ICollection<CartItem> Items { get; set; } = new List<CartItem>();
 

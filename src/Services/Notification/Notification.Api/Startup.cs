@@ -2,6 +2,7 @@ using Common.ApiKey;
 using Common.Caching;
 using Common.CorrelationId;
 using Common.Logging;
+using Common.Messaging.Extensions;
 using Common.RateLimiting;
 using Common.Validation;
 using FluentValidation;
@@ -18,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Notification.Api.Consumers;
 using Notification.Persistence.Database;
 using Notification.Service.EventHandlers.Services;
 using Notification.Service.Queries;
@@ -60,10 +62,11 @@ namespace Notification.Api
                 )
             );
 
-            // Health check
+// Health check
             services.AddHealthChecks()
                         .AddCheck("self", () => HealthCheckResult.Healthy())
-                        .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name);
+                        .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name)
+                        .AddRabbitMQHealthCheck(Configuration);
 
             // Health Checks UI
             services.AddHealthChecksUI(setup =>
@@ -91,6 +94,19 @@ namespace Notification.Api
             // HttpClient for EmailNotificationService
             services.AddHttpClient<IEmailNotificationService, EmailNotificationService>();
             services.AddTransient<IEmailNotificationService, EmailNotificationService>();
+
+            // RabbitMQ Messaging with MassTransit
+            services.AddRabbitMQMessaging(Configuration, x =>
+            {
+                x.AddConsumer<PaymentCompletedConsumer>();
+                x.AddConsumer<PaymentFailedConsumer>();
+                x.AddConsumer<CustomerRegisteredConsumer>();
+                x.AddConsumer<OrderCancelledConsumer>();
+                x.AddConsumer<OrderShippedConsumer>();
+                x.AddConsumer<OrderDeliveredConsumer>();
+                x.AddConsumer<StockUpdatedConsumer>();
+                x.AddConsumer<CartAbandonedConsumer>();
+            });
 
             // CORS
             services.AddCors(options =>

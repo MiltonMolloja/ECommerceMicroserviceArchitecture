@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Common.Logging\Common.Logging.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Messaging\Common.Messaging.csproj" />
     <ProjectReference Include="..\Cart.Common\Cart.Common.csproj" />
     <ProjectReference Include="..\Cart.Persistence.Database\Cart.Persistence.Database.csproj" />
     <ProjectReference Include="..\Cart.Service.EventHandlers\Cart.Service.EventHandlers.csproj" />

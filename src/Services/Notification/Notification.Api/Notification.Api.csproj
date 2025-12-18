@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Common.Logging\Common.Logging.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Messaging\Common.Messaging.csproj" />
     <ProjectReference Include="..\Notification.Persistence.Database\Notification.Persistence.Database.csproj" />
     <ProjectReference Include="..\Notification.Service.EventHandlers\Notification.Service.EventHandlers.csproj" />
     <ProjectReference Include="..\Notification.Service.Queries\Notification.Service.Queries.csproj" />

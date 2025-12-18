@@ -1,4 +1,6 @@
-﻿using MediatR;
+using Common.Messaging.Events.Orders;
+using MassTransit;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using Order.Domain;
 using Order.Persistence.Database;
@@ -17,15 +19,18 @@ namespace Order.Service.EventHandlers
     {
         private readonly ApplicationDbContext _context;
         private readonly ICatalogProxy _catalogProxy;
+        private readonly IPublishEndpoint _publishEndpoint;
         private readonly ILogger<OrderCreateEventHandler> _logger;
 
         public OrderCreateEventHandler(
             ApplicationDbContext context,
             ICatalogProxy catalogProxy,
+            IPublishEndpoint publishEndpoint,
             ILogger<OrderCreateEventHandler> logger)
         {
             _context = context;
             _catalogProxy = catalogProxy;
+            _publishEndpoint = publishEndpoint;
             _logger = logger;
         }
 
@@ -64,6 +69,34 @@ namespace Order.Service.EventHandlers
                 });
 
                 await trx.CommitAsync();
+            }
+
+            // Publicar evento OrderCreated para notificar a otros servicios
+            try
+            {
+                var orderCreatedEvent = new OrderCreatedEvent
+                {
+                    OrderId = entry.OrderId,
+                    ClientId = entry.ClientId,
+                    ClientEmail = string.Empty, // TODO: Obtener del servicio de Customer
+                    ClientName = notification.ShippingRecipientName ?? string.Empty,
+                    Total = entry.Total,
+                    Items = notification.Items.Select(x => new OrderItemInfo
+                    {
+                        ProductId = x.ProductId,
+                        ProductName = string.Empty, // TODO: Obtener del catálogo si es necesario
+                        Quantity = x.Quantity,
+                        UnitPrice = x.Price
+                    }).ToList()
+                };
+
+                await _publishEndpoint.Publish(orderCreatedEvent);
+                _logger.LogInformation("OrderCreatedEvent published for OrderId: {OrderId}", entry.OrderId);
+            }
+            catch (Exception ex)
+            {
+                // No fallar la creación de orden si falla la publicación del evento
+                _logger.LogWarning(ex, "Failed to publish OrderCreatedEvent for OrderId: {OrderId}", entry.OrderId);
             }
 
             _logger.LogInformation("--- New order creation ended");

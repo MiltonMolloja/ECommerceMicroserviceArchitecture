@@ -1,5 +1,4 @@
 using Common.Caching;
-using Common.Caching;
 using Identity.Domain;
 using Identity.Service.EventHandlers.Commands;
 using Identity.Service.Queries;

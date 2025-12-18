@@ -1,10 +1,14 @@
+using Common.Messaging.Events.Orders;
+using MassTransit;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Order.Domain;
 using Order.Persistence.Database;
 using Order.Service.EventHandlers.Commands;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static Order.Common.Enums;
@@ -14,13 +18,16 @@ namespace Order.Service.EventHandlers.Handlers
     public class UpdateOrderStatusEventHandler : INotificationHandler<UpdateOrderStatusCommand>
     {
         private readonly ApplicationDbContext _context;
+        private readonly IPublishEndpoint _publishEndpoint;
         private readonly ILogger<UpdateOrderStatusEventHandler> _logger;
 
         public UpdateOrderStatusEventHandler(
             ApplicationDbContext context,
+            IPublishEndpoint publishEndpoint,
             ILogger<UpdateOrderStatusEventHandler> logger)
         {
             _context = context;
+            _publishEndpoint = publishEndpoint;
             _logger = logger;
         }
 
@@ -63,11 +70,52 @@ namespace Order.Service.EventHandlers.Handlers
                 case OrderStatus.Cancelled:
                     order.CancelledAt = DateTime.UtcNow;
                     order.CancellationReason = notification.Reason;
+                    
+                    // Publicar evento OrderCancelled via RabbitMQ
+                    await PublishOrderCancelledEventAsync(order, notification.Reason, cancellationToken);
                     break;
             }
 
             await _context.SaveChangesAsync(cancellationToken);
             _logger.LogInformation($"Order {notification.OrderId} status updated to {notification.NewStatus}");
+        }
+
+        private async Task PublishOrderCancelledEventAsync(Domain.Order order, string reason, CancellationToken cancellationToken)
+        {
+            try
+            {
+                // Cargar los items de la orden para el evento
+                var orderWithItems = await _context.Orders
+                    .Include(o => o.Items)
+                    .FirstOrDefaultAsync(o => o.OrderId == order.OrderId, cancellationToken);
+
+                var orderCancelledEvent = new OrderCancelledEvent
+                {
+                    OrderId = order.OrderId,
+                    ClientId = order.ClientId,
+                    ClientEmail = string.Empty, // TODO: Obtener del servicio de Customer
+                    ClientName = order.ShippingRecipientName ?? string.Empty,
+                    Total = order.Total,
+                    CancellationReason = reason ?? "No reason provided",
+                    PaymentId = null, // TODO: Obtener si existe un pago asociado
+                    CancelledAt = DateTime.UtcNow,
+                    Items = orderWithItems?.Items?.Select(i => new OrderItemInfo
+                    {
+                        ProductId = i.ProductId,
+                        ProductName = string.Empty,
+                        Quantity = i.Quantity,
+                        UnitPrice = i.UnitPrice
+                    }).ToList() ?? new List<OrderItemInfo>()
+                };
+
+                await _publishEndpoint.Publish(orderCancelledEvent, cancellationToken);
+                _logger.LogInformation("OrderCancelledEvent published for OrderId: {OrderId}", order.OrderId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to publish OrderCancelledEvent for OrderId: {OrderId}", order.OrderId);
+                // No fallar la cancelación si falla la publicación del evento
+            }
         }
 
         private bool IsValidStateTransition(OrderStatus currentStatus, OrderStatus newStatus)

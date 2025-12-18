@@ -13,6 +13,7 @@
     <ProjectReference Include="..\Order.Persistence.Database\Order.Persistence.Database.csproj" />
     <ProjectReference Include="..\Order.Service.Proxies\Order.Service.Proxies.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.Validation\Common.Validation.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Messaging\Common.Messaging.csproj" />
   </ItemGroup>
 
 </Project>

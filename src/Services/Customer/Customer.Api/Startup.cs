@@ -2,11 +2,11 @@ using Common.ApiKey;
 using Common.Caching;
 using Common.CorrelationId;
 using Common.Logging;
+using Common.Messaging.Extensions;
 using Common.RateLimiting;
 using Common.Validation;
-using FluentValidation;
-using Common.Caching;
 using Customer.Persistence.Database;
+using FluentValidation;
 using HealthChecks.UI.Client;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -66,7 +66,8 @@ namespace Customer.Api
             // Health check
             services.AddHealthChecks()
                         .AddCheck("self", () => HealthCheckResult.Healthy())
-                        .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name);
+                        .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name)
+                        .AddRabbitMQHealthCheck(Configuration);
 
             // Health Checks UI
             services.AddHealthChecksUI(setup =>
@@ -88,6 +89,9 @@ namespace Customer.Api
 
             // Query services
             services.AddTransient<IClientQueryService, ClientQueryService>();
+
+            // RabbitMQ Messaging with MassTransit (Publisher only - for future events)
+            services.AddRabbitMQPublisher(Configuration);
 
             // CORS
             services.AddCors(options =>

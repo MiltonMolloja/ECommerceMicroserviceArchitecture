@@ -4,6 +4,7 @@ using Catalog.Service.EventHandlers;
 using Catalog.Service.EventHandlers.Commands;
 using Catalog.Service.EventHandlers.Exceptions;
 using Catalog.Tests.Config;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -25,6 +26,14 @@ namespace Catalog.Tests
             }
         }
 
+        private IPublishEndpoint GetPublishEndpoint
+        {
+            get
+            {
+                return new Mock<IPublishEndpoint>().Object;
+            }
+        }
+
         [TestMethod]
         public async Task TryToSubstractStockWhenProductHasStock()
         {
@@ -42,7 +51,7 @@ namespace Catalog.Tests
 
             context.SaveChanges();
 
-            var command = new ProductInStockUpdateStockEventHandler(context, GetIlogger);
+            var command = new ProductInStockUpdateStockEventHandler(context, GetPublishEndpoint, GetIlogger);
 
             await command.Handle(new ProductInStockUpdateStockCommand {
                 Items = new List<ProductInStockUpdateItem> { 
@@ -74,7 +83,7 @@ namespace Catalog.Tests
 
             context.SaveChanges();
 
-            var command = new ProductInStockUpdateStockEventHandler(context, GetIlogger);
+            var command = new ProductInStockUpdateStockEventHandler(context, GetPublishEndpoint, GetIlogger);
 
             try
             {
@@ -89,7 +98,7 @@ namespace Catalog.Tests
                 }
                 }, new System.Threading.CancellationToken()).Wait();
             }
-            catch (AggregateException ae) 
+            catch (AggregateException ae)
             {
                 if (ae.GetBaseException() is ProductInStockUpdateStockCommandException)
                 {
@@ -116,7 +125,7 @@ namespace Catalog.Tests
 
             context.SaveChanges();
 
-            var command = new ProductInStockUpdateStockEventHandler(context, GetIlogger);
+            var command = new ProductInStockUpdateStockEventHandler(context, GetPublishEndpoint, GetIlogger);
             command.Handle(new ProductInStockUpdateStockCommand
             {
                 Items = new List<ProductInStockUpdateItem> {
@@ -135,7 +144,7 @@ namespace Catalog.Tests
         public void TryToAddStockWhenProductNotExists()
         {
             var context = ApplicationDbContextInMemory.Get();
-            var command = new ProductInStockUpdateStockEventHandler(context, GetIlogger);
+            var command = new ProductInStockUpdateStockEventHandler(context, GetPublishEndpoint, GetIlogger);
 
             var productId = 4;
 

@@ -2,11 +2,11 @@ using Common.ApiKey;
 using Common.Caching;
 using Common.CorrelationId;
 using Common.Logging;
+using Common.Messaging.Extensions;
 using Common.RateLimiting;
 using Common.Validation;
 using FluentValidation;
 using HealthChecks.UI.Client;
-using Common.Caching;
 using Identity.Domain;
 using Identity.Persistence.Database;
 using Identity.Service.Queries;
@@ -68,7 +68,8 @@ namespace Identity.Api
             // Health check
             services.AddHealthChecks()
                         .AddCheck("self", () => HealthCheckResult.Healthy())
-                        .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name);
+                        .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name)
+                        .AddRabbitMQHealthCheck(Configuration);
 
             // Health Checks UI
             services.AddHealthChecksUI(setup =>
@@ -125,6 +126,9 @@ namespace Identity.Api
                 client.DefaultRequestHeaders.Add("X-Api-Key", Configuration["CustomerApi:ApiKey"]);
                 client.Timeout = System.TimeSpan.FromSeconds(30);
             });
+
+            // RabbitMQ Messaging with MassTransit (Publisher only)
+            services.AddRabbitMQPublisher(Configuration);
 
             // CORS
             services.AddCors(options =>

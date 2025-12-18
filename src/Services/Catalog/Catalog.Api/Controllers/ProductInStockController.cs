@@ -1,4 +1,3 @@
-﻿using Common.Caching;
 using Catalog.Service.EventHandlers.Commands;
 using Catalog.Service.Queries;
 using Catalog.Service.Queries.DTOs;

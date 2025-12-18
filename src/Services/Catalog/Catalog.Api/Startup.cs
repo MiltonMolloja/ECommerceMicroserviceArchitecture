@@ -1,3 +1,4 @@
+using Catalog.Api.Consumers;
 using Catalog.Api.Swagger;
 using Catalog.Common;
 using Catalog.Persistence.Database;
@@ -7,6 +8,7 @@ using Common.ApiKey;
 using Common.Caching;
 using Common.CorrelationId;
 using Common.Logging;
+using Common.Messaging.Extensions;
 using Common.RateLimiting;
 using Common.Validation;
 using FluentValidation;
@@ -74,7 +76,8 @@ namespace Catalog.Api
             // Health check
             services.AddHealthChecks()
                         .AddCheck("self", () => HealthCheckResult.Healthy())
-                        .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name);
+                        .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name)
+                        .AddRabbitMQHealthCheck(Configuration);
 
             // Health Checks UI
             services.AddHealthChecksUI(setup =>
@@ -107,6 +110,13 @@ namespace Catalog.Api
             services.AddTransient<ICategoryQueryService, CategoryQueryService>();
             services.AddTransient<IFacetService, FacetService>();
             services.AddTransient<IHomeQueryService, HomeQueryService>();
+
+            // RabbitMQ Messaging with MassTransit
+            services.AddRabbitMQMessaging(Configuration, x =>
+            {
+                x.AddConsumer<OrderCreatedConsumer>();
+                x.AddConsumer<OrderCancelledConsumer>();
+            });
 
             // CORS
             services.AddCors(options =>

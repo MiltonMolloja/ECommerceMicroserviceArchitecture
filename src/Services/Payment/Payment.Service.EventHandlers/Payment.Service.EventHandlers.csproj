@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -16,6 +16,7 @@
     <ProjectReference Include="..\Payment.Service.Gateways\Payment.Service.Gateways.csproj" />
     <ProjectReference Include="..\Payment.Service.Proxies\Payment.Service.Proxies.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.Validation\Common.Validation.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Messaging\Common.Messaging.csproj" />
   </ItemGroup>
 
 </Project>

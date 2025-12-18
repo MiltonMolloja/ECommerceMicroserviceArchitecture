@@ -2,6 +2,7 @@ using Common.ApiKey;
 using Common.Caching;
 using Common.CorrelationId;
 using Common.Logging;
+using Common.Messaging.Extensions;
 using Common.RateLimiting;
 using Common.Validation;
 using FluentValidation;
@@ -19,7 +20,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Common.Caching;
+using Order.Api.Consumers;
 using Order.Persistence.Database;
 using Order.Service.Proxies;
 using Order.Service.Proxies.Catalog;
@@ -68,7 +69,8 @@ namespace Order.Api
             // Health check
             services.AddHealthChecks()
                         .AddCheck("self", () => HealthCheckResult.Healthy())
-                        .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name);
+                        .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name)
+                        .AddRabbitMQHealthCheck(Configuration);
 
             // Health Checks UI
             services.AddHealthChecksUI(setup =>
@@ -87,6 +89,14 @@ namespace Order.Api
             // Proxies - Con propagación de Correlation ID
             services.AddHttpClient<ICatalogProxy, CatalogProxy>()
                 .AddCorrelationIdPropagation();
+
+            // RabbitMQ Messaging (Consumer for Payment events)
+            services.AddRabbitMQMessaging(Configuration, x =>
+            {
+                // Registrar consumidores de eventos de pago
+                x.AddConsumer<PaymentCompletedConsumer>();
+                x.AddConsumer<PaymentFailedConsumer>();
+            });
 
             // Event handlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Order.Service.EventHandlers")));

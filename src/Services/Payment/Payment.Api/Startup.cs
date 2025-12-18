@@ -2,6 +2,7 @@ using Common.ApiKey;
 using Common.Caching;
 using Common.CorrelationId;
 using Common.Logging;
+using Common.Messaging.Extensions;
 using Common.RateLimiting;
 using Common.Validation;
 using FluentValidation;
@@ -64,10 +65,11 @@ namespace Payment.Api
                 )
             );
 
-            // Health check
+// Health check
             services.AddHealthChecks()
                         .AddCheck("self", () => HealthCheckResult.Healthy())
-                        .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name);
+                        .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name)
+                        .AddRabbitMQHealthCheck(Configuration);
 
             // Health Checks UI
             services.AddHealthChecksUI(setup =>
@@ -76,6 +78,9 @@ namespace Payment.Api
                 setup.MaximumHistoryEntriesPerEndpoint(50);
             })
             .AddInMemoryStorage();
+
+            // RabbitMQ Messaging (Publisher only - no consumers in Payment.Api)
+            services.AddRabbitMQPublisher(Configuration);
 
             // Event handlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Payment.Service.EventHandlers")));

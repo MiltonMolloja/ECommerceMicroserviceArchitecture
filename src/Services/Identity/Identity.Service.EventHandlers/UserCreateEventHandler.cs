@@ -1,6 +1,8 @@
-﻿using Identity.Domain;
+using Common.Messaging.Events.Customers;
+using Identity.Domain;
 using Identity.Service.EventHandlers.Commands;
 using Identity.Service.EventHandlers.Services;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +24,7 @@ namespace Identity.Service.EventHandlers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<UserCreateEventHandler> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IPublishEndpoint _publishEndpoint;
 
         public UserCreateEventHandler(
             UserManager<ApplicationUser> userManager,
@@ -29,7 +32,8 @@ namespace Identity.Service.EventHandlers
             IAuditService auditService,
             IHttpContextAccessor httpContextAccessor,
             ILogger<UserCreateEventHandler> logger,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory,
+            IPublishEndpoint publishEndpoint)
         {
             _userManager = userManager;
             _notificationClient = notificationClient;
@@ -37,6 +41,7 @@ namespace Identity.Service.EventHandlers
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
             _httpClientFactory = httpClientFactory;
+            _publishEndpoint = publishEndpoint;
         }
 
         public async Task<IdentityResult> Handle(UserCreateCommand notification, CancellationToken cancellationToken)
@@ -118,6 +123,27 @@ namespace Identity.Service.EventHandlers
                 {
                     _logger.LogError(ex, $"Error creating client profile for user {entry.Email}");
                     // Don't fail the registration if client creation fails
+                }
+
+                // Publicar evento CustomerRegistered via RabbitMQ
+                try
+                {
+                    var customerRegisteredEvent = new CustomerRegisteredEvent
+                    {
+                        CustomerId = 0, // Se actualizará cuando Customer.Api procese el evento
+                        Email = entry.Email,
+                        FirstName = entry.FirstName,
+                        LastName = entry.LastName,
+                        RegisteredAt = DateTime.UtcNow
+                    };
+
+                    await _publishEndpoint.Publish(customerRegisteredEvent, cancellationToken);
+                    _logger.LogInformation("CustomerRegisteredEvent published for user: {Email}", entry.Email);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to publish CustomerRegisteredEvent for user: {Email}", entry.Email);
+                    // Don't fail the registration if event publishing fails
                 }
             }
 

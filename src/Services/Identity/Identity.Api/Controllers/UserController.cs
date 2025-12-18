@@ -1,4 +1,3 @@
-﻿using Common.Caching;
 using Common.Caching;
 using Identity.Service.Queries;
 using Identity.Service.Queries.DTOs;

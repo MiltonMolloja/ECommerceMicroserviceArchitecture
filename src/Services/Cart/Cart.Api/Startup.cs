@@ -1,10 +1,12 @@
-using Common.Caching;
+using Cart.Api.BackgroundServices;
+using Cart.Api.Consumers;
 using Cart.Persistence.Database;
 using Cart.Service.Queries;
 using Common.ApiKey;
 using Common.Caching;
 using Common.CorrelationId;
 using Common.Logging;
+using Common.Messaging.Extensions;
 using Common.RateLimiting;
 using Common.Validation;
 using FluentValidation;
@@ -65,7 +67,8 @@ namespace Cart.Api
             // Health check
             services.AddHealthChecks()
                         .AddCheck("self", () => HealthCheckResult.Healthy())
-                        .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name);
+                        .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name)
+                        .AddRabbitMQHealthCheck(Configuration);
 
             // Health Checks UI
             services.AddHealthChecksUI(setup =>
@@ -87,6 +90,15 @@ namespace Cart.Api
 
             // Query services
             services.AddTransient<ICartQueryService, CartQueryService>();
+
+            // RabbitMQ Messaging with MassTransit
+            services.AddRabbitMQMessaging(Configuration, x =>
+            {
+                x.AddConsumer<OrderCreatedConsumer>();
+            });
+
+            // Background Services
+            services.AddHostedService<CartAbandonmentService>();
 
             // CORS
             services.AddCors(options =>

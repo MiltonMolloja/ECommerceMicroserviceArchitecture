@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Identity.Domain\Identity.Domain.csproj" />
     <ProjectReference Include="..\Identity.Persistence.Database\Identity.Persistence.Database.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.Validation\Common.Validation.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Messaging\Common.Messaging.csproj" />
   </ItemGroup>
 
 </Project>

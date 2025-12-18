@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Common.Logging\Common.Logging.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Messaging\Common.Messaging.csproj" />
     <ProjectReference Include="..\Payment.Persistence.Database\Payment.Persistence.Database.csproj" />
     <ProjectReference Include="..\Payment.Service.EventHandlers\Payment.Service.EventHandlers.csproj" />
     <ProjectReference Include="..\Payment.Service.Queries\Payment.Service.Queries.csproj" />
