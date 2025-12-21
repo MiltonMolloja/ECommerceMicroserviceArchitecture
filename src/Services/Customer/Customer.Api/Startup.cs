@@ -192,7 +192,7 @@ namespace Customer.Api
             using (var scope = app.ApplicationServices.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                db.Database.Migrate();
+                db.Database.EnsureCreated();
             }
 
             // Database Logging - Enabled in all environments
