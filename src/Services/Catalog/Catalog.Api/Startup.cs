@@ -216,6 +216,13 @@ namespace Catalog.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            // Auto-migrate database on startup
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                db.Database.Migrate();
+            }
+
             // Database Logging - Enabled in all environments
             var httpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
             loggerFactory.AddDatabase(
