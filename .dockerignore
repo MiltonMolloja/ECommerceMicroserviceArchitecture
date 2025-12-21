@@ -1,0 +1,89 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vs
+.vscode
+.idea
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+
+# NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# Scripts
+scripts/
+*.ps1
+*.bat
+*.sh
+
+# Tools
+Tools/
+CSourceECommerceMicroserviceArchitecturetools/
+SourceECommerceMicroserviceArchitectureJwtGenerator/
+
+# Configuration files (will use environment variables in Docker)
+appsettings.Development.json
+appsettings.NoCache.json
+*.local.json
+
+# Logs
+logs/
+*.log
+
+# Docker
+**/Dockerfile*
+docker-compose*.yml
+.docker/
+
+# Misc
+$null
+*.tmp
+*.temp
+*.cache
+.env
+.env.*
+*.pdb
+
+# SQL Scripts
+*.sql
+
+# Test HTTP files
+*.http
+
+# Keep only necessary files
+!src/
+!*.sln
+!*.csproj
+!*.cs
+!*.json
+!appsettings.json
+!appsettings.Production.json

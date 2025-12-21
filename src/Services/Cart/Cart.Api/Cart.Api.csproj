@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -12,11 +12,11 @@
     <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="9.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
   </ItemGroup>
 
@@ -28,6 +28,7 @@
     <ProjectReference Include="..\Cart.Service.EventHandlers\Cart.Service.EventHandlers.csproj" />
     <ProjectReference Include="..\Cart.Service.Queries\Cart.Service.Queries.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.Caching\Common.Caching.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Database\Common.Database.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.RateLimiting\Common.RateLimiting.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.CorrelationId\Common.CorrelationId.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.ApiKey\Common.ApiKey.csproj" />

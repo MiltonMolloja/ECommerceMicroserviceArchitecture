@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Order.Api.Consumers;
-using Order.Domain;
 using Order.Tests.Config;
+using static Order.Common.Enums;
 
 namespace Order.Tests;
 
@@ -30,7 +30,7 @@ public class PaymentFailedConsumerTest
         var order = new Domain.Order
         {
             ClientId = 1,
-            Status = OrderStatus.Pending,
+            Status = OrderStatus.AwaitingPayment,
             Total = 100,
             CreatedAt = DateTime.UtcNow
         };
@@ -41,9 +41,11 @@ public class PaymentFailedConsumerTest
 
         var paymentEvent = new PaymentFailedEvent
         {
+            PaymentId = 1,
             OrderId = order.OrderId,
+            ClientId = 1,
             Amount = 100,
-            Reason = "Insufficient funds",
+            ErrorMessage = "Insufficient funds",
             ErrorCode = "INSUFFICIENT_FUNDS",
             FailedAt = DateTime.UtcNow
         };
@@ -69,7 +71,7 @@ public class PaymentFailedConsumerTest
         var order = new Domain.Order
         {
             ClientId = 1,
-            Status = OrderStatus.Pending,
+            Status = OrderStatus.AwaitingPayment,
             Total = 100,
             CreatedAt = DateTime.UtcNow
         };
@@ -80,18 +82,22 @@ public class PaymentFailedConsumerTest
 
         var paymentEvent1 = new PaymentFailedEvent
         {
+            PaymentId = 1,
             OrderId = order.OrderId,
+            ClientId = 1,
             Amount = 100,
-            Reason = "Card declined",
+            ErrorMessage = "Card declined",
             ErrorCode = "CARD_DECLINED",
             FailedAt = DateTime.UtcNow
         };
 
         var paymentEvent2 = new PaymentFailedEvent
         {
+            PaymentId = 2,
             OrderId = order.OrderId,
+            ClientId = 1,
             Amount = 100,
-            Reason = "Expired card",
+            ErrorMessage = "Expired card",
             ErrorCode = "EXPIRED_CARD",
             FailedAt = DateTime.UtcNow.AddMinutes(5)
         };
@@ -120,9 +126,11 @@ public class PaymentFailedConsumerTest
 
         var paymentEvent = new PaymentFailedEvent
         {
+            PaymentId = 1,
             OrderId = 999, // Non-existent order
+            ClientId = 1,
             Amount = 100,
-            Reason = "Test failure",
+            ErrorMessage = "Test failure",
             ErrorCode = "TEST",
             FailedAt = DateTime.UtcNow
         };

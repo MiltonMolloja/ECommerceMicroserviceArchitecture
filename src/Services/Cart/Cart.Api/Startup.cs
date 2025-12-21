@@ -5,6 +5,7 @@ using Cart.Service.Queries;
 using Common.ApiKey;
 using Common.Caching;
 using Common.CorrelationId;
+using Common.Database;
 using Common.Logging;
 using Common.Messaging.Extensions;
 using Common.RateLimiting;
@@ -56,13 +57,8 @@ namespace Cart.Api
             // Correlation ID
             services.AddCorrelationId();
 
-            // DbContext
-            services.AddDbContext<ApplicationDbContext>(
-                options => options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection"),
-                    x => x.MigrationsHistoryTable("__EFMigrationsHistory", "Cart")
-                )
-            );
+            // DbContext - Supports both SQL Server and PostgreSQL based on configuration
+            services.AddDatabaseContext<ApplicationDbContext>(Configuration, "Cart");
 
             // Health check
             services.AddHealthChecks()

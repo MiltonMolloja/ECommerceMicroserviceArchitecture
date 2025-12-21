@@ -98,9 +98,9 @@ namespace Catalog.Persistence.Database.Configuration
             #region Índices
 
             // Índice compuesto para búsquedas frecuentes
+            // Note: IncludeProperties removed for cross-database compatibility (SQL Server/PostgreSQL)
             builder.HasIndex(x => new { x.Position, x.IsActive })
-                .HasDatabaseName("IX_Banners_Position_Active")
-                .IncludeProperties(x => new { x.DisplayOrder, x.StartDate, x.EndDate });
+                .HasDatabaseName("IX_Banners_Position_Active");
 
             // Índice para ordenamiento
             builder.HasIndex(x => x.DisplayOrder)

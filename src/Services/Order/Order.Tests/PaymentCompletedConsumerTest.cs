@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Order.Api.Consumers;
-using Order.Domain;
 using Order.Tests.Config;
+using static Order.Common.Enums;
 
 namespace Order.Tests;
 
@@ -31,7 +31,7 @@ public class PaymentCompletedConsumerTest
         var order = new Domain.Order
         {
             ClientId = 1,
-            Status = OrderStatus.Pending,
+            Status = OrderStatus.AwaitingPayment,
             Total = 100,
             CreatedAt = DateTime.UtcNow
         };
@@ -42,7 +42,9 @@ public class PaymentCompletedConsumerTest
 
         var paymentEvent = new PaymentCompletedEvent
         {
+            PaymentId = 1,
             OrderId = order.OrderId,
+            ClientId = 1,
             Amount = 100,
             PaymentMethod = "CreditCard",
             TransactionId = "TXN123",
@@ -59,6 +61,8 @@ public class PaymentCompletedConsumerTest
         var updatedOrder = await context.Orders.FindAsync(order.OrderId);
         updatedOrder.Should().NotBeNull();
         updatedOrder!.Status.Should().Be(OrderStatus.Paid);
+        updatedOrder.PaymentTransactionId.Should().Be("TXN123");
+        updatedOrder.PaymentGateway.Should().Be("CreditCard");
     }
 
     [TestMethod]
@@ -70,7 +74,9 @@ public class PaymentCompletedConsumerTest
 
         var paymentEvent = new PaymentCompletedEvent
         {
+            PaymentId = 1,
             OrderId = 999, // Non-existent order
+            ClientId = 1,
             Amount = 100,
             PaymentMethod = "CreditCard",
             TransactionId = "TXN123",
@@ -88,7 +94,7 @@ public class PaymentCompletedConsumerTest
     }
 
     [TestMethod]
-    public async Task Should_NotUpdateOrder_When_AlreadyPaid()
+    public async Task Should_UpdateOrder_EvenWhenAlreadyPaid()
     {
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
@@ -98,7 +104,8 @@ public class PaymentCompletedConsumerTest
             ClientId = 1,
             Status = OrderStatus.Paid, // Already paid
             Total = 100,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            PaymentTransactionId = "OLD_TXN"
         };
         context.Orders.Add(order);
         await context.SaveChangesAsync();
@@ -107,10 +114,12 @@ public class PaymentCompletedConsumerTest
 
         var paymentEvent = new PaymentCompletedEvent
         {
+            PaymentId = 2,
             OrderId = order.OrderId,
+            ClientId = 1,
             Amount = 100,
-            PaymentMethod = "CreditCard",
-            TransactionId = "TXN123",
+            PaymentMethod = "MercadoPago",
+            TransactionId = "NEW_TXN",
             PaidAt = DateTime.UtcNow
         };
 
@@ -122,6 +131,7 @@ public class PaymentCompletedConsumerTest
 
         // Assert
         var updatedOrder = await context.Orders.FindAsync(order.OrderId);
-        updatedOrder!.Status.Should().Be(OrderStatus.Paid); // Still paid
+        updatedOrder!.Status.Should().Be(OrderStatus.Paid);
+        updatedOrder.PaymentTransactionId.Should().Be("NEW_TXN");
     }
 }

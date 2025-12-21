@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="8.8.0" />
     <PackageReference Include="MassTransit" Version="8.5.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="MSTest" Version="4.0.1" />
   </ItemGroup>
@@ -21,9 +21,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Order.Domain\Order.Domain.csproj" />
+    <ProjectReference Include="..\Order.Common\Order.Common.csproj" />
     <ProjectReference Include="..\Order.Persistence.Database\Order.Persistence.Database.csproj" />
     <ProjectReference Include="..\Order.Service.EventHandlers\Order.Service.EventHandlers.csproj" />
+    <ProjectReference Include="..\Order.Service.Proxies\Order.Service.Proxies.csproj" />
     <ProjectReference Include="..\Order.Api\Order.Api.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Messaging\Common.Messaging.csproj" />
   </ItemGroup>
 
 </Project>
