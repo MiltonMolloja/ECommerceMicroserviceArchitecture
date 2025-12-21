@@ -25,6 +25,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
