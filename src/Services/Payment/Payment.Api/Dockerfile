@@ -18,6 +18,7 @@ COPY ["src/Common/Common.Logging/Common.Logging.csproj", "src/Common/Common.Logg
 COPY ["src/Common/Common.Messaging/Common.Messaging.csproj", "src/Common/Common.Messaging/"]
 COPY ["src/Common/Common.RateLimiting/Common.RateLimiting.csproj", "src/Common/Common.RateLimiting/"]
 COPY ["src/Common/Common.Validation/Common.Validation.csproj", "src/Common/Common.Validation/"]
+COPY ["src/Common/Common.Database/Common.Database.csproj", "src/Common/Common.Database/"]
 
 # Copy Service Common projects
 COPY ["src/Services/Service.Common.Authentication/Service.Common.Authentication.csproj", "src/Services/Service.Common.Authentication/"]
