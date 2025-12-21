@@ -230,7 +230,18 @@ namespace Identity.Api
             using (var scope = app.ApplicationServices.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                db.Database.EnsureCreated();
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Startup>>();
+                try
+                {
+                    logger.LogInformation("Attempting to create database schema...");
+                    var created = db.Database.EnsureCreated();
+                    logger.LogInformation("Database EnsureCreated returned: {Created}", created);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to create database schema");
+                    throw;
+                }
             }
 
             // Database Logging - Enabled in all environments
