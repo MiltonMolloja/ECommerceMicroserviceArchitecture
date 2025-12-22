@@ -203,11 +203,21 @@ namespace Order.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            // Auto-migrate database on startup
+            // Auto-create database schema on startup (for PostgreSQL compatibility)
             using (var scope = app.ApplicationServices.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                db.Database.EnsureCreated();
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Startup>>();
+                try
+                {
+                    db.Database.ExecuteSqlRaw("CREATE SCHEMA IF NOT EXISTS \"Order\"");
+                    var created = db.Database.EnsureCreated();
+                    logger.LogInformation("Database EnsureCreated for Order returned: {Created}", created);
+                }
+                catch (System.Exception ex)
+                {
+                    logger.LogError(ex, "Failed to create Order database schema");
+                }
             }
 
             // Database Logging - Enabled in all environments
