@@ -125,7 +125,7 @@ namespace Identity.Service.EventHandlers
                     claims.Add(new Claim(ClaimTypes.Role, role));
                 }
 
-                var secretKey = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("SecretKey"));
+                var secretKey = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("Jwt:SecretKey"));
                 var expirationMinutes = 30;
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {

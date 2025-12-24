@@ -1,4 +1,4 @@
-﻿using Identity.Domain;
+using Identity.Domain;
 using Identity.Persistence.Database;
 using Identity.Service.EventHandlers.Commands;
 using Identity.Service.EventHandlers.Responses;
@@ -142,7 +142,7 @@ namespace Identity.Service.EventHandlers
 
         private async Task GenerateToken(ApplicationUser user, IdentityAccess identity)
         {
-            var secretKey = _configuration.GetValue<string>("SecretKey");
+            var secretKey = _configuration.GetValue<string>("Jwt:SecretKey");
             var key = Encoding.ASCII.GetBytes(secretKey);
 
             var claims = new List<Claim>
