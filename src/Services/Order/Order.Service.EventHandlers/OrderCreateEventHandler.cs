@@ -1,6 +1,7 @@
 using Common.Messaging.Events.Orders;
 using MassTransit;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Order.Domain;
 using Order.Persistence.Database;
@@ -39,37 +40,43 @@ namespace Order.Service.EventHandlers
             _logger.LogInformation("--- New order creation started");
             var entry = new Domain.Order();
 
-            using (var trx = await _context.Database.BeginTransactionAsync()) 
+            // Use execution strategy to support retry on failure (required for PostgreSQL with NpgsqlRetryingExecutionStrategy)
+            var strategy = _context.Database.CreateExecutionStrategy();
+
+            await strategy.ExecuteAsync(async () =>
             {
-                // 01. Prepare detail
-                _logger.LogInformation("--- Preparing detail");
-                PrepareDetail(entry, notification);
-
-                // 02. Prepare header
-                _logger.LogInformation("--- Preparing header");
-                PrepareHeader(entry, notification);
-
-                // 03. Create order
-                _logger.LogInformation("--- Creating order");
-                await _context.AddAsync(entry);
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation($"--- Order {entry.OrderId} was created");
-
-                // 04. Update Stocks
-                _logger.LogInformation("--- Updating stock");
-                await _catalogProxy.UpdateStockAsync(new ProductInStockUpdateStockCommand
+                using (var trx = await _context.Database.BeginTransactionAsync(cancellationToken)) 
                 {
-                    Items = notification.Items.Select(x => new ProductInStockUpdateItem
-                    {
-                        ProductId = x.ProductId,
-                        Stock = x.Quantity,
-                        Action = ProductInStockAction.Substract
-                    })
-                });
+                    // 01. Prepare detail
+                    _logger.LogInformation("--- Preparing detail");
+                    PrepareDetail(entry, notification);
 
-                await trx.CommitAsync();
-            }
+                    // 02. Prepare header
+                    _logger.LogInformation("--- Preparing header");
+                    PrepareHeader(entry, notification);
+
+                    // 03. Create order
+                    _logger.LogInformation("--- Creating order");
+                    await _context.AddAsync(entry, cancellationToken);
+                    await _context.SaveChangesAsync(cancellationToken);
+
+                    _logger.LogInformation($"--- Order {entry.OrderId} was created");
+
+                    // 04. Update Stocks
+                    _logger.LogInformation("--- Updating stock");
+                    await _catalogProxy.UpdateStockAsync(new ProductInStockUpdateStockCommand
+                    {
+                        Items = notification.Items.Select(x => new ProductInStockUpdateItem
+                        {
+                            ProductId = x.ProductId,
+                            Stock = x.Quantity,
+                            Action = ProductInStockAction.Substract
+                        })
+                    });
+
+                    await trx.CommitAsync(cancellationToken);
+                }
+            });
 
             // Publicar evento OrderCreated para notificar a otros servicios
             try
