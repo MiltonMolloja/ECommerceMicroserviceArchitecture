@@ -45,9 +45,14 @@ namespace Notification.Api.Services
                 {
                     case "email-confirmation":
                     case "email-verification":
-                        subject = "Verifica tu Correo Electrónico - ECommerce";
-                        htmlBody = RenderEmailVerificationTemplate(dataDict);
-                        textBody = $"Hola {GetValue(dataDict, "FirstName")}, verifica tu email con el token: {GetValue(dataDict, "ConfirmationToken")}";
+                        {
+                            subject = "Verifica tu Correo Electrónico - ECommerce";
+                            // Generar el link de verificación
+                            var verificationLink = GenerateVerificationLink(dataDict);
+                            dataDict["verificationLink"] = verificationLink;
+                            htmlBody = RenderEmailVerificationTemplate(dataDict);
+                            textBody = $"Hola {GetValue(dataDict, "FirstName")},\n\nGracias por registrarte en ECommerce.\n\nPor favor verifica tu correo haciendo clic en el siguiente enlace:\n{verificationLink}\n\nEste enlace expirará en 24 horas.\n\nSaludos,\nEl equipo de ECommerce";
+                        }
                         break;
 
                     case "password-reset":
@@ -291,15 +296,7 @@ namespace Notification.Api.Services
         {
             // Prepare data with computed values
             var firstName = GetValue(data, "FirstName");
-            var confirmationToken = GetValue(data, "ConfirmationToken");
-            var userId = GetValue(data, "UserId");
-            var baseUrl = GetValue(data, "baseUrl");
-
-            // Generar enlace al API Gateway endpoint con URL encoding
-            var apiGatewayUrl = _configuration.GetValue<string>("ApiGatewayUrl") ?? "http://localhost:10000";
-            var encodedToken = Uri.EscapeDataString(confirmationToken);
-            var encodedUserId = Uri.EscapeDataString(userId);
-            var verificationLink = $"{apiGatewayUrl}/v1/identity/confirm-email?userId={encodedUserId}&token={encodedToken}";
+            var verificationLink = GetValue(data, "verificationLink");
 
             // Try to load from file first
             var template = LoadTemplateFromFile("email-confirmation.html");
@@ -310,9 +307,6 @@ namespace Notification.Api.Services
                 // Fallback to inline template
                 return $@"<html><body><h1>Verifica tu correo</h1><p>Hola {firstName},</p><p>Por favor verifica tu correo haciendo clic en el siguiente enlace:</p><a href=""{verificationLink}"">Verificar Email</a></body></html>";
             }
-
-            // Add computed values to data
-            data["verificationLink"] = verificationLink;
 
             // Render template with data
             var renderedTemplate = RenderTemplateWithHandlebars(template, data);
@@ -716,6 +710,16 @@ namespace Notification.Api.Services
             var renderedTemplate = RenderTemplateWithHandlebars(template, data);
 
             return renderedTemplate;
+        }
+
+        private string GenerateVerificationLink(Dictionary<string, object> data)
+        {
+            var confirmationToken = GetValue(data, "ConfirmationToken");
+            var userId = GetValue(data, "UserId");
+            var apiGatewayUrl = _configuration.GetValue<string>("ApiGatewayUrl") ?? "http://localhost:10000";
+            var encodedToken = Uri.EscapeDataString(confirmationToken);
+            var encodedUserId = Uri.EscapeDataString(userId);
+            return $"{apiGatewayUrl}/v1/identity/confirm-email?userId={encodedUserId}&token={encodedToken}";
         }
 
         private string RenderDefaultTemplate(Dictionary<string, object> data)
