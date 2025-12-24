@@ -7,8 +7,8 @@ namespace Identity.Service.EventHandlers.Validators
     {
         public Verify2FACommandValidator()
         {
-            RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("UserId is required");
+            // Note: UserId is set by the controller from JWT token, not from the request body
+            // So we don't validate it here
 
             RuleFor(x => x.Code)
                 .NotEmpty().WithMessage("Code is required")
