@@ -115,6 +115,7 @@ namespace Order.Service.EventHandlers
             entry.Items = notification.Items.Select(x => new OrderDetail
             {
                 ProductId = x.ProductId,
+                ProductName = $"Product #{x.ProductId}", // TODO: Get from catalog if needed
                 Quantity = x.Quantity,
                 UnitPrice = x.Price,
                 Total = x.Price * x.Quantity
