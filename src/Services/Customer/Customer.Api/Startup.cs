@@ -169,7 +169,7 @@ namespace Customer.Api
 
             // Add Authentication
             var secretKey = Encoding.ASCII.GetBytes(
-                Configuration.GetValue<string>("SecretKey")
+                Configuration.GetValue<string>("Jwt:SecretKey")
             );
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(x =>
