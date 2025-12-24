@@ -128,6 +128,8 @@ namespace Order.Service.EventHandlers
             entry.PaymentType = notification.PaymentType;
             entry.ClientId = notification.ClientId.Value; // ClientId is guaranteed to have a value by the controller
             entry.CreatedAt = DateTime.UtcNow;
+            entry.OrderDate = DateTime.UtcNow; // Required by PostgreSQL schema
+            entry.UpdatedAt = DateTime.UtcNow;
 
             // Shipping Address
             entry.ShippingRecipientName = notification.ShippingRecipientName;
@@ -138,6 +140,9 @@ namespace Order.Service.EventHandlers
             entry.ShippingState = notification.ShippingState;
             entry.ShippingPostalCode = notification.ShippingPostalCode;
             entry.ShippingCountry = notification.ShippingCountry;
+            
+            // Legacy ShippingAddress field (for PostgreSQL compatibility)
+            entry.ShippingAddress = $"{notification.ShippingAddressLine1}, {notification.ShippingCity}, {notification.ShippingCountry}";
 
             // Billing Address
             entry.BillingAddressLine1 = notification.BillingSameAsShipping
@@ -154,8 +159,11 @@ namespace Order.Service.EventHandlers
                 : notification.BillingCountry;
             entry.BillingSameAsShipping = notification.BillingSameAsShipping;
 
-            // Sum
-            entry.Total = entry.Items.Sum(x => x.Total);
+            // Financial calculations (required by PostgreSQL schema)
+            entry.SubTotal = entry.Items.Sum(x => x.Total);
+            entry.Tax = 0; // TODO: Calculate tax if needed
+            entry.Discount = 0; // TODO: Apply discounts if needed
+            entry.Total = entry.SubTotal + entry.Tax - entry.Discount;
         }
     }
 }

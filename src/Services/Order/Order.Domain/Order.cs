@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using static Order.Common.Enums;
 
@@ -12,10 +12,20 @@ namespace Order.Domain
         public int ClientId { get; set; }
         public ICollection<OrderDetail> Items { get; set; } = new List<OrderDetail>();
         public DateTime CreatedAt { get; set; }
+        
+        // Financial fields (required by PostgreSQL schema)
+        public decimal SubTotal { get; set; }
+        public decimal Tax { get; set; }
+        public decimal Discount { get; set; }
         public decimal Total { get; set; }
+        
+        // Legacy fields for PostgreSQL compatibility
+        public DateTime OrderDate { get; set; }
+        public string ShippingAddress { get; set; }
+        public string Notes { get; set; }
 
         // Nuevos campos para tracking de estados
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } // Required by PostgreSQL schema (NOT NULL)
         public DateTime? PaidAt { get; set; }
         public DateTime? ShippedAt { get; set; }
         public DateTime? DeliveredAt { get; set; }
