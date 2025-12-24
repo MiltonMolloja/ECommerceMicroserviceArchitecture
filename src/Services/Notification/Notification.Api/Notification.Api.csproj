@@ -5,6 +5,13 @@
     <UserSecretsId>422fa609-3a82-47ee-98d5-77e68bcc71ff</UserSecretsId>
   </PropertyGroup>
 
+  <!-- Include Templates folder in publish output -->
+  <ItemGroup>
+    <Content Include="Templates\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.UI" Version="8.0.2" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1" />
