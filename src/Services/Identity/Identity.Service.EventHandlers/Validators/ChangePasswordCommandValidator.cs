@@ -7,8 +7,7 @@ namespace Identity.Service.EventHandlers.Validators
     {
         public ChangePasswordCommandValidator()
         {
-            RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("UserId is required");
+            // UserId is set by the controller from JWT claims, not validated here
 
             RuleFor(x => x.CurrentPassword)
                 .NotEmpty().WithMessage("Current password is required");

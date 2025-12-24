@@ -8,7 +8,7 @@
       "command": "npx",
       "args": ["-y", "mcp-ssh-tool"],
       "env": {
-        "SSH_HOST": "72.61.128.126",
+        "SSH_HOST-2": "72.61.128.126",
         "SSH_USER": "root",
         "SSH_PORT": "22"
       }
