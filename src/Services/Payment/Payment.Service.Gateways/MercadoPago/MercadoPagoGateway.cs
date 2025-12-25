@@ -36,9 +36,17 @@ namespace Payment.Service.Gateways.MercadoPago
             {
                 _logger.LogInformation("Processing payment with MercadoPago for amount {Amount}", request.Amount);
 
+                // ============================================================================
+                // DEMO ONLY: Monto hardcodeado a 20 ARS para propósitos demostrativos.
+                // En producción, usar request.Amount para cobrar el monto real del carrito.
+                // TODO: Remover este hardcode antes de ir a producción.
+                // ============================================================================
+                const decimal DEMO_AMOUNT = 20.00m;
+                _logger.LogWarning("DEMO MODE: Using hardcoded amount {DemoAmount} ARS instead of {RealAmount}", DEMO_AMOUNT, request.Amount);
+
                 var paymentData = new MercadoPagoPaymentRequest
                 {
-                    TransactionAmount = request.Amount,
+                    TransactionAmount = DEMO_AMOUNT, // DEMO: Usar monto fijo de 20 ARS
                     Token = request.PaymentToken,
                     Description = request.Description,
                     Installments = request.Installments,
