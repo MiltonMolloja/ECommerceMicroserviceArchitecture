@@ -110,6 +110,48 @@ namespace Notification.Api.Services
                         textBody = $"Hola {GetValue(dataDict, "CustomerName")}, tu reembolso {GetValue(dataDict, "RefundNumber")} ha sido procesado.";
                         break;
 
+                    case "welcome-email":
+                    case "welcomeemail":
+                        subject = "¡Bienvenido a ECommerce!";
+                        htmlBody = RenderWelcomeEmailTemplate(dataDict);
+                        textBody = $"Hola {GetValue(dataDict, "CustomerName")}, ¡bienvenido a ECommerce! Gracias por registrarte.";
+                        break;
+
+                    case "cart-abandoned":
+                    case "cartabandoned":
+                        subject = "¡No olvides tu carrito! - ECommerce";
+                        htmlBody = RenderCartAbandonedTemplate(dataDict);
+                        textBody = $"Hola {GetValue(dataDict, "CustomerName")}, tienes productos esperándote en tu carrito.";
+                        break;
+
+                    case "order-cancelled":
+                    case "ordercancelled":
+                        subject = $"Pedido Cancelado - {GetValue(dataDict, "OrderNumber")} - ECommerce";
+                        htmlBody = RenderOrderCancelledTemplate(dataDict);
+                        textBody = $"Hola {GetValue(dataDict, "CustomerName")}, tu pedido {GetValue(dataDict, "OrderNumber")} ha sido cancelado.";
+                        break;
+
+                    case "order-shipped":
+                    case "ordershipped":
+                        subject = $"¡Tu pedido está en camino! - {GetValue(dataDict, "OrderNumber")} - ECommerce";
+                        htmlBody = RenderOrderShippedTemplate(dataDict);
+                        textBody = $"Hola {GetValue(dataDict, "CustomerName")}, tu pedido {GetValue(dataDict, "OrderNumber")} ha sido enviado.";
+                        break;
+
+                    case "order-delivered":
+                    case "orderdelivered":
+                        subject = $"¡Pedido Entregado! - {GetValue(dataDict, "OrderNumber")} - ECommerce";
+                        htmlBody = RenderOrderDeliveredTemplate(dataDict);
+                        textBody = $"Hola {GetValue(dataDict, "CustomerName")}, tu pedido {GetValue(dataDict, "OrderNumber")} ha sido entregado.";
+                        break;
+
+                    case "review-request":
+                    case "reviewrequest":
+                        subject = "¿Qué te pareció tu compra? - ECommerce";
+                        htmlBody = RenderReviewRequestTemplate(dataDict);
+                        textBody = $"Hola {GetValue(dataDict, "CustomerName")}, nos encantaría conocer tu opinión sobre los productos que compraste.";
+                        break;
+
                     default:
                         _logger.LogWarning($"Template not found: {templateName}");
                         subject = "Notificación - ECommerce";
@@ -720,6 +762,387 @@ namespace Notification.Api.Services
             var encodedToken = Uri.EscapeDataString(confirmationToken);
             var encodedUserId = Uri.EscapeDataString(userId);
             return $"{apiGatewayUrl}/v1/identity/confirm-email?userId={encodedUserId}&token={encodedToken}";
+        }
+
+        private string RenderWelcomeEmailTemplate(Dictionary<string, object> data)
+        {
+            var customerName = GetValue(data, "CustomerName");
+            var email = GetValue(data, "Email");
+            var registeredAt = GetValue(data, "RegisteredAt");
+            var year = DateTime.Now.Year;
+
+            // Try to load from file first
+            var template = LoadTemplateFromFile("welcome-email.html");
+
+            if (template != null)
+            {
+                data["customerName"] = customerName;
+                data["email"] = email;
+                data["registeredAt"] = registeredAt;
+                return RenderTemplateWithHandlebars(template, data);
+            }
+
+            // Fallback template
+            return $@"<!DOCTYPE html>
+<html lang=""es"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>Bienvenido - ECommerce</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; }}
+        .container {{ max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
+        h1 {{ color: #232F3E; text-align: center; }}
+        .icon {{ text-align: center; font-size: 64px; margin: 20px 0; }}
+        p {{ color: #555; line-height: 1.6; }}
+        .btn {{ display: inline-block; background: #FF9900; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin-top: 20px; }}
+        .footer {{ margin-top: 40px; text-align: center; color: #666; font-size: 13px; }}
+    </style>
+</head>
+<body>
+    <div class=""container"">
+        <div class=""icon"">🎉</div>
+        <h1>¡Bienvenido a ECommerce!</h1>
+        <p>Hola <strong>{customerName}</strong>,</p>
+        <p>¡Gracias por registrarte en ECommerce! Estamos emocionados de tenerte como parte de nuestra comunidad.</p>
+        <p>Ahora puedes:</p>
+        <ul>
+            <li>Explorar miles de productos</li>
+            <li>Guardar tus favoritos</li>
+            <li>Recibir ofertas exclusivas</li>
+            <li>Realizar compras seguras</li>
+        </ul>
+        <p style=""text-align: center;"">
+            <a href=""https://ecommerce.com"" class=""btn"">Comenzar a Comprar</a>
+        </p>
+        <p style=""margin-top: 30px;"">Saludos,<br><strong>El equipo de ECommerce</strong></p>
+        <div class=""footer"">
+            <p>© {year} ECommerce, Inc. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>";
+        }
+
+        private string RenderCartAbandonedTemplate(Dictionary<string, object> data)
+        {
+            var customerName = GetValue(data, "CustomerName");
+            var cartTotal = GetValue(data, "CartTotal");
+            var itemCount = GetValue(data, "ItemCount");
+            var itemsList = GetValue(data, "ItemsList");
+            var cartUrl = GetValue(data, "CartUrl");
+            var year = DateTime.Now.Year;
+
+            // Try to load from file first
+            var template = LoadTemplateFromFile("cart-abandoned.html");
+
+            if (template != null)
+            {
+                data["customerName"] = customerName;
+                data["cartTotal"] = cartTotal;
+                data["itemCount"] = itemCount;
+                data["itemsList"] = itemsList;
+                data["cartUrl"] = cartUrl;
+                return RenderTemplateWithHandlebars(template, data);
+            }
+
+            // Fallback template
+            return $@"<!DOCTYPE html>
+<html lang=""es"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>Tu carrito te espera - ECommerce</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; }}
+        .container {{ max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
+        h1 {{ color: #232F3E; text-align: center; }}
+        .icon {{ text-align: center; font-size: 64px; margin: 20px 0; }}
+        p {{ color: #555; line-height: 1.6; }}
+        .btn {{ display: inline-block; background: #FF9900; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin-top: 20px; }}
+        .cart-summary {{ background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0; }}
+        .footer {{ margin-top: 40px; text-align: center; color: #666; font-size: 13px; }}
+    </style>
+</head>
+<body>
+    <div class=""container"">
+        <div class=""icon"">🛒</div>
+        <h1>¡Tu carrito te espera!</h1>
+        <p>Hola <strong>{customerName}</strong>,</p>
+        <p>Notamos que dejaste algunos productos en tu carrito. ¡No te preocupes, los guardamos para ti!</p>
+        <div class=""cart-summary"">
+            <p><strong>Productos en tu carrito ({itemCount}):</strong></p>
+            <p>{itemsList}</p>
+            <p><strong>Total:</strong> {cartTotal}</p>
+        </div>
+        <p style=""text-align: center;"">
+            <a href=""{cartUrl}"" class=""btn"">Completar mi Compra</a>
+        </p>
+        <p style=""margin-top: 30px;"">Saludos,<br><strong>El equipo de ECommerce</strong></p>
+        <div class=""footer"">
+            <p>© {year} ECommerce, Inc. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>";
+        }
+
+        private string RenderOrderCancelledTemplate(Dictionary<string, object> data)
+        {
+            var customerName = GetValue(data, "CustomerName");
+            var orderNumber = GetValue(data, "OrderNumber");
+            var amount = GetValue(data, "Amount");
+            var cancellationReason = GetValue(data, "CancellationReason");
+            var cancelledAt = GetValue(data, "CancelledAt");
+            var year = DateTime.Now.Year;
+
+            // Try to load from file first
+            var template = LoadTemplateFromFile("order-cancelled.html");
+
+            if (template != null)
+            {
+                data["customerName"] = customerName;
+                data["orderNumber"] = orderNumber;
+                data["amount"] = amount;
+                data["cancellationReason"] = cancellationReason;
+                data["cancelledAt"] = cancelledAt;
+                return RenderTemplateWithHandlebars(template, data);
+            }
+
+            // Fallback template
+            return $@"<!DOCTYPE html>
+<html lang=""es"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>Pedido Cancelado - ECommerce</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; }}
+        .container {{ max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
+        h1 {{ color: #232F3E; text-align: center; }}
+        .icon {{ text-align: center; font-size: 64px; margin: 20px 0; }}
+        p {{ color: #555; line-height: 1.6; }}
+        .order-details {{ background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0; }}
+        .btn {{ display: inline-block; background: #FF9900; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin-top: 20px; }}
+        .footer {{ margin-top: 40px; text-align: center; color: #666; font-size: 13px; }}
+    </style>
+</head>
+<body>
+    <div class=""container"">
+        <div class=""icon"">❌</div>
+        <h1>Pedido Cancelado</h1>
+        <p>Hola <strong>{customerName}</strong>,</p>
+        <p>Te confirmamos que tu pedido ha sido cancelado.</p>
+        <div class=""order-details"">
+            <p><strong>Número de Pedido:</strong> {orderNumber}</p>
+            <p><strong>Monto:</strong> {amount}</p>
+            <p><strong>Motivo:</strong> {cancellationReason}</p>
+            <p><strong>Fecha de Cancelación:</strong> {cancelledAt}</p>
+        </div>
+        <p>Si se realizó algún cargo, el reembolso será procesado en los próximos 5-10 días hábiles.</p>
+        <p style=""text-align: center;"">
+            <a href=""https://ecommerce.com"" class=""btn"">Seguir Comprando</a>
+        </p>
+        <p style=""margin-top: 30px;"">Saludos,<br><strong>El equipo de ECommerce</strong></p>
+        <div class=""footer"">
+            <p>© {year} ECommerce, Inc. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>";
+        }
+
+        private string RenderOrderShippedTemplate(Dictionary<string, object> data)
+        {
+            var customerName = GetValue(data, "CustomerName");
+            var orderNumber = GetValue(data, "OrderNumber");
+            var trackingNumber = GetValue(data, "TrackingNumber");
+            var carrier = GetValue(data, "Carrier");
+            var trackingUrl = GetValue(data, "TrackingUrl");
+            var shippedAt = GetValue(data, "ShippedAt");
+            var estimatedDelivery = GetValue(data, "EstimatedDelivery");
+            var shippingAddress = GetValue(data, "ShippingAddress");
+            var year = DateTime.Now.Year;
+
+            // Try to load from file first
+            var template = LoadTemplateFromFile("order-shipped.html");
+
+            if (template != null)
+            {
+                data["customerName"] = customerName;
+                data["orderNumber"] = orderNumber;
+                data["trackingNumber"] = trackingNumber;
+                data["carrier"] = carrier;
+                data["trackingUrl"] = trackingUrl;
+                data["shippedAt"] = shippedAt;
+                data["estimatedDelivery"] = estimatedDelivery;
+                data["shippingAddress"] = shippingAddress;
+                return RenderTemplateWithHandlebars(template, data);
+            }
+
+            // Fallback template
+            return $@"<!DOCTYPE html>
+<html lang=""es"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>Tu pedido está en camino - ECommerce</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; }}
+        .container {{ max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
+        h1 {{ color: #232F3E; text-align: center; }}
+        .icon {{ text-align: center; font-size: 64px; margin: 20px 0; }}
+        p {{ color: #555; line-height: 1.6; }}
+        .tracking-box {{ background: #e8f5e9; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #4CAF50; }}
+        .shipping-details {{ background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0; }}
+        .btn {{ display: inline-block; background: #FF9900; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin-top: 20px; }}
+        .footer {{ margin-top: 40px; text-align: center; color: #666; font-size: 13px; }}
+    </style>
+</head>
+<body>
+    <div class=""container"">
+        <div class=""icon"">📦</div>
+        <h1>¡Tu pedido está en camino!</h1>
+        <p>Hola <strong>{customerName}</strong>,</p>
+        <p>¡Buenas noticias! Tu pedido ha sido enviado y está en camino.</p>
+        <div class=""tracking-box"">
+            <p><strong>Número de Seguimiento:</strong> {trackingNumber}</p>
+            <p><strong>Transportista:</strong> {carrier}</p>
+            <p style=""text-align: center; margin-top: 15px;"">
+                <a href=""{trackingUrl}"" class=""btn"">Rastrear Envío</a>
+            </p>
+        </div>
+        <div class=""shipping-details"">
+            <p><strong>Pedido:</strong> {orderNumber}</p>
+            <p><strong>Fecha de Envío:</strong> {shippedAt}</p>
+            <p><strong>Entrega Estimada:</strong> {estimatedDelivery}</p>
+            <p><strong>Dirección de Entrega:</strong> {shippingAddress}</p>
+        </div>
+        <p style=""margin-top: 30px;"">Saludos,<br><strong>El equipo de ECommerce</strong></p>
+        <div class=""footer"">
+            <p>© {year} ECommerce, Inc. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>";
+        }
+
+        private string RenderOrderDeliveredTemplate(Dictionary<string, object> data)
+        {
+            var customerName = GetValue(data, "CustomerName");
+            var orderNumber = GetValue(data, "OrderNumber");
+            var deliveredAt = GetValue(data, "DeliveredAt");
+            var receivedBy = GetValue(data, "ReceivedBy");
+            var reviewUrl = GetValue(data, "ReviewUrl");
+            var year = DateTime.Now.Year;
+
+            // Try to load from file first
+            var template = LoadTemplateFromFile("order-delivered.html");
+
+            if (template != null)
+            {
+                data["customerName"] = customerName;
+                data["orderNumber"] = orderNumber;
+                data["deliveredAt"] = deliveredAt;
+                data["receivedBy"] = receivedBy;
+                data["reviewUrl"] = reviewUrl;
+                return RenderTemplateWithHandlebars(template, data);
+            }
+
+            // Fallback template
+            return $@"<!DOCTYPE html>
+<html lang=""es"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>Pedido Entregado - ECommerce</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; }}
+        .container {{ max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
+        h1 {{ color: #232F3E; text-align: center; }}
+        .icon {{ text-align: center; font-size: 64px; margin: 20px 0; }}
+        p {{ color: #555; line-height: 1.6; }}
+        .success-box {{ background: #e8f5e9; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #4CAF50; }}
+        .btn {{ display: inline-block; background: #FF9900; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin-top: 20px; }}
+        .footer {{ margin-top: 40px; text-align: center; color: #666; font-size: 13px; }}
+    </style>
+</head>
+<body>
+    <div class=""container"">
+        <div class=""icon"">✅</div>
+        <h1>¡Pedido Entregado!</h1>
+        <p>Hola <strong>{customerName}</strong>,</p>
+        <p>Tu pedido ha sido entregado exitosamente.</p>
+        <div class=""success-box"">
+            <p><strong>Pedido:</strong> {orderNumber}</p>
+            <p><strong>Entregado el:</strong> {deliveredAt}</p>
+            <p><strong>Recibido por:</strong> {receivedBy}</p>
+        </div>
+        <p>¡Esperamos que disfrutes tu compra! Nos encantaría conocer tu opinión.</p>
+        <p style=""text-align: center;"">
+            <a href=""{reviewUrl}"" class=""btn"">Dejar una Reseña</a>
+        </p>
+        <p style=""margin-top: 30px;"">Saludos,<br><strong>El equipo de ECommerce</strong></p>
+        <div class=""footer"">
+            <p>© {year} ECommerce, Inc. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>";
+        }
+
+        private string RenderReviewRequestTemplate(Dictionary<string, object> data)
+        {
+            var customerName = GetValue(data, "CustomerName");
+            var orderNumber = GetValue(data, "OrderNumber");
+            var year = DateTime.Now.Year;
+
+            // Try to load from file first
+            var template = LoadTemplateFromFile("review-request.html");
+
+            if (template != null)
+            {
+                data["customerName"] = customerName;
+                data["orderNumber"] = orderNumber;
+                return RenderTemplateWithHandlebars(template, data);
+            }
+
+            // Fallback template
+            return $@"<!DOCTYPE html>
+<html lang=""es"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>¿Qué te pareció tu compra? - ECommerce</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; }}
+        .container {{ max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
+        h1 {{ color: #232F3E; text-align: center; }}
+        .icon {{ text-align: center; font-size: 64px; margin: 20px 0; }}
+        p {{ color: #555; line-height: 1.6; }}
+        .stars {{ text-align: center; font-size: 32px; margin: 20px 0; }}
+        .btn {{ display: inline-block; background: #FF9900; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin-top: 20px; }}
+        .footer {{ margin-top: 40px; text-align: center; color: #666; font-size: 13px; }}
+    </style>
+</head>
+<body>
+    <div class=""container"">
+        <div class=""icon"">⭐</div>
+        <h1>¿Qué te pareció tu compra?</h1>
+        <p>Hola <strong>{customerName}</strong>,</p>
+        <p>Esperamos que estés disfrutando de los productos de tu pedido <strong>{orderNumber}</strong>.</p>
+        <p>Tu opinión es muy importante para nosotros y para otros compradores. ¿Podrías tomarte un momento para dejarnos una reseña?</p>
+        <div class=""stars"">⭐⭐⭐⭐⭐</div>
+        <p style=""text-align: center;"">
+            <a href=""https://ecommerce.com/orders/{orderNumber}/review"" class=""btn"">Escribir Reseña</a>
+        </p>
+        <p style=""margin-top: 30px;"">¡Gracias por tu tiempo!<br><strong>El equipo de ECommerce</strong></p>
+        <div class=""footer"">
+            <p>© {year} ECommerce, Inc. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>";
         }
 
         private string RenderDefaultTemplate(Dictionary<string, object> data)

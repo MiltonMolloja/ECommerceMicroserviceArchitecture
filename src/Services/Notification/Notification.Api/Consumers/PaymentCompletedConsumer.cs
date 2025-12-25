@@ -49,7 +49,7 @@ public class PaymentCompletedConsumer : IConsumer<PaymentCompletedEvent>
             // Enviar email de confirmación de compra usando template
             await _emailService.SendTemplatedEmailAsync(
                 message.ClientEmail,
-                "OrderConfirmation",
+                "purchase-confirmation",
                 emailData);
 
             _logger.LogInformation(

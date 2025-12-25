@@ -49,7 +49,7 @@ public class CartAbandonedConsumer : IConsumer<CartAbandonedEvent>
 
             await _emailService.SendTemplatedEmailAsync(
                 message.ClientEmail,
-                "CartAbandoned",
+                "cart-abandoned",
                 emailData);
 
             _logger.LogInformation(

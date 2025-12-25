@@ -1,9 +1,11 @@
 using Common.Messaging.DeadLetter;
 using MassTransit;
+using MassTransit.Topology;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Common.Messaging.Extensions;
 
@@ -47,6 +49,9 @@ public static class MassTransitExtensions
             // Configurar consumidores si se proporcionan
             configureConsumers?.Invoke(x);
 
+            // Usar KebabCaseEndpointNameFormatter globalmente para consistencia
+            x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter(false));
+
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(settings.Host, (ushort)settings.Port, settings.VirtualHost, h =>
@@ -54,6 +59,9 @@ public static class MassTransitExtensions
                     h.Username(settings.Username);
                     h.Password(settings.Password);
                 });
+
+                // Configurar el formateador de nombres de mensajes para usar kebab-case
+                cfg.MessageTopology.SetEntityNameFormatter(new KebabCaseEntityNameFormatter());
 
                 // Configuración de reintentos con backoff exponencial
                 cfg.UseMessageRetry(r =>
@@ -161,4 +169,30 @@ internal class DeadLetterEndpointNameFormatter : IEndpointNameFormatter
         => _defaultFormatter.CompensateActivity<T, TLog>();
 
     public string SanitizeName(string name) => _defaultFormatter.SanitizeName(name);
+}
+
+/// <summary>
+/// Formateador de nombres de entidades (exchanges, queues) en kebab-case.
+/// Convierte PaymentCompletedEvent a payment-completed-event.
+/// </summary>
+internal class KebabCaseEntityNameFormatter : IEntityNameFormatter
+{
+    public string FormatEntityName<T>()
+    {
+        return ToKebabCase(typeof(T).Name);
+    }
+
+    private static string ToKebabCase(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+            return name;
+
+        // Remover sufijo "Event" si existe
+        if (name.EndsWith("Event"))
+            name = name.Substring(0, name.Length - 5);
+
+        // Insertar guiones antes de mayúsculas y convertir a minúsculas
+        var result = Regex.Replace(name, "(?<!^)([A-Z])", "-$1").ToLowerInvariant();
+        return result;
+    }
 }

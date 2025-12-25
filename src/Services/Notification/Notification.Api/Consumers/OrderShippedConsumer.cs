@@ -51,7 +51,7 @@ public class OrderShippedConsumer : IConsumer<OrderShippedEvent>
             // Enviar email de confirmación de envío usando template
             await _emailService.SendTemplatedEmailAsync(
                 message.ClientEmail,
-                "OrderShipped",
+                "order-shipped",
                 emailData);
 
             _logger.LogInformation(

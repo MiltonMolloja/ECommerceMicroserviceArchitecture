@@ -45,7 +45,7 @@ public class OrderCancelledConsumer : IConsumer<OrderCancelledEvent>
 
             await _emailService.SendTemplatedEmailAsync(
                 message.ClientEmail,
-                "OrderCancelled",
+                "order-cancelled",
                 emailData);
 
             _logger.LogInformation(

@@ -51,7 +51,7 @@ public class OrderDeliveredConsumer : IConsumer<OrderDeliveredEvent>
             // Enviar email de confirmación de entrega
             await _emailService.SendTemplatedEmailAsync(
                 message.ClientEmail,
-                "OrderDelivered",
+                "order-delivered",
                 emailData);
 
             _logger.LogInformation(
@@ -74,7 +74,7 @@ public class OrderDeliveredConsumer : IConsumer<OrderDeliveredEvent>
 
             await _emailService.SendTemplatedEmailAsync(
                 message.ClientEmail,
-                "ReviewRequest",
+                "review-request",
                 reviewData);
 
             _logger.LogInformation(

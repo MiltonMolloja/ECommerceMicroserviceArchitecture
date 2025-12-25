@@ -25,6 +25,8 @@ using Notification.Api.Consumers;
 using Notification.Persistence.Database;
 using Notification.Service.EventHandlers.Services;
 using Notification.Service.Queries;
+using System;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 
@@ -88,9 +90,21 @@ namespace Notification.Api
             services.AddTransient<Services.IEmailTemplateService, Services.EmailTemplateServiceV2>();
             services.AddTransient<Services.IEmailService, Services.MailKitEmailService>();
 
-            // HttpClient for EmailNotificationService
-            services.AddHttpClient<IEmailNotificationService, EmailNotificationService>();
-            services.AddTransient<IEmailNotificationService, EmailNotificationService>();
+            // HttpClient for EmailNotificationService with timeout and resilience
+            services.AddTransient<CorrelationIdDelegatingHandler>();
+            services.AddHttpClient<IEmailNotificationService, EmailNotificationService>(client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(30); // 30 seconds timeout
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            })
+            .AddHttpMessageHandler<CorrelationIdDelegatingHandler>()
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                // Permite conexiones más estables
+                MaxConnectionsPerServer = 10,
+                UseCookies = false
+            })
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5)); // Recicla handlers cada 5 minutos
 
             // RabbitMQ Messaging with MassTransit
             services.AddRabbitMQMessaging(Configuration, x =>

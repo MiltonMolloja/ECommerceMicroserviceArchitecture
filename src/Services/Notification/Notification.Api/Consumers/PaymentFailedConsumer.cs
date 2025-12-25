@@ -48,7 +48,7 @@ public class PaymentFailedConsumer : IConsumer<PaymentFailedEvent>
             // Enviar email de notificación de pago fallido
             await _emailService.SendTemplatedEmailAsync(
                 message.ClientEmail,
-                "PaymentFailed",
+                "payment-failed",
                 emailData);
 
             _logger.LogInformation(

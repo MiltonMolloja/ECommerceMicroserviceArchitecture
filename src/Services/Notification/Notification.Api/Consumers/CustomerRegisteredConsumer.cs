@@ -43,7 +43,7 @@ public class CustomerRegisteredConsumer : IConsumer<CustomerRegisteredEvent>
 
             await _emailService.SendTemplatedEmailAsync(
                 message.Email,
-                "WelcomeEmail",
+                "welcome-email",
                 emailData);
 
             _logger.LogInformation(
