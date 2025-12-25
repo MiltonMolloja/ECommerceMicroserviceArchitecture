@@ -49,7 +49,13 @@ namespace Payment.Service.Gateways.MercadoPago
                     }
                 };
 
-                var response = await _httpClient.PostAsJsonAsync("/v1/payments", paymentData);
+                // MercadoPago requiere X-Idempotency-Key para evitar pagos duplicados
+                var idempotencyKey = Guid.NewGuid().ToString();
+                using var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/v1/payments");
+                httpRequest.Headers.Add("X-Idempotency-Key", idempotencyKey);
+                httpRequest.Content = JsonContent.Create(paymentData);
+                
+                var response = await _httpClient.SendAsync(httpRequest);
                 var responseContent = await response.Content.ReadAsStringAsync();
 
                 _logger.LogInformation("MercadoPago response status: {StatusCode}", response.StatusCode);
@@ -123,7 +129,13 @@ namespace Payment.Service.Gateways.MercadoPago
                     amount = request.Amount
                 };
 
-                var response = await _httpClient.PostAsJsonAsync($"/v1/payments/{request.TransactionId}/refunds", refundData);
+                // MercadoPago requiere X-Idempotency-Key para evitar reembolsos duplicados
+                var idempotencyKey = Guid.NewGuid().ToString();
+                using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"/v1/payments/{request.TransactionId}/refunds");
+                httpRequest.Headers.Add("X-Idempotency-Key", idempotencyKey);
+                httpRequest.Content = JsonContent.Create(refundData);
+                
+                var response = await _httpClient.SendAsync(httpRequest);
                 var responseContent = await response.Content.ReadAsStringAsync();
 
                 _logger.LogInformation("MercadoPago refund response status: {StatusCode}", response.StatusCode);
