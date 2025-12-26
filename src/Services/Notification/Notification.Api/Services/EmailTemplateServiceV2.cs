@@ -758,10 +758,13 @@ namespace Notification.Api.Services
         {
             var confirmationToken = GetValue(data, "ConfirmationToken");
             var userId = GetValue(data, "UserId");
-            var apiGatewayUrl = _configuration.GetValue<string>("ApiGatewayUrl") ?? "http://localhost:10000";
+            // Use IdentityUrl for identity endpoints, fallback to ApiGatewayUrl for backwards compatibility
+            var identityUrl = _configuration.GetValue<string>("IdentityUrl") 
+                ?? _configuration.GetValue<string>("ApiGatewayUrl") 
+                ?? "http://localhost:10000";
             var encodedToken = Uri.EscapeDataString(confirmationToken);
             var encodedUserId = Uri.EscapeDataString(userId);
-            return $"{apiGatewayUrl}/v1/identity/confirm-email?userId={encodedUserId}&token={encodedToken}";
+            return $"{identityUrl}/v1/identity/confirm-email?userId={encodedUserId}&token={encodedToken}";
         }
 
         private string RenderWelcomeEmailTemplate(Dictionary<string, object> data)
