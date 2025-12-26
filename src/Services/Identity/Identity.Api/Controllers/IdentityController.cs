@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -27,6 +28,7 @@ namespace Identity.Api.Controllers
         private readonly ICacheService _cacheService;
         private readonly ISessionQueryService _sessionQueryService;
         private readonly IAccountActivityQueryService _accountActivityQueryService;
+        private readonly IConfiguration _configuration;
 
         public IdentityController(
             ILogger<IdentityController> logger,
@@ -35,7 +37,8 @@ namespace Identity.Api.Controllers
             ICacheService cacheService,
             ISessionQueryService sessionQueryService,
             IAccountActivityQueryService accountActivityQueryService,
-            IOptions<CacheSettings> cacheSettings)
+            IOptions<CacheSettings> cacheSettings,
+            IConfiguration configuration)
         {
             _logger = logger;
             _signInManager = signInManager;
@@ -43,6 +46,7 @@ namespace Identity.Api.Controllers
             _cacheService = cacheService;
             _sessionQueryService = sessionQueryService;
             _accountActivityQueryService = accountActivityQueryService;
+            _configuration = configuration;
         }
 
         #region User Registration
@@ -351,7 +355,12 @@ namespace Identity.Api.Controllers
             }
 
             // Retornar una página HTML simple de confirmación exitosa
-            var htmlResponse = @"
+            // Use configured URLs for production, fallback to localhost for development
+            var loginServiceUrl = _configuration.GetValue<string>("LoginServiceUrl") ?? "http://localhost:4400";
+            var frontendUrl = _configuration.GetValue<string>("FrontendUrl") ?? "http://localhost:4200";
+            var loginUrl = $"{loginServiceUrl}/auth/login?returnUrl={Uri.EscapeDataString($"{frontendUrl}/auth/callback?next=%2F")}";
+            
+            var htmlResponse = $@"
 <!DOCTYPE html>
 <html lang='es'>
 <head>
@@ -359,13 +368,13 @@ namespace Identity.Api.Controllers
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>Email Confirmado</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f5f5f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background-color: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
-        .icon { font-size: 64px; margin-bottom: 20px; }
-        h1 { color: #232F3E; margin-bottom: 20px; }
-        p { color: #555; line-height: 1.6; }
-        .button { display: inline-block; margin-top: 20px; padding: 12px 24px; background-color: #FF9900; color: #232F3E; text-decoration: none; border-radius: 4px; font-weight: bold; }
-        .button:hover { background-color: #FFA500; }
+        body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }}
+        .container {{ background-color: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }}
+        .icon {{ font-size: 64px; margin-bottom: 20px; }}
+        h1 {{ color: #232F3E; margin-bottom: 20px; }}
+        p {{ color: #555; line-height: 1.6; }}
+        .button {{ display: inline-block; margin-top: 20px; padding: 12px 24px; background-color: #FF9900; color: #232F3E; text-decoration: none; border-radius: 4px; font-weight: bold; }}
+        .button:hover {{ background-color: #FFA500; }}
     </style>
 </head>
 <body>
@@ -374,7 +383,7 @@ namespace Identity.Api.Controllers
         <h1>¡Email Confirmado Exitosamente!</h1>
         <p>Tu dirección de correo electrónico ha sido verificada correctamente.</p>
         <p>Ya puedes iniciar sesión en tu cuenta.</p>
-        <a href='http://localhost:4400/auth/login?returnUrl=http:%2F%2Flocalhost:4200%2Fauth%2Fcallback%3Fnext%3D%252F' class='button'>Ir a Iniciar Sesión</a>
+        <a href='{loginUrl}' class='button'>Ir a Iniciar Sesión</a>
     </div>
 </body>
 </html>";
