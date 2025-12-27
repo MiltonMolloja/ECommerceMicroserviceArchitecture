@@ -42,6 +42,13 @@ namespace Order.Service.EventHandlers.Handlers
                 throw new Exception($"Order {notification.OrderId} not found");
             }
 
+            // Si el estado ya es el mismo, no hacer nada (idempotencia)
+            if (order.Status == notification.NewStatus)
+            {
+                _logger.LogInformation($"Order {notification.OrderId} is already in status {notification.NewStatus}, skipping update");
+                return;
+            }
+
             // Validar transición de estado
             if (!IsValidStateTransition(order.Status, notification.NewStatus))
             {

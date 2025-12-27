@@ -233,12 +233,16 @@ namespace Notification.Api
                 }
             }
 
-            // Database Logging
-            var httpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
-            loggerFactory.AddDatabase(
-                Configuration.GetConnectionString("DefaultConnection"),
-                "Notification.Api",
-                httpContextAccessor);
+            // Database Logging - Only if enabled in configuration
+            var databaseLoggingEnabled = Configuration.GetValue<bool>("DatabaseLogging:Enabled");
+            if (databaseLoggingEnabled)
+            {
+                var httpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
+                loggerFactory.AddDatabase(
+                    Configuration.GetConnectionString("DefaultConnection"),
+                    "Notification.Api",
+                    httpContextAccessor);
+            }
 
             if (env.IsDevelopment())
             {

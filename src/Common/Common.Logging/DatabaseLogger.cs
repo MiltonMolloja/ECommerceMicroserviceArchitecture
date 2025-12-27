@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 using System;
-using System.Data.SqlClient;
 
 namespace Common.Logging
 {
@@ -116,14 +116,14 @@ namespace Common.Logging
                     // If we can't get the correlation ID, just continue without it
                 }
 
-                using (var connection = new SqlConnection(_connectionString))
+                using (var connection = new NpgsqlConnection(_connectionString))
                 {
                     connection.Open();
 
                     var command = connection.CreateCommand();
                     command.CommandText = @"
-                        INSERT INTO [Logging].[Logs]
-                        (Timestamp, LogLevel, Category, Message, Exception, Environment, MachineName, ServiceName, CorrelationId)
+                        INSERT INTO ""Logging"".""Logs""
+                        (""Timestamp"", ""LogLevel"", ""Category"", ""Message"", ""Exception"", ""Environment"", ""MachineName"", ""ServiceName"", ""CorrelationId"")
                         VALUES
                         (@Timestamp, @LogLevel, @Category, @Message, @Exception, @Environment, @MachineName, @ServiceName, @CorrelationId)";
 

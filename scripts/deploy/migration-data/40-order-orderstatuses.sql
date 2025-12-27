@@ -1,0 +1,17 @@
+﻿INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (0, 'AwaitingPayment', 'Esperando Pago', 'Orden creada, esperando confirmaciÃ³n de pago', 'warning', 1, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (1, 'PaymentProcessing', 'Procesando Pago', 'Pago en proceso de verificaciÃ³n', 'info', 2, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (2, 'PaymentFailed', 'Pago Fallido', 'El pago no pudo ser procesado', 'danger', 3, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (3, 'Paid', 'Pagado', 'Pago confirmado exitosamente', 'success', 4, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (4, 'Processing', 'Procesando', 'Orden en proceso de preparaciÃ³n', 'info', 5, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (5, 'ReadyToShip', 'Listo para Enviar', 'Orden lista para ser enviada', 'primary', 6, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (6, 'Shipped', 'Enviado', 'Orden enviada al courier', 'primary', 7, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (7, 'InTransit', 'En TrÃ¡nsito', 'Orden en camino al destino', 'primary', 8, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (8, 'OutForDelivery', 'En Reparto', 'Orden en reparto final', 'primary', 9, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (9, 'Delivered', 'Entregado', 'Orden entregada al cliente', 'success', 10, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (10, 'Cancelled', 'Cancelado', 'Orden cancelada', 'danger', 11, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (11, 'Refunded', 'Reembolsado', 'Pago reembolsado al cliente', 'warning', 12, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (12, 'PartiallyRefunded', 'Reembolso Parcial', 'Reembolso parcial realizado', 'warning', 13, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (13, 'ReturnRequested', 'DevoluciÃ³n Solicitada', 'Cliente solicitÃ³ devoluciÃ³n', 'warning', 14, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (14, 'Returned', 'Devuelto', 'Producto devuelto', 'secondary', 15, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (15, 'OnHold', 'En Espera', 'Orden en espera por problema', 'warning', 16, true, '2025-11-26T00:28:02');
+INSERT INTO "." (", ", ", ", ", ", ", ") VALUES (16, 'PaymentDisputed', 'Pago Disputado', 'Pago en disputa', 'danger', 17, true, '2025-11-26T00:28:02');

@@ -206,12 +206,16 @@ namespace Customer.Api
                 }
             }
 
-            // Database Logging - Enabled in all environments
-            var httpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
-            loggerFactory.AddDatabase(
-                Configuration.GetConnectionString("DefaultConnection"),
-                "Customer.Api",
-                httpContextAccessor);
+            // Database Logging - Only if enabled in configuration
+            var databaseLoggingEnabled = Configuration.GetValue<bool>("DatabaseLogging:Enabled");
+            if (databaseLoggingEnabled)
+            {
+                var httpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
+                loggerFactory.AddDatabase(
+                    Configuration.GetConnectionString("DefaultConnection"),
+                    "Customer.Api",
+                    httpContextAccessor);
+            }
 
             if (env.IsDevelopment())
             {

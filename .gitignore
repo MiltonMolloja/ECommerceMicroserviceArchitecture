@@ -286,3 +286,4 @@ __pycache__/
 # tools/**
 # !tools/packages.config
 nul
+/src/Services/Identity/Identity.Api/appsettings.json

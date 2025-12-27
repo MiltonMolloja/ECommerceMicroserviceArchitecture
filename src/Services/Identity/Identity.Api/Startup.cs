@@ -245,12 +245,16 @@ namespace Identity.Api
                 }
             }
 
-            // Database Logging - Enabled in all environments
-            var httpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
-            loggerFactory.AddDatabase(
-                Configuration.GetConnectionString("DefaultConnection"),
-                "Identity.Api",
-                httpContextAccessor);
+            // Database Logging - Only if enabled in configuration
+            var databaseLoggingEnabled = Configuration.GetValue<bool>("DatabaseLogging:Enabled");
+            if (databaseLoggingEnabled)
+            {
+                var httpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
+                loggerFactory.AddDatabase(
+                    Configuration.GetConnectionString("DefaultConnection"),
+                    "Identity.Api",
+                    httpContextAccessor);
+            }
 
             if (env.IsDevelopment())
             {

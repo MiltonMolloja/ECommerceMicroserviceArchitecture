@@ -1,0 +1,27 @@
+-- Fix Cart schema - Add missing columns
+
+-- ShoppingCarts missing columns
+ALTER TABLE "Cart"."ShoppingCarts" 
+ADD COLUMN IF NOT EXISTS "AbandonmentNotifiedAt" TIMESTAMP NULL;
+
+-- CartItems missing columns (all from CartItem entity)
+ALTER TABLE "Cart"."CartItems"
+ADD COLUMN IF NOT EXISTS "ProductName" VARCHAR(200) NULL;
+
+ALTER TABLE "Cart"."CartItems"
+ADD COLUMN IF NOT EXISTS "ProductSKU" VARCHAR(50) NULL;
+
+ALTER TABLE "Cart"."CartItems"
+ADD COLUMN IF NOT EXISTS "ProductImageUrl" VARCHAR(500) NULL;
+
+ALTER TABLE "Cart"."CartItems"
+ADD COLUMN IF NOT EXISTS "DiscountPercentage" DECIMAL(5,2) NOT NULL DEFAULT 0;
+
+ALTER TABLE "Cart"."CartItems"
+ADD COLUMN IF NOT EXISTS "TaxRate" DECIMAL(5,2) NOT NULL DEFAULT 0;
+
+ALTER TABLE "Cart"."CartItems"
+ADD COLUMN IF NOT EXISTS "AddedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE "Cart"."CartItems"
+ADD COLUMN IF NOT EXISTS "UpdatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;

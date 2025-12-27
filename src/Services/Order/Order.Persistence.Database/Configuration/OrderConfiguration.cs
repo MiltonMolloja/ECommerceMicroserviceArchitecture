@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Order.Persistence.Database.Configuration
 {
@@ -7,6 +8,16 @@ namespace Order.Persistence.Database.Configuration
         public OrderConfiguration(EntityTypeBuilder<Domain.Order> entityBuilder)
         {
             entityBuilder.HasKey(x => x.OrderId);
+            
+            // Table name
+            entityBuilder.ToTable("Orders");
+
+            // Explicit column mappings for PostgreSQL compatibility
+            entityBuilder.Property(e => e.Status).HasColumnName("Status");
+            entityBuilder.Property(e => e.PaymentType).HasColumnName("PaymentType");
+            entityBuilder.Property(e => e.SubTotal).HasColumnName("SubTotal");
+            entityBuilder.Property(e => e.Tax).HasColumnName("Tax");
+            entityBuilder.Property(e => e.Discount).HasColumnName("Discount");
 
             // Shipping Address
             entityBuilder.Property(e => e.ShippingRecipientName).HasMaxLength(200);
