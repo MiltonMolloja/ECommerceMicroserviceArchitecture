@@ -610,5 +610,40 @@ namespace Identity.Api.Controllers
         }
 
         #endregion
+
+        #region Development Tools
+
+        /// <summary>
+        /// Reset test user to default state (Development mode only)
+        /// This endpoint is only available in non-production environments.
+        /// </summary>
+        [HttpPost("dev/reset-test-user")]
+        [EnableRateLimiting("write")]
+        public async Task<IActionResult> ResetTestUser()
+        {
+            // Check if we're in production - block the endpoint
+            var environment = _configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") 
+                ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            
+            if (string.Equals(environment, "Production", StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogWarning("Attempt to reset test user in Production environment blocked");
+                return NotFound(); // Return 404 to not reveal the endpoint exists
+            }
+
+            _logger.LogInformation("Resetting test user (Development mode)");
+            
+            var command = new ResetTestUserCommand();
+            var result = await _mediator.Send(command);
+
+            if (!result)
+            {
+                return BadRequest(new { message = "Failed to reset test user" });
+            }
+
+            return Ok(new { message = "Test user reset successfully", email = ResetTestUserCommand.TestUserEmail });
+        }
+
+        #endregion
     }
 }

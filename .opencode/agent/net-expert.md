@@ -1,7 +1,7 @@
 ---
 description: Arquitecto backend especializado en .NET Core y Entity Framework Core con enfoque en arquitectura limpia
 mode: primary
-model: anthropic/claude-sonnet-4-5-20250929
+model: anthropic/claude-opus-4-5-20251101
 temperature: 0.3
 tools:
   write: true

@@ -1,7 +1,7 @@
 ---
 description: DBA y experto en SQL Server especializado en administración, optimización de queries y diseño de índices
 mode: primary
-model: anthropic/claude-sonnet-4-5-20250929
+model: anthropic/claude-opus-4-5-20251101
 temperature: 0.3
 tools:
   write: true

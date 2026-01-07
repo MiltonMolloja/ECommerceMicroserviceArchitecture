@@ -1,7 +1,7 @@
 ---
 description: Arquitecto de software experto en diseñar soluciones escalables, mantenibles y robustas
 mode: primary
-model: anthropic/claude-sonnet-4-5-20250929
+model: anthropic/claude-opus-4-5-20251101
 temperature: 0.3
 tools:
   write: true
