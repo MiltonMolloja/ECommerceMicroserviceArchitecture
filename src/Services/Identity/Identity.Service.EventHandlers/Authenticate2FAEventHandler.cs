@@ -126,11 +126,11 @@ namespace Identity.Service.EventHandlers
                 }
 
                 var secretKey = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("Jwt:SecretKey"));
-                var expirationMinutes = 30;
+                var expirationSeconds = 30; // TODO: Cambiar a minutos en producción
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(claims),
-                    Expires = DateTime.UtcNow.AddMinutes(expirationMinutes),
+                    Expires = DateTime.UtcNow.AddSeconds(expirationSeconds),
                     SigningCredentials = new SigningCredentials(
                         new SymmetricSecurityKey(secretKey),
                         SecurityAlgorithms.HmacSha256Signature)
