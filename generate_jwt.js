@@ -1,5 +1,20 @@
 const crypto = require('crypto');
 
+// IMPORTANT: Set JWT_SECRET environment variable before running
+// Example: set JWT_SECRET=your-secret-key-minimum-32-characters
+const secret = process.env.JWT_SECRET;
+
+if (!secret) {
+    console.error("ERROR: JWT_SECRET environment variable is required.");
+    console.error("Set it with: set JWT_SECRET=your-secret-key-minimum-32-characters");
+    process.exit(1);
+}
+
+if (secret.length < 32) {
+    console.error("ERROR: JWT_SECRET must be at least 32 characters long.");
+    process.exit(1);
+}
+
 // Header
 const header = {
     alg: "HS256",
@@ -12,17 +27,14 @@ const oneYear = 365 * 24 * 60 * 60;
 const exp = now + oneYear;
 
 const payload = {
-    nameid: "65812A2A-2B92-4357-A48F-E3C9FD5755BE",
-    email: "admin@gmail.com",
-    unique_name: "Admin",
-    family_name: "Administrator",
+    nameid: process.env.JWT_USER_ID || "65812A2A-2B92-4357-A48F-E3C9FD5755BE",
+    email: process.env.JWT_EMAIL || "admin@gmail.com",
+    unique_name: process.env.JWT_USERNAME || "Admin",
+    family_name: process.env.JWT_FAMILY_NAME || "Administrator",
     nbf: now,
     exp: exp,
     iat: now
 };
-
-// Secret key
-const secret = "molloja-ecommerce-secret-key-super-secure-2025-minimum-32chars";
 
 // Encode to base64url
 function base64urlEncode(str) {

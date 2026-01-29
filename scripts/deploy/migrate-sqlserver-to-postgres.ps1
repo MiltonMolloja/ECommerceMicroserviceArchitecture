@@ -1,9 +1,20 @@
 # Migration Script: SQL Server to PostgreSQL
 # ECommerce Database Migration
+#
+# IMPORTANT: Set environment variables before running:
+#   $env:PG_CONNECTION_STRING = "postgresql://user:password@host:port/database"
+#   $env:SQL_SERVER = "localhost\SQLEXPRESS"
+#   $env:SQL_DATABASE = "ECommerceDb"
 
-$SqlServer = "localhost\SQLEXPRESS"
-$SqlDatabase = "ECommerceDb"
-$PgConnectionString = "postgresql://postgres:3jxEbemom6JTy9dqbrpAoAlNfUVpzmbQ2@72.61.128.126:5433/ecommerce"
+$SqlServer = $env:SQL_SERVER ?? "localhost\SQLEXPRESS"
+$SqlDatabase = $env:SQL_DATABASE ?? "ECommerceDb"
+$PgConnectionString = $env:PG_CONNECTION_STRING
+
+if (-not $PgConnectionString) {
+    Write-Host "ERROR: PG_CONNECTION_STRING environment variable is required." -ForegroundColor Red
+    Write-Host "Set it with: `$env:PG_CONNECTION_STRING = 'postgresql://user:password@host:port/database'" -ForegroundColor Yellow
+    exit 1
+}
 
 function Invoke-PgSql {
     param([string]$Query)

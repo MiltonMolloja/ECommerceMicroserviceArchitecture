@@ -41,12 +41,13 @@ namespace Catalog.Tests
 
             var productInStockId = 1;
             var productId = 1;
+            var initialStock = 1;
 
             // Add product
             context.Stocks.Add(new ProductInStock { 
                 ProductInStockId = productInStockId,
                 ProductId = productId,
-                Stock = 1
+                Stock = initialStock
             });
 
             context.SaveChanges();
@@ -56,12 +57,16 @@ namespace Catalog.Tests
             await command.Handle(new ProductInStockUpdateStockCommand {
                 Items = new List<ProductInStockUpdateItem> { 
                     new ProductInStockUpdateItem { 
-                        ProductId = 1,
+                        ProductId = productId,
                         Stock = 1,
                         Action = Common.Enums.ProductInStockAction.Substract
                     }
                 }
             }, new System.Threading.CancellationToken());
+
+            // Assert: Stock should be 0 after subtracting 1 from initial stock of 1
+            var updatedStock = context.Stocks.First(x => x.ProductInStockId == productInStockId);
+            Assert.AreEqual(0, updatedStock.Stock);
         }
 
         [TestMethod]
