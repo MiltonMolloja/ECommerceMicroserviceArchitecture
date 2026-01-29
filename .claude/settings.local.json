@@ -110,7 +110,9 @@
       "Bash(npx -y @upshiftone/context7 --help)",
       "Bash(npx:*)",
       "WebFetch(domain:www.npmjs.com)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@72.61.128.126 \"docker ps -a | grep notification\")",
+      "Bash(ssh root@72.61.128.126:*)"
     ],
     "deny": [],
     "ask": []

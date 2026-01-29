@@ -1,0 +1,41 @@
+<Project>
+  <!-- 
+    Directory.Build.props - Configuracion global para todos los proyectos .NET
+    Este archivo aplica automaticamente a todos los .csproj del repositorio
+  -->
+
+  <PropertyGroup>
+    <!-- Habilitar analisis de codigo -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    
+    <!-- Nullable reference types -->
+    <Nullable>enable</Nullable>
+    
+    <!-- Implicit usings -->
+    <ImplicitUsings>enable</ImplicitUsings>
+    
+    <!-- Generar documentacion XML para SonarQube -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    
+    <!-- Suprimir warnings de documentacion faltante (opcional) -->
+    <NoWarn>$(NoWarn);CS1591;CS1573</NoWarn>
+  </PropertyGroup>
+
+  <!-- Configuracion especifica para proyectos de test -->
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    
+    <!-- Coverlet - Configuracion de cobertura de codigo -->
+    <CollectCoverage>true</CollectCoverage>
+    <CoverletOutputFormat>opencover</CoverletOutputFormat>
+    <CoverletOutput>$(MSBuildProjectDirectory)/coverage/</CoverletOutput>
+    
+    <!-- Excluir archivos generados automaticamente de la cobertura -->
+    <ExcludeByFile>**/Migrations/**/*.cs</ExcludeByFile>
+    <ExcludeByAttribute>GeneratedCodeAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
+  </PropertyGroup>
+
+</Project>

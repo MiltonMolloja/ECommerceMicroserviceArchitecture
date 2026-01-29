@@ -287,3 +287,18 @@ __pycache__/
 # !tools/packages.config
 nul
 /src/Services/Identity/Identity.Api/appsettings.json
+
+# ===========================================
+# SonarQube
+# ===========================================
+.sonarqube/
+.scannerwork/
+
+# ===========================================
+# Code Coverage
+# ===========================================
+**/coverage/
+**/TestResults/
+*.opencover.xml
+coverage.json
+coverage.cobertura.xml
