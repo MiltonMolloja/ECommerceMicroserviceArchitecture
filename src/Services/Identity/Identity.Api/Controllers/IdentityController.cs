@@ -23,7 +23,6 @@ namespace Identity.Api.Controllers
     public class IdentityController : ControllerBase
     {
         private readonly ILogger<IdentityController> _logger;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMediator _mediator;
         private readonly ICacheService _cacheService;
         private readonly ISessionQueryService _sessionQueryService;
@@ -40,8 +39,9 @@ namespace Identity.Api.Controllers
             IOptions<CacheSettings> cacheSettings,
             IConfiguration configuration)
         {
+            _ = signInManager; // Authentication handled by mediator commands
+            _ = cacheSettings; // Cache settings accessed via ICacheService
             _logger = logger;
-            _signInManager = signInManager;
             _mediator = mediator;
             _cacheService = cacheService;
             _sessionQueryService = sessionQueryService;

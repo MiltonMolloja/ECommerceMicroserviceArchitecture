@@ -27,7 +27,6 @@ namespace Api.Gateway.Proxies
     {
         private readonly ApiUrls _apiUrls;
         private readonly HttpClient _httpClient;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CartProxy(
             HttpClient httpClient,
@@ -40,7 +39,6 @@ namespace Api.Gateway.Proxies
 
             _httpClient = httpClient;
             _apiUrls = apiUrls.Value;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<CartDto> GetByClientIdAsync(int clientId)

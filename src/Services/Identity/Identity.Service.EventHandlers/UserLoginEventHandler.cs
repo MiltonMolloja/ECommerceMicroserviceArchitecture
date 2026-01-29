@@ -27,7 +27,6 @@ namespace Identity.Service.EventHandlers
         IRequestHandler<UserLoginCommand, IdentityAccess>
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly IRefreshTokenService _refreshTokenService;
@@ -49,8 +48,8 @@ namespace Identity.Service.EventHandlers
             ILogger<UserLoginEventHandler> logger,
             IHttpClientFactory httpClientFactory)
         {
+            _ = userManager; // User lookup done via DbContext for better control
             _signInManager = signInManager;
-            _userManager = userManager;
             _context = context;
             _configuration = configuration;
             _refreshTokenService = refreshTokenService;

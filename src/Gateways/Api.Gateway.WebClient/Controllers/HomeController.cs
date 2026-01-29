@@ -24,7 +24,6 @@ namespace Api.Gateway.WebClient.Controllers
     {
         private readonly IHomeProxy _homeProxy;
         private readonly ICacheService _cacheService;
-        private readonly CacheSettings _cacheSettings;
         private readonly ILogger<HomeController> _logger;
         private readonly ILanguageAwareCacheKeyProvider _cacheKeyProvider;
 
@@ -35,9 +34,9 @@ namespace Api.Gateway.WebClient.Controllers
             ILogger<HomeController> logger,
             ILanguageAwareCacheKeyProvider cacheKeyProvider)
         {
+            _ = cacheSettings; // Settings accessed via cacheKeyProvider
             _homeProxy = homeProxy;
             _cacheService = cacheService;
-            _cacheSettings = cacheSettings.Value;
             _logger = logger;
             _cacheKeyProvider = cacheKeyProvider;
         }

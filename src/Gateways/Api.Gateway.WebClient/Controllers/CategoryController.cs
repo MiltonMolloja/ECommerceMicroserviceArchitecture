@@ -14,14 +14,13 @@ namespace Api.Gateway.WebClient.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryProxy _categoryProxy;
-        private readonly ILogger<CategoryController> _logger;
 
         public CategoryController(
             ICategoryProxy categoryProxy,
             ILogger<CategoryController> logger)
         {
+            _ = logger; // Reserved for future logging implementation
             _categoryProxy = categoryProxy;
-            _logger = logger;
         }
 
         /// <summary>

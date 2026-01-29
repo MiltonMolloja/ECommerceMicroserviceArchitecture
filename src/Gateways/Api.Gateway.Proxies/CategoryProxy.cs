@@ -26,16 +26,15 @@ namespace Api.Gateway.Proxies
     {
         private readonly HttpClient _httpClient;
         private readonly ApiUrls _apiUrls;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CategoryProxy(
             HttpClient httpClient,
             IOptions<ApiUrls> apiUrls,
             IHttpContextAccessor httpContextAccessor)
         {
+            _ = httpContextAccessor; // Used for DI registration, kept for future use
             _httpClient = httpClient;
             _apiUrls = apiUrls.Value;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<DataCollection<CategoryDetailDto>> GetAllAsync(int page, int take, string language)

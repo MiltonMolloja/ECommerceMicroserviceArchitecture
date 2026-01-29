@@ -25,7 +25,6 @@ namespace Identity.Service.EventHandlers
     public class Authenticate2FAEventHandler : IRequestHandler<Authenticate2FACommand, IdentityAccess>
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
         private readonly ITwoFactorService _twoFactorService;
         private readonly IConfiguration _configuration;
@@ -47,8 +46,8 @@ namespace Identity.Service.EventHandlers
             ILogger<Authenticate2FAEventHandler> logger,
             IHttpClientFactory httpClientFactory)
         {
+            _ = signInManager; // 2FA verification uses UserManager directly
             _userManager = userManager;
-            _signInManager = signInManager;
             _context = context;
             _twoFactorService = twoFactorService;
             _configuration = configuration;

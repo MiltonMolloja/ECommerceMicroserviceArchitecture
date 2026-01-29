@@ -23,7 +23,6 @@ namespace Identity.Api.Controllers
         private readonly IUserQueryService _userQueryService;
         private readonly IAuditLogQueryService _auditLogQueryService;
         private readonly ILogger<UserController> _logger;
-        private readonly IMediator _mediator;
         private readonly ICacheService _cacheService;
         private readonly CacheSettings _cacheSettings;
 
@@ -35,8 +34,8 @@ namespace Identity.Api.Controllers
             ICacheService cacheService,
             IOptions<CacheSettings> cacheSettings)
         {
+            _ = mediator; // Reserved for future command handling
             _logger = logger;
-            _mediator = mediator;
             _userQueryService = userQueryService;
             _auditLogQueryService = auditLogQueryService;
             _cacheService = cacheService;

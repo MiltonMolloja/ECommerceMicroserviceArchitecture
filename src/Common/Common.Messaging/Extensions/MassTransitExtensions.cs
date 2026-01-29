@@ -143,12 +143,11 @@ public static class MassTransitExtensions
 /// </summary>
 internal class DeadLetterEndpointNameFormatter : IEndpointNameFormatter
 {
-    private readonly RabbitMQSettings _settings;
     private readonly IEndpointNameFormatter _defaultFormatter;
 
     public DeadLetterEndpointNameFormatter(RabbitMQSettings settings)
     {
-        _settings = settings;
+        _ = settings; // Reserved for future custom DLQ naming based on settings
         _defaultFormatter = new KebabCaseEndpointNameFormatter(false);
     }
 

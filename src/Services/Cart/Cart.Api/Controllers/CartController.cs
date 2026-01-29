@@ -21,8 +21,6 @@ namespace Cart.Api.Controllers
         private readonly ICartQueryService _cartQueryService;
         private readonly ILogger<CartController> _logger;
         private readonly IMediator _mediator;
-        private readonly ICacheService _cacheService;
-        private readonly CacheSettings _cacheSettings;
 
         public CartController(
             ILogger<CartController> logger,
@@ -31,11 +29,11 @@ namespace Cart.Api.Controllers
             ICacheService cacheService,
             IOptions<CacheSettings> cacheSettings)
         {
+            _ = cacheService; // Reserved for future caching implementation
+            _ = cacheSettings; // Reserved for future caching implementation
             _logger = logger;
             _mediator = mediator;
             _cartQueryService = cartQueryService;
-            _cacheService = cacheService;
-            _cacheSettings = cacheSettings.Value;
         }
 
         [HttpGet("client/{clientId}")]
