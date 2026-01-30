@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Order.Domain;
 using Order.Persistence.Database.Configuration;
 
@@ -21,15 +21,15 @@ namespace Order.Persistence.Database
                 warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
             // Database schema
-            builder.HasDefaultSchema("Order");
+            modelBuilder.HasDefaultSchema("Order");
 
             // Model Contraints
-            ModelConfig(builder);
+            ModelConfig(modelBuilder);
         }
 
         public DbSet<Domain.Order> Orders { get; set; }

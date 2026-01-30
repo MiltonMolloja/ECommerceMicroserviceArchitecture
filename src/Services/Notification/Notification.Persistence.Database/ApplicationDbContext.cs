@@ -21,17 +21,17 @@ namespace Notification.Persistence.Database
                 warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
             // Database schema
-            builder.HasDefaultSchema("Notification");
+            modelBuilder.HasDefaultSchema("Notification");
 
             // Apply configurations
-            builder.ApplyConfiguration(new NotificationConfiguration());
-            builder.ApplyConfiguration(new NotificationTemplateConfiguration());
-            builder.ApplyConfiguration(new NotificationPreferencesConfiguration());
+            modelBuilder.ApplyConfiguration(new NotificationConfiguration());
+            modelBuilder.ApplyConfiguration(new NotificationTemplateConfiguration());
+            modelBuilder.ApplyConfiguration(new NotificationPreferencesConfiguration());
         }
 
         public DbSet<Domain.Notification> Notifications { get; set; }

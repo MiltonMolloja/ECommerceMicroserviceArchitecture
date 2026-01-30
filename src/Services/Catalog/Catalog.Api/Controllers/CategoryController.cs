@@ -142,7 +142,7 @@ namespace Catalog.Api.Controllers
         [ProducesResponseType(typeof(List<CategoryTreeDto>), 200)]
         public async Task<ActionResult<List<CategoryTreeDto>>> GetTree()
         {
-            var baseCacheKey = "categories:tree";
+            const string baseCacheKey = "categories:tree";
             var cacheKey = _cacheKeyProvider.GenerateKey(baseCacheKey);
 
             var cachedTree = await _cacheService.GetAsync<List<CategoryTreeDto>>(cacheKey);
@@ -169,7 +169,7 @@ namespace Catalog.Api.Controllers
         [ProducesResponseType(typeof(List<CategoryDto>), 200)]
         public async Task<ActionResult<List<CategoryDto>>> GetRootCategories()
         {
-            var baseCacheKey = "categories:root";
+            const string baseCacheKey = "categories:root";
             var cacheKey = _cacheKeyProvider.GenerateKey(baseCacheKey);
 
             var cachedRoots = await _cacheService.GetAsync<List<CategoryDto>>(cacheKey);

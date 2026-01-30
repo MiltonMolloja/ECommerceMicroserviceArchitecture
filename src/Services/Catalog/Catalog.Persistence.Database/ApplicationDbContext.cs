@@ -21,25 +21,25 @@ namespace Catalog.Persistence.Database
                 warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
             // Database schema
-            builder.HasDefaultSchema("Catalog");
+            modelBuilder.HasDefaultSchema("Catalog");
 
             // Apply configurations
-            builder.ApplyConfiguration(new ProductConfiguration());
-            builder.ApplyConfiguration(new CategoryConfiguration());
-            builder.ApplyConfiguration(new ProductCategoryConfiguration());
-            builder.ApplyConfiguration(new ProductInStockConfiguration());
-            builder.ApplyConfiguration(new BrandConfiguration());
-            builder.ApplyConfiguration(new ProductAttributeConfiguration());
-            builder.ApplyConfiguration(new AttributeValueConfiguration());
-            builder.ApplyConfiguration(new ProductAttributeValueConfiguration());
-            builder.ApplyConfiguration(new ProductReviewConfiguration());
-            builder.ApplyConfiguration(new ProductRatingConfiguration());
-            builder.ApplyConfiguration(new BannerConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductConfiguration());
+            modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductCategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductInStockConfiguration());
+            modelBuilder.ApplyConfiguration(new BrandConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductAttributeConfiguration());
+            modelBuilder.ApplyConfiguration(new AttributeValueConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductAttributeValueConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductReviewConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductRatingConfiguration());
+            modelBuilder.ApplyConfiguration(new BannerConfiguration());
         }
 
         public DbSet<Product> Products { get; set; }

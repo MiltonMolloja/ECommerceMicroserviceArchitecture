@@ -125,7 +125,7 @@ namespace Identity.Service.EventHandlers
                 }
 
                 var secretKey = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("Jwt:SecretKey"));
-                var expirationSeconds = 30; // TODO: Cambiar a minutos en producción
+                const int expirationSeconds = 30; // TODO: Cambiar a minutos en producción
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(claims),

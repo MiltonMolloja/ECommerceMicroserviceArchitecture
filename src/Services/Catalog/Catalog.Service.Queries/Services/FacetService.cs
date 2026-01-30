@@ -140,7 +140,7 @@ namespace Catalog.Service.Queries.Services
 
         private List<PriceRangeDto> GeneratePriceRanges(decimal min, decimal max, decimal range, List<decimal> prices)
         {
-            var rangeCount = 4;
+            const int rangeCount = 4;
             var step = range / rangeCount;
             var ranges = new List<PriceRangeDto>();
 

@@ -87,53 +87,53 @@ namespace Api.Gateway.Proxies
             );
         }
 
-        public async Task<ProductSearchResponse> SearchAsync(ProductSearchRequest searchRequest)
+        public async Task<ProductSearchResponse> SearchAsync(ProductSearchRequest request)
         {
             AddAcceptLanguageHeader();
 
             // Construir query string
             var queryParams = new List<string>();
 
-            if (!string.IsNullOrWhiteSpace(searchRequest.Query))
-                queryParams.Add($"query={System.Uri.EscapeDataString(searchRequest.Query)}");
+            if (!string.IsNullOrWhiteSpace(request.Query))
+                queryParams.Add($"query={System.Uri.EscapeDataString(request.Query)}");
 
-            queryParams.Add($"page={searchRequest.Page}");
-            queryParams.Add($"pageSize={searchRequest.PageSize}");
-            queryParams.Add($"sortBy={searchRequest.SortBy}");
-            queryParams.Add($"sortOrder={searchRequest.SortOrder}");
+            queryParams.Add($"page={request.Page}");
+            queryParams.Add($"pageSize={request.PageSize}");
+            queryParams.Add($"sortBy={request.SortBy}");
+            queryParams.Add($"sortOrder={request.SortOrder}");
 
-            if (searchRequest.CategoryId.HasValue)
-                queryParams.Add($"categoryId={searchRequest.CategoryId.Value}");
+            if (request.CategoryId.HasValue)
+                queryParams.Add($"categoryId={request.CategoryId.Value}");
 
-            if (!string.IsNullOrWhiteSpace(searchRequest.BrandIds))
-                queryParams.Add($"brandIds={System.Uri.EscapeDataString(searchRequest.BrandIds)}");
+            if (!string.IsNullOrWhiteSpace(request.BrandIds))
+                queryParams.Add($"brandIds={System.Uri.EscapeDataString(request.BrandIds)}");
 
-            if (searchRequest.MinPrice.HasValue)
-                queryParams.Add($"minPrice={searchRequest.MinPrice.Value}");
+            if (request.MinPrice.HasValue)
+                queryParams.Add($"minPrice={request.MinPrice.Value}");
 
-            if (searchRequest.MaxPrice.HasValue)
-                queryParams.Add($"maxPrice={searchRequest.MaxPrice.Value}");
+            if (request.MaxPrice.HasValue)
+                queryParams.Add($"maxPrice={request.MaxPrice.Value}");
 
-            if (searchRequest.InStock.HasValue)
-                queryParams.Add($"inStock={searchRequest.InStock.Value}");
+            if (request.InStock.HasValue)
+                queryParams.Add($"inStock={request.InStock.Value}");
 
-            if (searchRequest.IsFeatured.HasValue)
-                queryParams.Add($"isFeatured={searchRequest.IsFeatured.Value}");
+            if (request.IsFeatured.HasValue)
+                queryParams.Add($"isFeatured={request.IsFeatured.Value}");
 
-            if (searchRequest.HasDiscount.HasValue)
-                queryParams.Add($"hasDiscount={searchRequest.HasDiscount.Value}");
+            if (request.HasDiscount.HasValue)
+                queryParams.Add($"hasDiscount={request.HasDiscount.Value}");
 
-            if (searchRequest.MinRating.HasValue)
-                queryParams.Add($"minRating={searchRequest.MinRating.Value}");
+            if (request.MinRating.HasValue)
+                queryParams.Add($"minRating={request.MinRating.Value}");
 
             var queryString = string.Join("&", queryParams);
             var url = $"{_apiUrls.CatalogUrl}v1/products/search?{queryString}";
 
-            var request = await _httpClient.GetAsync(url);
-            request.EnsureSuccessStatusCode();
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
 
             return JsonSerializer.Deserialize<ProductSearchResponse>(
-                await request.Content.ReadAsStringAsync(),
+                await response.Content.ReadAsStringAsync(),
                 new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
@@ -141,12 +141,12 @@ namespace Api.Gateway.Proxies
             );
         }
 
-        public async Task<ProductAdvancedSearchResponse> SearchAdvancedAsync(ProductAdvancedSearchRequest searchRequest)
+        public async Task<ProductAdvancedSearchResponse> SearchAdvancedAsync(ProductAdvancedSearchRequest request)
         {
             AddAcceptLanguageHeader();
 
             // Serializar el request a JSON
-            var json = JsonSerializer.Serialize(searchRequest, new JsonSerializerOptions
+            var json = JsonSerializer.Serialize(request, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });

@@ -1,4 +1,4 @@
-﻿using Identity.Domain;
+using Identity.Domain;
 using Identity.Persistence.Database.Configuration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -26,15 +26,15 @@ namespace Identity.Persistence.Database
                 warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
             // Database schema
-            builder.HasDefaultSchema("Identity");
+            modelBuilder.HasDefaultSchema("Identity");
 
             // Model Contraints
-            ModelConfig(builder);
+            ModelConfig(modelBuilder);
         }
 
         private void ModelConfig(ModelBuilder modelBuilder)

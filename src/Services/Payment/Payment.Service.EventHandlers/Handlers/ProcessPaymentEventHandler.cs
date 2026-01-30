@@ -65,7 +65,7 @@ namespace Payment.Service.EventHandlers.Handlers
                 }
 
                 // Determinar PaymentMethod basado en PaymentMethodId de MercadoPago
-                var paymentMethod = Domain.PaymentMethod.MercadoPago;  // Siempre usar MercadoPago
+                const Domain.PaymentMethod paymentMethod = Domain.PaymentMethod.MercadoPago;  // Siempre usar MercadoPago
 
                 // 2. Crear registro de pago
                 var payment = new Domain.Payment

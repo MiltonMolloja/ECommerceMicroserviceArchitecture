@@ -21,16 +21,16 @@ namespace Cart.Persistence.Database
                 warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
             // Database schema
-            builder.HasDefaultSchema("Cart");
+            modelBuilder.HasDefaultSchema("Cart");
 
             // Apply configurations
-            new ShoppingCartConfiguration(builder.Entity<ShoppingCart>());
-            new CartItemConfiguration(builder.Entity<CartItem>());
+            new ShoppingCartConfiguration(modelBuilder.Entity<ShoppingCart>());
+            new CartItemConfiguration(modelBuilder.Entity<CartItem>());
         }
 
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }

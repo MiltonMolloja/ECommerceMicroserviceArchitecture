@@ -20,17 +20,17 @@ namespace Payment.Persistence.Database
                 warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
             // Database schema
-            builder.HasDefaultSchema("Payment");
+            modelBuilder.HasDefaultSchema("Payment");
 
             // Apply configurations
-            builder.ApplyConfiguration(new PaymentConfiguration());
-            builder.ApplyConfiguration(new PaymentDetailConfiguration());
-            builder.ApplyConfiguration(new PaymentTransactionConfiguration());
+            modelBuilder.ApplyConfiguration(new PaymentConfiguration());
+            modelBuilder.ApplyConfiguration(new PaymentDetailConfiguration());
+            modelBuilder.ApplyConfiguration(new PaymentTransactionConfiguration());
         }
 
         public DbSet<Domain.Payment> Payments { get; set; }

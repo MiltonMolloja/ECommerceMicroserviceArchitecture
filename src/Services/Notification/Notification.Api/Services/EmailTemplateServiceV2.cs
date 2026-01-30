@@ -260,7 +260,7 @@ namespace Notification.Api.Services
             var result = template;
 
             // Handle {{#each}} blocks for arrays FIRST (before simple variable replacement)
-            var eachPattern = @"\{\{#each\s+(\w+)\}\}(.*?)\{\{/each\}\}";
+            const string eachPattern = @"\{\{#each\s+(\w+)\}\}(.*?)\{\{/each\}\}";
             var eachMatches = Regex.Matches(result, eachPattern, RegexOptions.Singleline);
 
             foreach (Match match in eachMatches)
@@ -315,7 +315,7 @@ namespace Notification.Api.Services
         private string RenderSimpleVariables(string template, Dictionary<string, object> data)
         {
             var result = template;
-            var variablePattern = @"\{\{(\w+)\}\}";
+            const string variablePattern = @"\{\{(\w+)\}\}";
             var matches = Regex.Matches(result, variablePattern);
 
             // Replace each variable found

@@ -1,4 +1,4 @@
-﻿using Customer.Domain;
+using Customer.Domain;
 using Microsoft.EntityFrameworkCore;
 using Order.Persistence.Database.Configuration;
 
@@ -21,15 +21,15 @@ namespace Customer.Persistence.Database
                 warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
             // Database schema
-            builder.HasDefaultSchema("Customer");
+            modelBuilder.HasDefaultSchema("Customer");
 
             // Model Contraints
-            ModelConfig(builder);
+            ModelConfig(modelBuilder);
         }
 
         public DbSet<Client> Clients { get; set; }
