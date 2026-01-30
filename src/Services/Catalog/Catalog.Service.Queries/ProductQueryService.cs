@@ -141,98 +141,99 @@ namespace Catalog.Service.Queries
             IQueryable<Product> query,
             ProductSearchRequest request)
         {
-            // Filtro por texto de búsqueda
-            if (!string.IsNullOrWhiteSpace(request.Query))
-            {
-                var searchTerm = request.Query.ToLower().Trim();
-                query = query.Where(p =>
-                    p.NameSpanish.ToLower().Contains(searchTerm) ||
-                    p.NameEnglish.ToLower().Contains(searchTerm) ||
-                    p.DescriptionSpanish.ToLower().Contains(searchTerm) ||
-                    p.DescriptionEnglish.ToLower().Contains(searchTerm) ||
-                    p.SKU.ToLower().Contains(searchTerm) ||
-                    p.Brand.ToLower().Contains(searchTerm)
-                );
-            }
-
-            // Filtro por categoría
-            if (request.CategoryId.HasValue)
-            {
-                query = query.Where(p =>
-                    p.ProductCategories.Any(pc => pc.CategoryId == request.CategoryId.Value)
-                );
-            }
-
-            // Filtro por marcas
-            if (!string.IsNullOrWhiteSpace(request.BrandIds))
-            {
-                var brands = request.BrandIds
-                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(b => b.Trim())
-                    .ToList();
-
-                if (brands.Any())
-                {
-                    query = query.Where(p => brands.Contains(p.Brand));
-                }
-            }
-
-            // Filtro por rango de precio
-            if (request.MinPrice.HasValue)
-            {
-                query = query.Where(p => p.Price >= request.MinPrice.Value);
-            }
-
-            if (request.MaxPrice.HasValue)
-            {
-                query = query.Where(p => p.Price <= request.MaxPrice.Value);
-            }
-
-            // Filtro por stock
-            if (request.InStock.HasValue)
-            {
-                if (request.InStock.Value)
-                {
-                    query = query.Where(p => p.Stock != null && p.Stock.Stock > 0);
-                }
-                else
-                {
-                    query = query.Where(p => p.Stock == null || p.Stock.Stock == 0);
-                }
-            }
-
-            // Filtro por productos destacados
-            if (request.IsFeatured.HasValue)
-            {
-                query = query.Where(p => p.IsFeatured == request.IsFeatured.Value);
-            }
-
-            // Filtro por productos con descuento
-            if (request.HasDiscount.HasValue)
-            {
-                if (request.HasDiscount.Value)
-                {
-                    query = query.Where(p => p.DiscountPercentage > 0);
-                }
-                else
-                {
-                    query = query.Where(p => p.DiscountPercentage == 0);
-                }
-            }
-
-            // Filtro por rating mínimo
-            if (request.MinRating.HasValue)
-            {
-                query = query.Where(p =>
-                    p.ProductRating != null &&
-                    p.ProductRating.AverageRating >= request.MinRating.Value
-                );
-            }
+            query = ApplyTextSearchFilter(query, request.Query);
+            query = ApplyCategoryFilter(query, request.CategoryId);
+            query = ApplyBrandFilter(query, request.BrandIds);
+            query = ApplyPriceRangeFilter(query, request.MinPrice, request.MaxPrice);
+            query = ApplyStockFilter(query, request.InStock);
+            query = ApplyFeaturedFilter(query, request.IsFeatured);
+            query = ApplyDiscountFilter(query, request.HasDiscount);
+            query = ApplyRatingFilter(query, request.MinRating);
 
             // Solo productos activos
-            query = query.Where(p => p.IsActive);
+            return query.Where(p => p.IsActive);
+        }
+
+        private static IQueryable<Product> ApplyTextSearchFilter(IQueryable<Product> query, string searchQuery)
+        {
+            if (string.IsNullOrWhiteSpace(searchQuery))
+                return query;
+
+            var searchTerm = searchQuery.ToLower().Trim();
+            return query.Where(p =>
+                p.NameSpanish.ToLower().Contains(searchTerm) ||
+                p.NameEnglish.ToLower().Contains(searchTerm) ||
+                p.DescriptionSpanish.ToLower().Contains(searchTerm) ||
+                p.DescriptionEnglish.ToLower().Contains(searchTerm) ||
+                p.SKU.ToLower().Contains(searchTerm) ||
+                p.Brand.ToLower().Contains(searchTerm)
+            );
+        }
+
+        private static IQueryable<Product> ApplyCategoryFilter(IQueryable<Product> query, int? categoryId)
+        {
+            if (!categoryId.HasValue)
+                return query;
+
+            return query.Where(p => p.ProductCategories.Any(pc => pc.CategoryId == categoryId.Value));
+        }
+
+        private static IQueryable<Product> ApplyBrandFilter(IQueryable<Product> query, string brandIds)
+        {
+            if (string.IsNullOrWhiteSpace(brandIds))
+                return query;
+
+            var brands = brandIds
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(b => b.Trim())
+                .ToList();
+
+            return brands.Any() ? query.Where(p => brands.Contains(p.Brand)) : query;
+        }
+
+        private static IQueryable<Product> ApplyPriceRangeFilter(IQueryable<Product> query, decimal? minPrice, decimal? maxPrice)
+        {
+            if (minPrice.HasValue)
+                query = query.Where(p => p.Price >= minPrice.Value);
+
+            if (maxPrice.HasValue)
+                query = query.Where(p => p.Price <= maxPrice.Value);
 
             return query;
+        }
+
+        private static IQueryable<Product> ApplyStockFilter(IQueryable<Product> query, bool? inStock)
+        {
+            if (!inStock.HasValue)
+                return query;
+
+            return inStock.Value
+                ? query.Where(p => p.Stock != null && p.Stock.Stock > 0)
+                : query.Where(p => p.Stock == null || p.Stock.Stock == 0);
+        }
+
+        private static IQueryable<Product> ApplyFeaturedFilter(IQueryable<Product> query, bool? isFeatured)
+        {
+            return isFeatured.HasValue
+                ? query.Where(p => p.IsFeatured == isFeatured.Value)
+                : query;
+        }
+
+        private static IQueryable<Product> ApplyDiscountFilter(IQueryable<Product> query, bool? hasDiscount)
+        {
+            if (!hasDiscount.HasValue)
+                return query;
+
+            return hasDiscount.Value
+                ? query.Where(p => p.DiscountPercentage > 0)
+                : query.Where(p => p.DiscountPercentage == 0);
+        }
+
+        private static IQueryable<Product> ApplyRatingFilter(IQueryable<Product> query, decimal? minRating)
+        {
+            return minRating.HasValue
+                ? query.Where(p => p.ProductRating != null && p.ProductRating.AverageRating >= minRating.Value)
+                : query;
         }
 
         /// <summary>

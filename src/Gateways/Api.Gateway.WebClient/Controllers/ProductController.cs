@@ -323,9 +323,8 @@ namespace Api.Gateway.WebClient.Controllers
                 var cacheKey = _cacheKeyProvider.GenerateKey(baseCacheKey);
 
                 // Intentar obtener del caché (solo si no se solicitan facetas, ya que pueden cambiar frecuentemente)
-                if (!request.IncludeBrandFacets && !request.IncludeCategoryFacets &&
-                    !request.IncludePriceFacets && !request.IncludeRatingFacets &&
-                    !request.IncludeAttributeFacets)
+                var includeFacets = HasFacetsRequested(request);
+                if (!includeFacets)
                 {
                     var cachedResult = await _cacheService.GetAsync<ProductAdvancedSearchResponse>(cacheKey);
                     if (cachedResult != null)
@@ -345,9 +344,7 @@ namespace Api.Gateway.WebClient.Controllers
                 var executionTime = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
 
                 // Guardar en caché (con TTL más corto para búsquedas con facetas)
-                var cacheDuration = (request.IncludeBrandFacets || request.IncludeCategoryFacets ||
-                                    request.IncludePriceFacets || request.IncludeRatingFacets ||
-                                    request.IncludeAttributeFacets)
+                var cacheDuration = includeFacets
                     ? TimeSpan.FromMinutes(2) // Facetas cambian más frecuentemente
                     : TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes);
 
@@ -378,40 +375,42 @@ namespace Api.Gateway.WebClient.Controllers
         private Dictionary<string, List<string>> ParseAttributeFiltersFromQuery()
         {
             var attributeFilters = new Dictionary<string, List<string>>();
+            const string filterPrefix = "filter_attr_";
 
-            // Iterar sobre todos los query parameters
-            foreach (var queryParam in Request.Query)
+            var attributeParams = Request.Query
+                .Where(q => q.Key.StartsWith(filterPrefix, StringComparison.OrdinalIgnoreCase));
+
+            foreach (var queryParam in attributeParams)
             {
-                // Buscar parámetros que empiecen con "filter_attr_"
-                if (queryParam.Key.StartsWith("filter_attr_", StringComparison.OrdinalIgnoreCase))
-                {
-                    // Extraer el ID del atributo (ej: "filter_attr_107" -> "107")
-                    var attributeIdStr = queryParam.Key.Substring("filter_attr_".Length);
-                    
-                    if (int.TryParse(attributeIdStr, out var attributeId))
-                    {
-                        // Usar el attributeId como clave
-                        var attributeKey = attributeId.ToString();
-                        
-                        if (!attributeFilters.ContainsKey(attributeKey))
-                        {
-                            attributeFilters[attributeKey] = new List<string>();
-                        }
-
-                        // Agregar todos los valores (puede haber múltiples: filter_attr_107=1056&filter_attr_107=1036)
-                        foreach (var value in queryParam.Value)
-                        {
-                            if (!string.IsNullOrWhiteSpace(value))
-                            {
-                                attributeFilters[attributeKey].Add(value);
-                                _logger.LogInformation($"Parsed attribute filter: attr_{attributeId} = {value}");
-                            }
-                        }
-                    }
-                }
+                ProcessAttributeFilter(queryParam, filterPrefix, attributeFilters);
             }
 
             return attributeFilters;
+        }
+
+        private void ProcessAttributeFilter(
+            KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues> queryParam,
+            string filterPrefix,
+            Dictionary<string, List<string>> attributeFilters)
+        {
+            var attributeIdStr = queryParam.Key.Substring(filterPrefix.Length);
+
+            if (!int.TryParse(attributeIdStr, out var attributeId))
+                return;
+
+            var attributeKey = attributeId.ToString();
+
+            if (!attributeFilters.ContainsKey(attributeKey))
+            {
+                attributeFilters[attributeKey] = new List<string>();
+            }
+
+            var validValues = queryParam.Value.Where(v => !string.IsNullOrWhiteSpace(v));
+            foreach (var value in validValues)
+            {
+                attributeFilters[attributeKey].Add(value);
+                _logger.LogInformation($"Parsed attribute filter: attr_{attributeId} = {value}");
+            }
         }
 
         /// <summary>
@@ -478,6 +477,18 @@ namespace Api.Gateway.WebClient.Controllers
             keyBuilder.Append($"facets={request.IncludeBrandFacets},{request.IncludeCategoryFacets},{request.IncludePriceFacets},{request.IncludeRatingFacets},{request.IncludeAttributeFacets}");
 
             return keyBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Verifica si se solicitaron facetas en la búsqueda avanzada
+        /// </summary>
+        private static bool HasFacetsRequested(ProductAdvancedSearchRequest request)
+        {
+            return request.IncludeBrandFacets ||
+                   request.IncludeCategoryFacets ||
+                   request.IncludePriceFacets ||
+                   request.IncludeRatingFacets ||
+                   request.IncludeAttributeFacets;
         }
 
         /// <summary>

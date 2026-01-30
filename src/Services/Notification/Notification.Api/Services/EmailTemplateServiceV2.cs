@@ -260,6 +260,15 @@ namespace Notification.Api.Services
             var result = template;
 
             // Handle {{#each}} blocks for arrays FIRST (before simple variable replacement)
+            result = ProcessEachBlocks(result, data);
+
+            // Find all {{variable}} patterns in the template
+            return RenderSimpleVariables(result, data);
+        }
+
+        private string ProcessEachBlocks(string template, Dictionary<string, object> data)
+        {
+            var result = template;
             const string eachPattern = @"\{\{#each\s+(\w+)\}\}(.*?)\{\{/each\}\}";
             var eachMatches = Regex.Matches(result, eachPattern, RegexOptions.Singleline);
 
@@ -270,46 +279,60 @@ namespace Notification.Api.Services
 
                 if (data.ContainsKey(arrayName) && data[arrayName] is IEnumerable<object> items)
                 {
-                    var renderedBlocks = new StringBuilder();
-                    var index = 0;
-
-                    foreach (var item in items)
-                    {
-                        var blockData = new Dictionary<string, object>(data);
-                        blockData["@index"] = (index + 1).ToString();
-
-                        // If item is a dictionary or has properties, add them to blockData
-                        if (item is Dictionary<string, object> itemDict)
-                        {
-                            foreach (var kvp in itemDict)
-                            {
-                                blockData[kvp.Key] = kvp.Value;
-                            }
-                        }
-                        else if (item != null)
-                        {
-                            // Try to extract properties from the object
-                            var properties = item.GetType().GetProperties();
-                            foreach (var prop in properties)
-                            {
-                                blockData[prop.Name] = prop.GetValue(item);
-                            }
-                            blockData["this"] = item.ToString();
-                        }
-
-                        var renderedBlock = RenderSimpleVariables(blockTemplate, blockData);
-                        renderedBlocks.Append(renderedBlock);
-                        index++;
-                    }
-
-                    result = result.Replace(match.Value, renderedBlocks.ToString());
+                    var renderedContent = RenderEachBlock(items, blockTemplate, data);
+                    result = result.Replace(match.Value, renderedContent);
                 }
             }
 
-            // Find all {{variable}} patterns in the template
-            result = RenderSimpleVariables(result, data);
-
             return result;
+        }
+
+        private string RenderEachBlock(IEnumerable<object> items, string blockTemplate, Dictionary<string, object> parentData)
+        {
+            var renderedBlocks = new StringBuilder();
+            var index = 0;
+
+            foreach (var item in items)
+            {
+                var blockData = CreateBlockData(item, parentData, index);
+                var renderedBlock = RenderSimpleVariables(blockTemplate, blockData);
+                renderedBlocks.Append(renderedBlock);
+                index++;
+            }
+
+            return renderedBlocks.ToString();
+        }
+
+        private static Dictionary<string, object> CreateBlockData(object item, Dictionary<string, object> parentData, int index)
+        {
+            var blockData = new Dictionary<string, object>(parentData)
+            {
+                ["@index"] = (index + 1).ToString()
+            };
+
+            if (item is Dictionary<string, object> itemDict)
+            {
+                foreach (var kvp in itemDict)
+                {
+                    blockData[kvp.Key] = kvp.Value;
+                }
+            }
+            else if (item != null)
+            {
+                ExtractObjectProperties(item, blockData);
+            }
+
+            return blockData;
+        }
+
+        private static void ExtractObjectProperties(object item, Dictionary<string, object> blockData)
+        {
+            var properties = item.GetType().GetProperties();
+            foreach (var prop in properties)
+            {
+                blockData[prop.Name] = prop.GetValue(item);
+            }
+            blockData["this"] = item.ToString();
         }
 
         private string RenderSimpleVariables(string template, Dictionary<string, object> data)

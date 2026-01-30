@@ -225,9 +225,8 @@ namespace Catalog.Api.Controllers
                 var cacheKey = _cacheKeyProvider.GenerateKey(baseCacheKey);
 
                 // Intentar obtener del caché (solo si no se solicitan facetas, ya que pueden cambiar frecuentemente)
-                if (!request.IncludeBrandFacets && !request.IncludeCategoryFacets &&
-                    !request.IncludePriceFacets && !request.IncludeRatingFacets &&
-                    !request.IncludeAttributeFacets)
+                var includeFacets = HasFacetsRequested(request);
+                if (!includeFacets)
                 {
                     var cachedResult = await _cacheService.GetAsync<ProductAdvancedSearchResponse>(cacheKey);
                     if (cachedResult != null)
@@ -242,9 +241,7 @@ namespace Catalog.Api.Controllers
                 var result = await _productQueryService.SearchAdvancedAsync(request);
 
                 // Guardar en caché (con TTL más corto para búsquedas con facetas)
-                var cacheDuration = (request.IncludeBrandFacets || request.IncludeCategoryFacets ||
-                                    request.IncludePriceFacets || request.IncludeRatingFacets ||
-                                    request.IncludeAttributeFacets)
+                var cacheDuration = includeFacets
                     ? TimeSpan.FromMinutes(2) // Facetas cambian más frecuentemente
                     : TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes);
 
@@ -448,6 +445,18 @@ namespace Catalog.Api.Controllers
                 _logger.LogError(ex, "Error clearing search cache");
                 return StatusCode(500, new { message = "Error clearing cache", error = ex.Message });
             }
+        }
+
+        /// <summary>
+        /// Verifica si se solicitaron facetas en la búsqueda avanzada
+        /// </summary>
+        private static bool HasFacetsRequested(ProductAdvancedSearchRequest request)
+        {
+            return request.IncludeBrandFacets ||
+                   request.IncludeCategoryFacets ||
+                   request.IncludePriceFacets ||
+                   request.IncludeRatingFacets ||
+                   request.IncludeAttributeFacets;
         }
     }
 }

@@ -32,16 +32,7 @@ namespace Common.ApiKey
             }
 
             // Endpoints que no requieren API Key (health checks, swagger, autenticación, etc.)
-            var path = context.Request.Path.Value?.ToLower() ?? string.Empty;
-            if (path.Contains("/hc") ||
-                path.Contains("/swagger") ||
-                path.Contains("/healthchecks-ui") ||
-                path.Contains("/health") ||
-                path.EndsWith(".json") && path.Contains("swagger") ||
-                // Endpoints de autenticación públicos (no requieren API Key)
-                path.Contains("/identity/authentication") ||
-                path.Contains("/identity/refresh-token") ||
-                (path.Contains("/v1/identity") && context.Request.Method == "POST" && !path.Contains("/revoke-token")))
+            if (IsExcludedEndpoint(context))
             {
                 await _next(context);
                 return;
@@ -88,6 +79,56 @@ namespace Common.ApiKey
                 context.Request.Path);
 
             await _next(context);
+        }
+
+        /// <summary>
+        /// Determina si el endpoint está excluido de la validación de API Key
+        /// </summary>
+        private static bool IsExcludedEndpoint(HttpContext context)
+        {
+            var path = context.Request.Path.Value?.ToLower() ?? string.Empty;
+
+            // Health checks y monitoreo
+            if (IsHealthCheckEndpoint(path))
+                return true;
+
+            // Swagger/OpenAPI
+            if (IsSwaggerEndpoint(path))
+                return true;
+
+            // Endpoints de autenticación públicos
+            if (IsPublicAuthEndpoint(path, context.Request.Method))
+                return true;
+
+            return false;
+        }
+
+        private static bool IsHealthCheckEndpoint(string path)
+        {
+            return path.Contains("/hc") ||
+                   path.Contains("/health") ||
+                   path.Contains("/healthchecks-ui");
+        }
+
+        private static bool IsSwaggerEndpoint(string path)
+        {
+            return path.Contains("/swagger") ||
+                   (path.EndsWith(".json") && path.Contains("swagger"));
+        }
+
+        private static bool IsPublicAuthEndpoint(string path, string method)
+        {
+            if (path.Contains("/identity/authentication"))
+                return true;
+
+            if (path.Contains("/identity/refresh-token"))
+                return true;
+
+            // POST a /v1/identity (registro, login) excepto revoke-token
+            if (path.Contains("/v1/identity") && method == "POST" && !path.Contains("/revoke-token"))
+                return true;
+
+            return false;
         }
     }
 }

@@ -122,10 +122,19 @@ namespace Catalog.Domain
         /// <summary>
         /// Indica si el banner está actualmente vigente
         /// </summary>
-        public bool IsCurrentlyActive =>
-            IsActive &&
-            (!StartDate.HasValue || StartDate.Value <= DateTime.UtcNow) &&
-            (!EndDate.HasValue || EndDate.Value >= DateTime.UtcNow);
+        public bool IsCurrentlyActive => IsActive && IsWithinDateRange();
+
+        #endregion
+
+        #region Private Methods
+
+        private bool IsWithinDateRange()
+        {
+            var now = DateTime.UtcNow;
+            var hasStarted = !StartDate.HasValue || StartDate.Value <= now;
+            var hasNotEnded = !EndDate.HasValue || EndDate.Value >= now;
+            return hasStarted && hasNotEnded;
+        }
 
         #endregion
     }

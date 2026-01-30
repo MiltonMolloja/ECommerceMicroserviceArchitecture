@@ -287,82 +287,56 @@ namespace Identity.Service.EventHandlers
             return "Unknown";
         }
 
-        private string ParseDevice(string userAgent)
+        private static readonly (Func<string, bool> Matcher, string Device)[] DevicePatterns =
+        {
+            (ua => ua.Contains("iphone"), "iPhone"),
+            (ua => ua.Contains("ipad"), "iPad"),
+            (ua => ua.Contains("android") && ua.Contains("mobile"), "Android Phone"),
+            (ua => ua.Contains("android"), "Android Tablet"),
+            (ua => ua.Contains("windows phone"), "Windows Phone"),
+            (ua => ua.Contains("mac os x") || ua.Contains("macintosh"), "Mac"),
+            (ua => ua.Contains("windows nt"), "Windows PC"),
+            (ua => ua.Contains("linux") && !ua.Contains("android"), "Linux PC"),
+            (ua => ua.Contains("postman"), "Postman (API Testing)"),
+            (ua => ua.Contains("insomnia"), "Insomnia (API Testing)"),
+            (ua => ua.Contains("swagger"), "Swagger UI (API Testing)"),
+            (ua => ua.Contains("curl"), "cURL (Command Line)")
+        };
+
+        private static string ParseDevice(string userAgent)
         {
             if (string.IsNullOrEmpty(userAgent))
                 return "API Client / Testing Tool";
 
             var ua = userAgent.ToLower();
-
-            // Mobile devices
-            if (ua.Contains("iphone"))
-                return "iPhone";
-            if (ua.Contains("ipad"))
-                return "iPad";
-            if (ua.Contains("android") && ua.Contains("mobile"))
-                return "Android Phone";
-            if (ua.Contains("android"))
-                return "Android Tablet";
-            if (ua.Contains("windows phone"))
-                return "Windows Phone";
-
-            // Desktop OS
-            if (ua.Contains("mac os x") || ua.Contains("macintosh"))
-                return "Mac";
-            if (ua.Contains("windows nt"))
-                return "Windows PC";
-            if (ua.Contains("linux") && !ua.Contains("android"))
-                return "Linux PC";
-
-            // API Clients / Testing tools
-            if (ua.Contains("postman"))
-                return "Postman (API Testing)";
-            if (ua.Contains("insomnia"))
-                return "Insomnia (API Testing)";
-            if (ua.Contains("swagger"))
-                return "Swagger UI (API Testing)";
-            if (ua.Contains("curl"))
-                return "cURL (Command Line)";
-
-            return "Unknown Device";
+            var match = DevicePatterns.FirstOrDefault(p => p.Matcher(ua));
+            return match.Device ?? "Unknown Device";
         }
 
-        private string ParseBrowser(string userAgent)
+        private static readonly (Func<string, bool> Matcher, string Browser)[] BrowserPatterns =
+        {
+            (ua => ua.Contains("postman"), "Postman"),
+            (ua => ua.Contains("insomnia"), "Insomnia"),
+            (ua => ua.Contains("swagger"), "Swagger UI"),
+            (ua => ua.Contains("curl"), "cURL"),
+            (ua => ua.Contains("python-requests"), "Python Requests"),
+            (ua => ua.Contains("java"), "Java HTTP Client"),
+            (ua => ua.Contains("edg/") || ua.Contains("edge/"), "Microsoft Edge"),
+            (ua => ua.Contains("chrome/") && !ua.Contains("edg"), "Google Chrome"),
+            (ua => ua.Contains("firefox/"), "Mozilla Firefox"),
+            (ua => ua.Contains("safari/") && !ua.Contains("chrome") && !ua.Contains("chromium"), "Safari"),
+            (ua => ua.Contains("opera/") || ua.Contains("opr/"), "Opera"),
+            (ua => ua.Contains("msie") || ua.Contains("trident"), "Internet Explorer")
+        };
+
+        private static string ParseBrowser(string userAgent)
         {
             if (string.IsNullOrEmpty(userAgent))
                 return "API Client / Testing Tool";
 
             var ua = userAgent.ToLower();
-
-            // API Clients / Testing tools (check first)
-            if (ua.Contains("postman"))
-                return "Postman";
-            if (ua.Contains("insomnia"))
-                return "Insomnia";
-            if (ua.Contains("swagger"))
-                return "Swagger UI";
-            if (ua.Contains("curl"))
-                return "cURL";
-            if (ua.Contains("python-requests"))
-                return "Python Requests";
-            if (ua.Contains("java"))
-                return "Java HTTP Client";
-
-            // Real browsers (order matters!)
-            if (ua.Contains("edg/") || ua.Contains("edge/"))
-                return "Microsoft Edge";
-            if (ua.Contains("chrome/") && !ua.Contains("edg"))
-                return "Google Chrome";
-            if (ua.Contains("firefox/"))
-                return "Mozilla Firefox";
-            if (ua.Contains("safari/") && !ua.Contains("chrome") && !ua.Contains("chromium"))
-                return "Safari";
-            if (ua.Contains("opera/") || ua.Contains("opr/"))
-                return "Opera";
-            if (ua.Contains("msie") || ua.Contains("trident"))
-                return "Internet Explorer";
-
-            return "Unknown Browser";
+            var match = BrowserPatterns.FirstOrDefault(p => p.Matcher(ua));
+            return match.Browser ?? "Unknown Browser";
         }
     }
 }
