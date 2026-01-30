@@ -26,15 +26,15 @@ namespace Identity.Persistence.Database
                 warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
             // Database schema
-            modelBuilder.HasDefaultSchema("Identity");
+            builder.HasDefaultSchema("Identity");
 
             // Model Contraints
-            ModelConfig(modelBuilder);
+            ModelConfig(builder);
         }
 
         private void ModelConfig(ModelBuilder modelBuilder)

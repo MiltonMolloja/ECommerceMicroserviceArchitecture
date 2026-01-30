@@ -80,9 +80,10 @@ namespace Catalog.Domain
         public decimal PriceWithTax => Price * (1 + TaxRate / 100);
 
         /// <summary>
-        /// Array de URLs de imágenes
+        /// Obtiene el array de URLs de imágenes
         /// </summary>
-        public string[] ImageUrls => string.IsNullOrEmpty(Images)
+        /// <returns>Array de URLs de imágenes</returns>
+        public string[] GetImageUrls() => string.IsNullOrEmpty(Images)
             ? Array.Empty<string>()
             : Images.Split(',', StringSplitOptions.RemoveEmptyEntries)
                     .Select(s => s.Trim())
@@ -91,7 +92,7 @@ namespace Catalog.Domain
         /// <summary>
         /// URL de la primera imagen (imagen principal)
         /// </summary>
-        public string PrimaryImageUrl => ImageUrls.FirstOrDefault();
+        public string PrimaryImageUrl => GetImageUrls().FirstOrDefault();
 
         #endregion
 

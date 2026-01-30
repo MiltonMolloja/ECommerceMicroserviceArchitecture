@@ -114,7 +114,7 @@ namespace Catalog.Persistence.Database.Configuration
             builder.Ignore(x => x.FinalPrice);
             builder.Ignore(x => x.HasDiscount);
             builder.Ignore(x => x.PriceWithTax);
-            builder.Ignore(x => x.ImageUrls);
+            // GetImageUrls() es un método, no necesita ser ignorado
             builder.Ignore(x => x.PrimaryImageUrl);
 
             // Relación con Stock (1:1)
