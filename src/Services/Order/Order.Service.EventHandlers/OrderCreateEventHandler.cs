@@ -45,7 +45,7 @@ namespace Order.Service.EventHandlers
 
             await strategy.ExecuteAsync(async () =>
             {
-                using (var trx = await _context.Database.BeginTransactionAsync(cancellationToken)) 
+                using (var trx = await _context.Database.BeginTransactionAsync(cancellationToken))
                 {
                     // 01. Prepare detail
                     _logger.LogInformation("--- Preparing detail");
@@ -110,7 +110,7 @@ namespace Order.Service.EventHandlers
             return entry.OrderId;
         }
 
-        private void PrepareDetail(Domain.Order entry, OrderCreateCommand notification) 
+        private void PrepareDetail(Domain.Order entry, OrderCreateCommand notification)
         {
             entry.Items = notification.Items.Select(x => new OrderDetail
             {
@@ -141,7 +141,7 @@ namespace Order.Service.EventHandlers
             entry.ShippingState = notification.ShippingState;
             entry.ShippingPostalCode = notification.ShippingPostalCode;
             entry.ShippingCountry = notification.ShippingCountry;
-            
+
             // Legacy ShippingAddress field (for PostgreSQL compatibility)
             entry.ShippingAddress = $"{notification.ShippingAddressLine1}, {notification.ShippingCity}, {notification.ShippingCountry}";
 

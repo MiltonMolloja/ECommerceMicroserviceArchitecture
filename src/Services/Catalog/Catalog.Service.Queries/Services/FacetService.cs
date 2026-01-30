@@ -92,11 +92,12 @@ namespace Catalog.Service.Queries.Services
 
             // Usar el contexto de idioma para localizar nombres
             var languageName = _languageContext.IsEnglish ? "NameEnglish" : "NameSpanish";
-            
+
             var facets = await query
                 .SelectMany(p => p.ProductCategories)
-                .GroupBy(pc => new { 
-                    pc.CategoryId, 
+                .GroupBy(pc => new
+                {
+                    pc.CategoryId,
                     NameSpanish = pc.Category.NameSpanish,
                     NameEnglish = pc.Category.NameEnglish
                 })

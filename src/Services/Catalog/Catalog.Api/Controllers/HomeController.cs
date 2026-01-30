@@ -68,7 +68,7 @@ namespace Catalog.Api.Controllers
             try
             {
                 var language = _languageContext.CurrentLanguage;
-                _logger.LogInformation("Fetching home page data for language: {Language}, productsPerSection: {ProductsPerSection}", 
+                _logger.LogInformation("Fetching home page data for language: {Language}, productsPerSection: {ProductsPerSection}",
                     language, productsPerSection);
 
                 var response = await _homeService.GetHomePageDataAsync(language, productsPerSection);

@@ -41,7 +41,7 @@ namespace Catalog.Service.EventHandlers
 
             _logger.LogInformation("--- Retrieve products from database");
 
-            foreach (var item in notification.Items) 
+            foreach (var item in notification.Items)
             {
                 var entry = stocks.SingleOrDefault(x => x.ProductId == item.ProductId);
 
@@ -64,7 +64,7 @@ namespace Catalog.Service.EventHandlers
                 else
                 {
                     var previousStock = entry?.Stock ?? 0;
-                    
+
                     if (entry == null)
                     {
                         entry = new ProductInStock
@@ -106,7 +106,7 @@ namespace Catalog.Service.EventHandlers
                 };
 
                 await _publishEndpoint.Publish(stockUpdatedEvent, cancellationToken);
-                _logger.LogInformation("StockUpdatedEvent published for ProductId: {ProductId}, Previous: {Previous}, Current: {Current}", 
+                _logger.LogInformation("StockUpdatedEvent published for ProductId: {ProductId}, Previous: {Previous}, Current: {Current}",
                     productId, previousStock, currentStock);
             }
             catch (Exception ex)

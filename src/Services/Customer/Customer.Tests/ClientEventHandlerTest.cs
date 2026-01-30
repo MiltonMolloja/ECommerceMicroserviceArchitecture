@@ -414,7 +414,7 @@ public class ClientEventHandlerTest
         // Assert
         var updatedAddress1 = await context.ClientAddresses.FindAsync(address1.AddressId);
         var updatedAddress2 = await context.ClientAddresses.FindAsync(address2.AddressId);
-        
+
         updatedAddress1!.IsDefaultShipping.Should().BeFalse();
         updatedAddress2!.IsDefaultShipping.Should().BeTrue();
     }
@@ -473,7 +473,7 @@ public class ClientEventHandlerTest
         // Assert
         var updatedAddress1 = await context.ClientAddresses.FindAsync(address1.AddressId);
         var updatedAddress2 = await context.ClientAddresses.FindAsync(address2.AddressId);
-        
+
         updatedAddress1!.IsDefaultBilling.Should().BeFalse();
         updatedAddress2!.IsDefaultBilling.Should().BeTrue();
     }

@@ -155,7 +155,7 @@ namespace Payment.Service.EventHandlers.Handlers
                     };
 
                     await _publishEndpoint.Publish(paymentCompletedEvent, cancellationToken);
-                    _logger.LogInformation("Published PaymentCompletedEvent for OrderId: {OrderId}, PaymentId: {PaymentId}", 
+                    _logger.LogInformation("Published PaymentCompletedEvent for OrderId: {OrderId}, PaymentId: {PaymentId}",
                         notification.OrderId, payment.PaymentId);
 
                     // ========================================

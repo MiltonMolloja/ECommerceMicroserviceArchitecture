@@ -359,7 +359,7 @@ namespace Identity.Api.Controllers
             var loginServiceUrl = _configuration.GetValue<string>("LoginServiceUrl") ?? "http://localhost:4400";
             var frontendUrl = _configuration.GetValue<string>("FrontendUrl") ?? "http://localhost:4200";
             var loginUrl = $"{loginServiceUrl}/auth/login?returnUrl={Uri.EscapeDataString($"{frontendUrl}/auth/callback?next=%2F")}";
-            
+
             var htmlResponse = $@"
 <!DOCTYPE html>
 <html lang='es'>
@@ -622,9 +622,9 @@ namespace Identity.Api.Controllers
         public async Task<IActionResult> ResetTestUser()
         {
             // Check if we're in production - block the endpoint
-            var environment = _configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") 
+            var environment = _configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT")
                 ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            
+
             if (string.Equals(environment, "Production", StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogWarning("Attempt to reset test user in Production environment blocked");
@@ -632,7 +632,7 @@ namespace Identity.Api.Controllers
             }
 
             _logger.LogInformation("Resetting test user (Development mode)");
-            
+
             var command = new ResetTestUserCommand();
             var result = await _mediator.Send(command);
 

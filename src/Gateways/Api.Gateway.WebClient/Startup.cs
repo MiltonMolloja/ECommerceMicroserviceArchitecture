@@ -227,6 +227,6 @@ namespace Api.Gateway.WebClient
                 });
                 endpoints.MapHealthChecksUI();
             });
-        }        
+        }
     }
 }

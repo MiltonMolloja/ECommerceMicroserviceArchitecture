@@ -25,7 +25,7 @@ namespace Order.Service.Queries
             _context = context;
         }
 
-        public async Task<DataCollection<OrderDto>> GetAllAsync(int page, int take) 
+        public async Task<DataCollection<OrderDto>> GetAllAsync(int page, int take)
         {
             var collection = await _context.Orders
                 .AsNoTracking()

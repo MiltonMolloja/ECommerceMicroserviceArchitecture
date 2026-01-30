@@ -61,7 +61,7 @@ namespace Notification.Api
             // DbContext - Supports both SQL Server and PostgreSQL based on configuration
             services.AddDatabaseContext<ApplicationDbContext>(Configuration, "Notification");
 
-// Health check
+            // Health check
             services.AddHealthChecks()
                         .AddCheck("self", () => HealthCheckResult.Healthy())
                         .AddDbContextCheck<ApplicationDbContext>(typeof(ApplicationDbContext).Name)

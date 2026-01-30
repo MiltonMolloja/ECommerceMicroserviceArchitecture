@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Catalog.Api.Controllers
 {
-    
+
     [ApiController]
     [Route("v1/products")]
     public class ProductController : ControllerBase

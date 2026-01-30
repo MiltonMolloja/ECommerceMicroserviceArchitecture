@@ -15,7 +15,7 @@ namespace Identity.Api
         {
             // Enable legacy timestamp behavior for Npgsql (allows DateTime without timezone)
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-            
+
             CreateHostBuilder(args).Build().Run();
         }
 

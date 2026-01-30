@@ -26,7 +26,7 @@ public class PaymentFailedConsumerTest
     {
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
-        
+
         var order = new Domain.Order
         {
             ClientId = 1,
@@ -67,7 +67,7 @@ public class PaymentFailedConsumerTest
     {
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
-        
+
         var order = new Domain.Order
         {
             ClientId = 1,

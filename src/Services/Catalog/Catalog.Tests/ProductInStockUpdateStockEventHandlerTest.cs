@@ -18,9 +18,9 @@ namespace Catalog.Tests
     [TestClass]
     public class ProductInStockUpdateStockEventHandlerTest
     {
-        private ILogger<ProductInStockUpdateStockEventHandler> GetIlogger 
+        private ILogger<ProductInStockUpdateStockEventHandler> GetIlogger
         {
-            get 
+            get
             {
                 return new Mock<ILogger<ProductInStockUpdateStockEventHandler>>().Object;
             }
@@ -44,7 +44,8 @@ namespace Catalog.Tests
             var initialStock = 1;
 
             // Add product
-            context.Stocks.Add(new ProductInStock { 
+            context.Stocks.Add(new ProductInStock
+            {
                 ProductInStockId = productInStockId,
                 ProductId = productId,
                 Stock = initialStock
@@ -54,9 +55,10 @@ namespace Catalog.Tests
 
             var command = new ProductInStockUpdateStockEventHandler(context, GetPublishEndpoint, GetIlogger);
 
-            await command.Handle(new ProductInStockUpdateStockCommand {
-                Items = new List<ProductInStockUpdateItem> { 
-                    new ProductInStockUpdateItem { 
+            await command.Handle(new ProductInStockUpdateStockCommand
+            {
+                Items = new List<ProductInStockUpdateItem> {
+                    new ProductInStockUpdateItem {
                         ProductId = productId,
                         Stock = 1,
                         Action = Common.Enums.ProductInStockAction.Substract

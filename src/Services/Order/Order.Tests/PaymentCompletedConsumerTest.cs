@@ -26,7 +26,7 @@ public class PaymentCompletedConsumerTest
     {
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
-        
+
         // Create a pending order
         var order = new Domain.Order
         {
@@ -98,7 +98,7 @@ public class PaymentCompletedConsumerTest
     {
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
-        
+
         var order = new Domain.Order
         {
             ClientId = 1,

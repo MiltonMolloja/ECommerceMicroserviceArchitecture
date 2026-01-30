@@ -21,14 +21,14 @@ public class MockPaymentGatewayTest
     public void Setup()
     {
         _loggerMock = new Mock<ILogger<MockPaymentGateway>>();
-        
+
         // Configuración sin delay para tests rápidos
         var configValues = new Dictionary<string, string?>
         {
             { "PaymentGateway:MockSettings:SimulateDelay", "false" },
             { "PaymentGateway:MockSettings:DelayMilliseconds", "0" }
         };
-        
+
         _configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(configValues)
             .Build();

@@ -9,7 +9,7 @@ namespace Order.Persistence.Database.Configuration
         public OrderDetailConfiguration(EntityTypeBuilder<OrderDetail> entityBuilder)
         {
             entityBuilder.HasKey(x => x.OrderDetailId);
-            
+
             // PostgreSQL uses "OrderDetails" table name (plural)
             entityBuilder.ToTable("OrderDetails");
         }

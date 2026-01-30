@@ -2,7 +2,7 @@
 {
     public class ApiGatewayUrl
     {
-        public ApiGatewayUrl(string url) 
+        public ApiGatewayUrl(string url)
         {
             Value = url;
         }

@@ -58,7 +58,7 @@ public class PaymentCompletedConsumer : IConsumer<PaymentCompletedEvent>
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, 
+            _logger.LogError(ex,
                 "Error sending order confirmation email for OrderId: {OrderId} to {ClientEmail}",
                 message.OrderId, message.ClientEmail);
             throw; // Re-throw para que MassTransit maneje el retry

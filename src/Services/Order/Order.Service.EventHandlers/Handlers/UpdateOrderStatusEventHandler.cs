@@ -77,7 +77,7 @@ namespace Order.Service.EventHandlers.Handlers
                 case OrderStatus.Cancelled:
                     order.CancelledAt = DateTime.UtcNow;
                     order.CancellationReason = notification.Reason;
-                    
+
                     // Publicar evento OrderCancelled via RabbitMQ
                     await PublishOrderCancelledEventAsync(order, notification.Reason, cancellationToken);
                     break;

@@ -20,7 +20,7 @@ public class CartAbandonmentService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<CartAbandonmentService> _logger;
-    
+
     // Configuración
     private readonly TimeSpan _checkInterval = TimeSpan.FromHours(1); // Verificar cada hora
     private readonly TimeSpan _abandonmentThreshold = TimeSpan.FromHours(24); // 24 horas sin actividad
@@ -69,7 +69,7 @@ public class CartAbandonmentService : BackgroundService
         // 3. No han sido notificados previamente (AbandonmentNotifiedAt es null)
         var abandonedCarts = await context.ShoppingCarts
             .Include(c => c.Items)
-            .Where(c => c.Items.Any() && 
+            .Where(c => c.Items.Any() &&
                         c.UpdatedAt < abandonmentCutoff &&
                         c.AbandonmentNotifiedAt == null &&
                         c.ClientId.HasValue) // Solo carritos de clientes registrados

@@ -24,7 +24,7 @@ public class UserCreateEventHandlerTest
     {
         _loggerMock = new Mock<ILogger<UserCreateEventHandler>>();
         _publishEndpointMock = new Mock<IPublishEndpoint>();
-        
+
         var userStoreMock = new Mock<IUserStore<ApplicationUser>>();
         _userManagerMock = new Mock<UserManager<ApplicationUser>>(
             userStoreMock.Object, null!, null!, null!, null!, null!, null!, null!, null!);

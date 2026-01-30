@@ -117,7 +117,7 @@ namespace Api.Gateway.WebClient.Controllers
                 if (attributeFilters.Any())
                 {
                     _logger.LogInformation($"Gateway: Detected {attributeFilters.Count} attribute filters, using advanced search");
-                    
+
                     // Convertir ProductSearchRequest a ProductAdvancedSearchRequest
                     var advancedRequest = new ProductAdvancedSearchRequest
                     {
@@ -154,7 +154,7 @@ namespace Api.Gateway.WebClient.Controllers
                     if (cachedAdvancedResult != null)
                     {
                         _logger.LogInformation($"Gateway: Advanced search with attributes retrieved from cache: {advancedCacheKey}");
-                        
+
                         // Convertir resultado avanzado cacheado a resultado simple
                         var cachedSimpleResult = new ProductSearchResponse
                         {
@@ -197,7 +197,7 @@ namespace Api.Gateway.WebClient.Controllers
                     _logger.LogInformation(
                         $"Gateway: Advanced search with attributes executed in {executionTimeAdv}ms and cached: {advancedCacheKey}"
                     );
-                    
+
                     // Convertir resultado avanzado a resultado simple
                     var simpleResult = new ProductSearchResponse
                     {

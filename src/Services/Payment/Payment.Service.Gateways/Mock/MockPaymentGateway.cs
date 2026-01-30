@@ -85,7 +85,7 @@ namespace Payment.Service.Gateways.Mock
             // Basado en el nombre del titular de la tarjeta
             // ============================================
             var cardholderName = request.CardholderName?.Trim().ToUpperInvariant();
-            
+
             if (!string.IsNullOrEmpty(cardholderName))
             {
                 if (TestCardholderNames.TryGetValue(cardholderName, out var testResult))
@@ -144,7 +144,7 @@ namespace Payment.Service.Gateways.Mock
             // ============================================
             // LÓGICA LEGACY (mantener compatibilidad)
             // ============================================
-            
+
             if (request.PaymentToken == "MOCK_FAIL_TOKEN")
             {
                 _logger.LogWarning($"[MOCK GATEWAY] Payment failed - Test token for failure scenario");

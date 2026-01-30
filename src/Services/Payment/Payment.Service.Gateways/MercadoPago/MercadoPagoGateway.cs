@@ -62,7 +62,7 @@ namespace Payment.Service.Gateways.MercadoPago
                 using var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/v1/payments");
                 httpRequest.Headers.Add("X-Idempotency-Key", idempotencyKey);
                 httpRequest.Content = JsonContent.Create(paymentData);
-                
+
                 var response = await _httpClient.SendAsync(httpRequest);
                 var responseContent = await response.Content.ReadAsStringAsync();
 
@@ -142,7 +142,7 @@ namespace Payment.Service.Gateways.MercadoPago
                 using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"/v1/payments/{request.TransactionId}/refunds");
                 httpRequest.Headers.Add("X-Idempotency-Key", idempotencyKey);
                 httpRequest.Content = JsonContent.Create(refundData);
-                
+
                 var response = await _httpClient.SendAsync(httpRequest);
                 var responseContent = await response.Content.ReadAsStringAsync();
 

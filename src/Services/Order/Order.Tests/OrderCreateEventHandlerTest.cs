@@ -26,7 +26,7 @@ public class OrderCreateEventHandlerTest
         _loggerMock = new Mock<ILogger<OrderCreateEventHandler>>();
         _publishEndpointMock = new Mock<IPublishEndpoint>();
         _catalogProxyMock = new Mock<ICatalogProxy>();
-        
+
         // Setup catalog proxy to succeed by default
         _catalogProxyMock
             .Setup(x => x.UpdateStockAsync(It.IsAny<ProductInStockUpdateStockCommand>()))
@@ -39,9 +39,9 @@ public class OrderCreateEventHandlerTest
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
         var handler = new OrderCreateEventHandler(
-            context, 
-            _catalogProxyMock.Object, 
-            _publishEndpointMock.Object, 
+            context,
+            _catalogProxyMock.Object,
+            _publishEndpointMock.Object,
             _loggerMock.Object);
 
         var command = new OrderCreateCommand
@@ -82,9 +82,9 @@ public class OrderCreateEventHandlerTest
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
         var handler = new OrderCreateEventHandler(
-            context, 
-            _catalogProxyMock.Object, 
-            _publishEndpointMock.Object, 
+            context,
+            _catalogProxyMock.Object,
+            _publishEndpointMock.Object,
             _loggerMock.Object);
 
         var command = new OrderCreateCommand
@@ -119,9 +119,9 @@ public class OrderCreateEventHandlerTest
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
         var handler = new OrderCreateEventHandler(
-            context, 
-            _catalogProxyMock.Object, 
-            _publishEndpointMock.Object, 
+            context,
+            _catalogProxyMock.Object,
+            _publishEndpointMock.Object,
             _loggerMock.Object);
 
         var command = new OrderCreateCommand
@@ -145,7 +145,7 @@ public class OrderCreateEventHandlerTest
 
         // Assert
         orderId.Should().BeGreaterThan(0);
-        
+
         var orderInDb = await context.Orders.FindAsync(orderId);
         orderInDb!.Total.Should().Be(199.99m);
         orderInDb.Items.Should().HaveCount(1);
@@ -158,9 +158,9 @@ public class OrderCreateEventHandlerTest
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
         var handler = new OrderCreateEventHandler(
-            context, 
-            _catalogProxyMock.Object, 
-            _publishEndpointMock.Object, 
+            context,
+            _catalogProxyMock.Object,
+            _publishEndpointMock.Object,
             _loggerMock.Object);
 
         var command = new OrderCreateCommand
@@ -193,9 +193,9 @@ public class OrderCreateEventHandlerTest
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
         var handler = new OrderCreateEventHandler(
-            context, 
-            _catalogProxyMock.Object, 
-            _publishEndpointMock.Object, 
+            context,
+            _catalogProxyMock.Object,
+            _publishEndpointMock.Object,
             _loggerMock.Object);
 
         var command = new OrderCreateCommand
@@ -236,9 +236,9 @@ public class OrderCreateEventHandlerTest
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
         var handler = new OrderCreateEventHandler(
-            context, 
-            _catalogProxyMock.Object, 
-            _publishEndpointMock.Object, 
+            context,
+            _catalogProxyMock.Object,
+            _publishEndpointMock.Object,
             _loggerMock.Object);
 
         var command = new OrderCreateCommand
@@ -276,9 +276,9 @@ public class OrderCreateEventHandlerTest
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
         var handler = new OrderCreateEventHandler(
-            context, 
-            _catalogProxyMock.Object, 
-            _publishEndpointMock.Object, 
+            context,
+            _catalogProxyMock.Object,
+            _publishEndpointMock.Object,
             _loggerMock.Object);
 
         var command = new OrderCreateCommand
@@ -321,9 +321,9 @@ public class OrderCreateEventHandlerTest
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
         var handler = new OrderCreateEventHandler(
-            context, 
-            _catalogProxyMock.Object, 
-            _publishEndpointMock.Object, 
+            context,
+            _catalogProxyMock.Object,
+            _publishEndpointMock.Object,
             _loggerMock.Object);
 
         var command = new OrderCreateCommand

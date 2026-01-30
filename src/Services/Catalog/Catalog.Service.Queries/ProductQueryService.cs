@@ -160,7 +160,7 @@ namespace Catalog.Service.Queries
                 return query;
 
             var searchTerm = searchQuery.ToLower().Trim();
-            
+
             // Split into separate filters to reduce conditional operators (S1067)
             return query.Where(p =>
                 MatchesNameOrDescription(p, searchTerm) ||
@@ -447,7 +447,7 @@ namespace Catalog.Service.Queries
 
             // IMPORTANTE: No usar Task.WhenAll con DbContext compartido
             // Ejecutar operaciones secuencialmente para evitar threading issues
-            
+
             // 1. Contar total de resultados primero
             var total = await query.CountAsync();
 
@@ -531,7 +531,7 @@ namespace Catalog.Service.Queries
                 return query;
 
             var searchTerm = searchQuery.Trim().ToLower();
-            
+
             // Split into separate filters to reduce conditional operators (S1067)
             return query.Where(p =>
                 MatchesAdvancedNameOrDescription(p, searchTerm) ||

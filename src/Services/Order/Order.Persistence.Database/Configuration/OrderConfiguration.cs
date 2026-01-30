@@ -8,7 +8,7 @@ namespace Order.Persistence.Database.Configuration
         public OrderConfiguration(EntityTypeBuilder<Domain.Order> entityBuilder)
         {
             entityBuilder.HasKey(x => x.OrderId);
-            
+
             // Table name
             entityBuilder.ToTable("Orders");
 

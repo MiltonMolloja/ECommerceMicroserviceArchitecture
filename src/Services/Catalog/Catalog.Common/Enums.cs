@@ -2,7 +2,7 @@
 {
     public class Enums
     {
-        public enum ProductInStockAction 
+        public enum ProductInStockAction
         {
             Add,
             Substract

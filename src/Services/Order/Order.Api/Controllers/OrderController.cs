@@ -90,8 +90,8 @@ namespace Order.Api.Controllers
             return order;
         }
 
-            [HttpPost]
-            public async Task<IActionResult> Create(OrderCreateCommand notification)
+        [HttpPost]
+        public async Task<IActionResult> Create(OrderCreateCommand notification)
         {
             try
             {

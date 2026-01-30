@@ -75,7 +75,7 @@ namespace Common.Logging
             {
                 return;
             }
-            message = $"{ logLevel }: {message}";
+            message = $"{logLevel}: {message}";
             if (exception != null)
             {
                 message += Environment.NewLine + Environment.NewLine + exception.ToString();

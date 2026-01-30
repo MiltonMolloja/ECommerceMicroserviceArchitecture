@@ -64,9 +64,9 @@ public class OrderDeliveredConsumer : IConsumer<OrderDeliveredEvent>
             {
                 { "CustomerName", message.ClientName },
                 { "OrderNumber", $"#ORD-{message.OrderId:D8}" },
-                { "Products", message.Items.Select(i => new 
-                { 
-                    i.ProductId, 
+                { "Products", message.Items.Select(i => new
+                {
+                    i.ProductId,
                     i.ProductName,
                     ReviewUrl = $"https://ecommerce.com/products/{i.ProductId}/review?orderId={message.OrderId}"
                 }).ToList() }
@@ -83,7 +83,7 @@ public class OrderDeliveredConsumer : IConsumer<OrderDeliveredEvent>
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, 
+            _logger.LogError(ex,
                 "Error sending order delivered email for OrderId: {OrderId} to {ClientEmail}",
                 message.OrderId, message.ClientEmail);
             throw; // Re-throw para que MassTransit maneje el retry

@@ -782,8 +782,8 @@ namespace Notification.Api.Services
             var confirmationToken = GetValue(data, "ConfirmationToken");
             var userId = GetValue(data, "UserId");
             // Use IdentityUrl for identity endpoints, fallback to ApiGatewayUrl for backwards compatibility
-            var identityUrl = _configuration.GetValue<string>("IdentityUrl") 
-                ?? _configuration.GetValue<string>("ApiGatewayUrl") 
+            var identityUrl = _configuration.GetValue<string>("IdentityUrl")
+                ?? _configuration.GetValue<string>("ApiGatewayUrl")
                 ?? "http://localhost:10000";
             var encodedToken = Uri.EscapeDataString(confirmationToken);
             var encodedUserId = Uri.EscapeDataString(userId);

@@ -12,13 +12,13 @@ namespace Order.Domain
         public int ClientId { get; set; }
         public ICollection<OrderDetail> Items { get; set; } = new List<OrderDetail>();
         public DateTime CreatedAt { get; set; }
-        
+
         // Financial fields (required by PostgreSQL schema)
         public decimal SubTotal { get; set; }
         public decimal Tax { get; set; }
         public decimal Discount { get; set; }
         public decimal Total { get; set; }
-        
+
         // Legacy fields for PostgreSQL compatibility
         public DateTime OrderDate { get; set; }
         public string ShippingAddress { get; set; }

@@ -40,7 +40,7 @@ public class StockUpdatedConsumer : IConsumer<StockUpdatedEvent>
                 // 1. Una tabla de wishlists/alertas de stock
                 // 2. Consultar usuarios interesados en este producto
                 // 3. Enviar emails a cada usuario
-                
+
                 await Task.CompletedTask;
             }
             else if (message.IsOutOfStock)

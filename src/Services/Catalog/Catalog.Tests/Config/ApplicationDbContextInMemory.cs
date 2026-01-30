@@ -5,7 +5,7 @@ namespace Catalog.Tests.Config
 {
     public static class ApplicationDbContextInMemory
     {
-        public static ApplicationDbContext Get() 
+        public static ApplicationDbContext Get()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: $"Catalog.Db")

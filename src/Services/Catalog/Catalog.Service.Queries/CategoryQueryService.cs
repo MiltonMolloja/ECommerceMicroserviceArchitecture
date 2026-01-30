@@ -62,7 +62,7 @@ namespace Catalog.Service.Queries
 
             var dto = MapToCategoryDto(category, includeSubCategories: true);
             dto.Breadcrumbs = await GetBreadcrumbsAsync(id);
-            
+
             return dto;
         }
 
@@ -83,7 +83,7 @@ namespace Catalog.Service.Queries
 
             var dto = MapToCategoryDto(category, includeSubCategories: true);
             dto.Breadcrumbs = await GetBreadcrumbsAsync(category.CategoryId);
-            
+
             return dto;
         }
 

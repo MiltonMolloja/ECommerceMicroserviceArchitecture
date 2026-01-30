@@ -9,7 +9,7 @@ namespace Common.Caching
         {
             // Verificar si el cache está deshabilitado
             var cacheDisabled = configuration.GetValue<bool>("CacheSettings:Disabled", false);
-            
+
             if (cacheDisabled)
             {
                 // Usar NoCacheService cuando está deshabilitado

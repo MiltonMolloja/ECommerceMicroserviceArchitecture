@@ -39,7 +39,7 @@ namespace Identity.Service.EventHandlers
                 {
                     // If user doesn't exist, create it
                     _logger.LogInformation("Test user not found, creating new user");
-                    
+
                     user = new ApplicationUser
                     {
                         Id = ResetTestUserCommand.TestUserId,
@@ -59,10 +59,10 @@ namespace Identity.Service.EventHandlers
                     };
 
                     var createResult = await _userManager.CreateAsync(user);
-                    
+
                     if (!createResult.Succeeded)
                     {
-                        _logger.LogError("Failed to create test user: {Errors}", 
+                        _logger.LogError("Failed to create test user: {Errors}",
                             string.Join(", ", createResult.Errors));
                         return false;
                     }
@@ -88,7 +88,7 @@ namespace Identity.Service.EventHandlers
 
                 if (!updateResult.Succeeded)
                 {
-                    _logger.LogError("Failed to reset test user: {Errors}", 
+                    _logger.LogError("Failed to reset test user: {Errors}",
                         string.Join(", ", updateResult.Errors));
                     return false;
                 }

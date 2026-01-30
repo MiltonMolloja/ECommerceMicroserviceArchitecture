@@ -39,9 +39,9 @@ namespace Api.Gateway.Proxies
 
         public async Task<DataCollection<CategoryDetailDto>> GetAllAsync(int page, int take, string language)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, 
+            var request = new HttpRequestMessage(HttpMethod.Get,
                 $"{_apiUrls.CatalogUrl}/v1/categories?page={page}&take={take}");
-            
+
             request.Headers.Add("Accept-Language", language);
 
             var response = await _httpClient.SendAsync(request);
@@ -56,9 +56,9 @@ namespace Api.Gateway.Proxies
 
         public async Task<CategoryDetailDto> GetAsync(int id, string language)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, 
+            var request = new HttpRequestMessage(HttpMethod.Get,
                 $"{_apiUrls.CatalogUrl}/v1/categories/{id}");
-            
+
             request.Headers.Add("Accept-Language", language);
 
             var response = await _httpClient.SendAsync(request);
@@ -73,9 +73,9 @@ namespace Api.Gateway.Proxies
 
         public async Task<CategoryDetailDto> GetBySlugAsync(string slug, string language)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, 
+            var request = new HttpRequestMessage(HttpMethod.Get,
                 $"{_apiUrls.CatalogUrl}/v1/categories/by-slug/{slug}");
-            
+
             request.Headers.Add("Accept-Language", language);
 
             var response = await _httpClient.SendAsync(request);
@@ -90,9 +90,9 @@ namespace Api.Gateway.Proxies
 
         public async Task<List<CategoryTreeDto>> GetCategoryTreeAsync(string language)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, 
+            var request = new HttpRequestMessage(HttpMethod.Get,
                 $"{_apiUrls.CatalogUrl}/v1/categories/tree");
-            
+
             request.Headers.Add("Accept-Language", language);
 
             var response = await _httpClient.SendAsync(request);
@@ -107,9 +107,9 @@ namespace Api.Gateway.Proxies
 
         public async Task<List<CategoryDto>> GetRootCategoriesAsync(string language)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, 
+            var request = new HttpRequestMessage(HttpMethod.Get,
                 $"{_apiUrls.CatalogUrl}/v1/categories/root");
-            
+
             request.Headers.Add("Accept-Language", language);
 
             var response = await _httpClient.SendAsync(request);
@@ -124,9 +124,9 @@ namespace Api.Gateway.Proxies
 
         public async Task<List<CategoryDto>> GetSubCategoriesAsync(int parentId, string language)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, 
+            var request = new HttpRequestMessage(HttpMethod.Get,
                 $"{_apiUrls.CatalogUrl}/v1/categories/{parentId}/subcategories");
-            
+
             request.Headers.Add("Accept-Language", language);
 
             var response = await _httpClient.SendAsync(request);
@@ -141,9 +141,9 @@ namespace Api.Gateway.Proxies
 
         public async Task<List<CategoryBreadcrumbDto>> GetBreadcrumbsAsync(int categoryId, string language)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, 
+            var request = new HttpRequestMessage(HttpMethod.Get,
                 $"{_apiUrls.CatalogUrl}/v1/categories/{categoryId}/breadcrumbs");
-            
+
             request.Headers.Add("Accept-Language", language);
 
             var response = await _httpClient.SendAsync(request);
@@ -158,9 +158,9 @@ namespace Api.Gateway.Proxies
 
         public async Task<List<CategoryBreadcrumbDto>> GetBreadcrumbsBySlugAsync(string slug, string language)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, 
+            var request = new HttpRequestMessage(HttpMethod.Get,
                 $"{_apiUrls.CatalogUrl}/v1/categories/by-slug/{slug}/breadcrumbs");
-            
+
             request.Headers.Add("Accept-Language", language);
 
             var response = await _httpClient.SendAsync(request);
