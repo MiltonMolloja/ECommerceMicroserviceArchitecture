@@ -484,11 +484,16 @@ namespace Api.Gateway.WebClient.Controllers
         /// </summary>
         private static bool HasFacetsRequested(ProductAdvancedSearchRequest request)
         {
-            return request.IncludeBrandFacets ||
-                   request.IncludeCategoryFacets ||
-                   request.IncludePriceFacets ||
-                   request.IncludeRatingFacets ||
-                   request.IncludeAttributeFacets;
+            // Use array to reduce conditional operators (S1067)
+            var facetFlags = new[]
+            {
+                request.IncludeBrandFacets,
+                request.IncludeCategoryFacets,
+                request.IncludePriceFacets,
+                request.IncludeRatingFacets,
+                request.IncludeAttributeFacets
+            };
+            return facetFlags.Any(f => f);
         }
 
         /// <summary>
