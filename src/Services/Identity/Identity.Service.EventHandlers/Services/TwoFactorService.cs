@@ -1,6 +1,5 @@
 using Identity.Domain;
 using Identity.Persistence.Database;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;

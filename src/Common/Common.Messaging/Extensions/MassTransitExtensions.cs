@@ -1,6 +1,5 @@
 using Common.Messaging.DeadLetter;
 using MassTransit;
-using MassTransit.Topology;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

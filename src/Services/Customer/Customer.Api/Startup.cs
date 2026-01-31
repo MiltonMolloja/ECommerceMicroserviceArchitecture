@@ -7,7 +7,6 @@ using Common.Messaging.Extensions;
 using Common.RateLimiting;
 using Common.Validation;
 using Customer.Persistence.Database;
-using FluentValidation;
 using HealthChecks.UI.Client;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

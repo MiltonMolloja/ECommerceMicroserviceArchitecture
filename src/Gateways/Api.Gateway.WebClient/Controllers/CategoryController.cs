@@ -1,5 +1,4 @@
 using Api.Gateway.Models;
-using Common.Caching;
 using Api.Gateway.Models.Catalog.DTOs;
 using Api.Gateway.Proxies;
 using Microsoft.AspNetCore.Mvc;

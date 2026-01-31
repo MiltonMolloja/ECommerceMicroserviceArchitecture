@@ -1,4 +1,3 @@
-using Api.Gateway.Models;
 using System.Collections.Generic;
 
 namespace Api.Gateway.Models.Catalog.DTOs
