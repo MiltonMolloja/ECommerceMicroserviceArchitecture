@@ -67,7 +67,7 @@ namespace Identity.Service.EventHandlers
             var user = await _context.Users.SingleOrDefaultAsync(x => x.Email == notification.Email, cancellationToken);
             if (user == null)
             {
-                _logger.LogWarning($"Login attempt for non-existent user: {notification.Email}");
+                _logger.LogWarning("Login attempt for non-existent user: {Email}", notification.Email);
                 return result;
             }
 
@@ -81,7 +81,7 @@ namespace Identity.Service.EventHandlers
                 // Check if 2FA is enabled
                 if (user.TwoFactorEnabled)
                 {
-                    _logger.LogInformation($"Login successful for {user.Email}, 2FA required");
+                    _logger.LogInformation("Login successful for {Email}, 2FA required", user.Email);
 
                     await _auditService.LogActionAsync(
                         user.Id,
@@ -121,7 +121,7 @@ namespace Identity.Service.EventHandlers
                 // Send new session alert email
                 await SendNewSessionAlertAsync(user, ipAddress, userAgent);
 
-                _logger.LogInformation($"Login successful for {user.Email}");
+                _logger.LogInformation("Login successful for {Email}", user.Email);
             }
             else
             {
@@ -133,7 +133,7 @@ namespace Identity.Service.EventHandlers
                     userAgent,
                     "Invalid credentials");
 
-                _logger.LogWarning($"Failed login attempt for {user.Email}");
+                _logger.LogWarning("Failed login attempt for {Email}", user.Email);
             }
 
             return result;
@@ -206,13 +206,13 @@ namespace Identity.Service.EventHandlers
                 }
                 else
                 {
-                    _logger.LogWarning($"Failed to get ClientId for UserId {userId}. Status: {response.StatusCode}");
+                    _logger.LogWarning("Failed to get ClientId for UserId {UserId}. Status: {StatusCode}", userId, response.StatusCode);
                     return null;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error getting ClientId for UserId {userId}");
+                _logger.LogError(ex, "Error getting ClientId for UserId {UserId}", userId);
                 return null;
             }
         }
@@ -230,7 +230,7 @@ namespace Identity.Service.EventHandlers
                 var now = DateTime.UtcNow;
 
                 // Log UserAgent for debugging
-                _logger.LogInformation($"Processing login alert - IP: {ipAddress}, UserAgent: {userAgent ?? "null"}");
+                _logger.LogInformation("Processing login alert - IP: {IpAddress}, UserAgent: {UserAgent}", ipAddress, userAgent ?? "null");
 
                 var device = ParseDevice(userAgent);
                 var browser = ParseBrowser(userAgent);
@@ -253,11 +253,11 @@ namespace Identity.Service.EventHandlers
                         SecureLink = $"{_configuration.GetValue<string>("FrontendUrl") ?? "http://localhost:4400"}/profile/security"
                     });
 
-                _logger.LogInformation($"New session alert email sent to {user.Email}");
+                _logger.LogInformation("New session alert email sent to {Email}", user.Email);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error sending new session alert email to {user.Email}");
+                _logger.LogError(ex, "Error sending new session alert email to {Email}", user.Email);
                 // Don't throw - email failure shouldn't block login
             }
         }

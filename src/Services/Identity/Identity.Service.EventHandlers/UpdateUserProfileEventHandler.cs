@@ -37,7 +37,7 @@ namespace Identity.Service.EventHandlers
                 var user = await _userManager.FindByIdAsync(request.UserId);
                 if (user == null)
                 {
-                    _logger.LogWarning($"Update profile attempt for non-existent user: {request.UserId}");
+                    _logger.LogWarning("Update profile attempt for non-existent user: {UserId}", request.UserId);
                     return false;
                 }
 
@@ -49,7 +49,7 @@ namespace Identity.Service.EventHandlers
 
                 if (!result.Succeeded)
                 {
-                    _logger.LogWarning($"Failed to update profile for user {user.Email}");
+                    _logger.LogWarning("Failed to update profile for user {Email}", user.Email);
                     return false;
                 }
 
@@ -64,13 +64,13 @@ namespace Identity.Service.EventHandlers
                     ipAddress,
                     userAgent);
 
-                _logger.LogInformation($"Profile updated successfully for user {user.Email}");
+                _logger.LogInformation("Profile updated successfully for user {Email}", user.Email);
 
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error updating profile for user {request.UserId}");
+                _logger.LogError(ex, "Error updating profile for user {UserId}", request.UserId);
                 return false;
             }
         }

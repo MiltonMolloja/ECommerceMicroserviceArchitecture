@@ -65,13 +65,13 @@ namespace Identity.Service.EventHandlers
                     ipAddress,
                     userAgent);
 
-                _logger.LogInformation($"All sessions revoked for user {request.UserId} (excluding current)");
+                _logger.LogInformation("All sessions revoked for user {UserId} (excluding current)", request.UserId);
 
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error revoking all sessions for user {request.UserId}");
+                _logger.LogError(ex, "Error revoking all sessions for user {UserId}", request.UserId);
                 throw;
             }
         }

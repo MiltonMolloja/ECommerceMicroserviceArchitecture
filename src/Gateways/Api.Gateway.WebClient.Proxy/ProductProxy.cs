@@ -91,8 +91,8 @@ namespace Api.Gateway.WebClient.Proxy
             var url = $"{_apiGatewayUrl}products/search?{queryString}";
 
             // DEBUG: Log de la URL completa
-            _logger.LogInformation($"🌐 ProductProxy - URL generada: {url}");
-            _logger.LogInformation($"🔍 ProductProxy - HasDiscount en request: {request.HasDiscount}");
+            _logger.LogInformation("ProductProxy - URL generada: {Url}", url);
+            _logger.LogInformation("ProductProxy - HasDiscount en request: {HasDiscount}", request.HasDiscount);
 
             var response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();

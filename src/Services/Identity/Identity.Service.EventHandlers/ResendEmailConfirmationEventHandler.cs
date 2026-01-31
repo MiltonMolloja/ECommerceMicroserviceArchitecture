@@ -42,13 +42,13 @@ namespace Identity.Service.EventHandlers
                 // Don't reveal if user exists or not
                 if (user == null)
                 {
-                    _logger.LogWarning($"Resend email confirmation for non-existent email: {request.Email}");
+                    _logger.LogWarning("Resend email confirmation for non-existent email: {Email}", request.Email);
                     return true; // Return true to not reveal user existence
                 }
 
                 if (user.EmailConfirmed)
                 {
-                    _logger.LogInformation($"Email already confirmed for {user.Email}");
+                    _logger.LogInformation("Email already confirmed for {Email}", user.Email);
                     return true;
                 }
 
@@ -78,13 +78,13 @@ namespace Identity.Service.EventHandlers
                     ipAddress,
                     userAgent);
 
-                _logger.LogInformation($"Email confirmation resent to {user.Email}");
+                _logger.LogInformation("Email confirmation resent to {Email}", user.Email);
 
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error resending email confirmation to {request.Email}");
+                _logger.LogError(ex, "Error resending email confirmation to {Email}", request.Email);
                 throw;
             }
         }

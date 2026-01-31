@@ -64,13 +64,13 @@ namespace Catalog.Api.Controllers
                 var result = await _reviewQueryService.GetProductReviewsAsync(productId, page, pageSize, sortBy, verifiedOnly);
 
                 var filterInfo = verifiedOnly.HasValue && verifiedOnly.Value ? " (verified only)" : "";
-                _logger.LogInformation($"Retrieved {result.Items.Count} reviews for product {productId} (page {page}){filterInfo}");
+                _logger.LogInformation("Retrieved {ReviewCount} reviews for product {ProductId} (page {Page}){FilterInfo}", result.Items.Count, productId, page, filterInfo);
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error retrieving reviews for product {productId}");
+                _logger.LogError(ex, "Error retrieving reviews for product {ProductId}", productId);
                 return StatusCode(500, new { message = "Error retrieving product reviews", error = ex.Message });
             }
         }
@@ -90,13 +90,13 @@ namespace Catalog.Api.Controllers
             {
                 var summary = await _reviewQueryService.GetProductRatingSummaryAsync(productId);
 
-                _logger.LogInformation($"Retrieved rating summary for product {productId}: {summary.AverageRating:F1} stars ({summary.TotalReviews} reviews)");
+                _logger.LogInformation("Retrieved rating summary for product {ProductId}: {AverageRating:F1} stars ({TotalReviews} reviews)", productId, summary.AverageRating, summary.TotalReviews);
 
                 return Ok(summary);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error retrieving rating summary for product {productId}");
+                _logger.LogError(ex, "Error retrieving rating summary for product {ProductId}", productId);
                 return StatusCode(500, new { message = "Error retrieving rating summary", error = ex.Message });
             }
         }

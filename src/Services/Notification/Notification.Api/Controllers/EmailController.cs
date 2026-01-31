@@ -45,7 +45,7 @@ namespace Notification.Api.Controllers
                     return BadRequest(new { error = "El campo 'Template' es requerido" });
                 }
 
-                _logger.LogInformation($"Sending email to {request.To} using template {request.Template}");
+                _logger.LogInformation("Sending email to {To} using template {Template}", request.To, request.Template);
 
                 var emailData = request.Data ?? new Dictionary<string, object>();
 
@@ -62,7 +62,7 @@ namespace Notification.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error sending email to {request.To}");
+                _logger.LogError(ex, "Error sending email to {To}", request.To);
                 return StatusCode(500, new { error = "Internal server error sending email", details = ex.Message });
             }
         }
@@ -91,7 +91,7 @@ namespace Notification.Api.Controllers
                     return BadRequest(new { error = "Debe proporcionar HtmlBody o TextBody" });
                 }
 
-                _logger.LogInformation($"Sending direct email to {message.To}");
+                _logger.LogInformation("Sending direct email to {To}", message.To);
 
                 await _emailService.SendEmailAsync(message);
 
@@ -103,7 +103,7 @@ namespace Notification.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error sending direct email to {message.To}");
+                _logger.LogError(ex, "Error sending direct email to {To}", message.To);
                 return StatusCode(500, new { error = "Internal server error sending email", details = ex.Message });
             }
         }

@@ -49,14 +49,14 @@ namespace Catalog.Service.EventHandlers
                 {
                     if (entry == null || item.Stock > entry.Stock)
                     {
-                        _logger.LogError($"--- Product {item.ProductId} -doens't have enough stock");
+                        _logger.LogError("--- Product {ProductId} -doens't have enough stock", item.ProductId);
                         throw new ProductInStockUpdateStockCommandException($"Product {item.ProductId} - doens't have enough stock");
                     }
 
                     var previousStock = entry.Stock;
                     entry.Stock -= item.Stock;
 
-                    _logger.LogInformation($"--- Product {entry.ProductId} - its stock was subtracted and its new stock is {entry.Stock}");
+                    _logger.LogInformation("--- Product {ProductId} - its stock was subtracted and its new stock is {Stock}", entry.ProductId, entry.Stock);
 
                     // Publicar evento de stock actualizado
                     await PublishStockUpdatedEventAsync(entry.ProductId, previousStock, entry.Stock, cancellationToken);
@@ -72,12 +72,12 @@ namespace Catalog.Service.EventHandlers
                             ProductId = item.ProductId
                         };
 
-                        _logger.LogInformation($"--- New stock record was created for {entry.ProductId} because didn't exists before");
+                        _logger.LogInformation("--- New stock record was created for {ProductId} because didn't exists before", entry.ProductId);
 
                         await _context.AddAsync(entry);
                     }
 
-                    _logger.LogInformation($"--- Add stock to product {entry.ProductId}");
+                    _logger.LogInformation("--- Add stock to product {ProductId}", entry.ProductId);
                     entry.Stock += item.Stock;
 
                     // Publicar evento de stock actualizado

@@ -50,7 +50,7 @@ namespace Catalog.Api.Controllers
             var cachedStocks = await _cacheService.GetAsync<DataCollection<ProductInStockDto>>(cacheKey);
             if (cachedStocks != null)
             {
-                _logger.LogInformation($"Product stocks retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Product stocks retrieved from cache: {CacheKey}", cacheKey);
                 return cachedStocks;
             }
 
@@ -65,7 +65,7 @@ namespace Catalog.Api.Controllers
 
             // Guardar en caché usando configuración de appsettings
             await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-            _logger.LogInformation($"Product stocks cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+            _logger.LogInformation("Product stocks cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
             return result;
         }

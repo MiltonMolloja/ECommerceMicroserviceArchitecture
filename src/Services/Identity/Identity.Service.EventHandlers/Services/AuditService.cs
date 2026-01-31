@@ -43,11 +43,11 @@ namespace Identity.Service.EventHandlers.Services
                 _context.UserAuditLogs.Add(auditLog);
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation($"Audit log created: User {userId} - Action {action} - Success {success}");
+                _logger.LogInformation("Audit log created: User {UserId} - Action {Action} - Success {Success}", userId, action, success);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error creating audit log for user {userId}, action {action}");
+                _logger.LogError(ex, "Error creating audit log for user {UserId}, action {Action}", userId, action);
                 // Don't throw - audit failures shouldn't break the main flow
             }
         }

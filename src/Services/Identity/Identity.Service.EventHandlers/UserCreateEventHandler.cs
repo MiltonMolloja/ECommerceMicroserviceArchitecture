@@ -86,11 +86,11 @@ namespace Identity.Service.EventHandlers
                         ipAddress,
                         userAgent);
 
-                    _logger.LogInformation($"User created successfully: {entry.Email}. Confirmation email sent.");
+                    _logger.LogInformation("User created successfully: {Email}. Confirmation email sent.", entry.Email);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error sending confirmation email to {entry.Email}");
+                    _logger.LogError(ex, "Error sending confirmation email to {Email}", entry.Email);
                     // Don't fail the registration if email sending fails
                 }
 
@@ -111,17 +111,17 @@ namespace Identity.Service.EventHandlers
 
                     if (response.IsSuccessStatusCode)
                     {
-                        _logger.LogInformation($"Client profile created successfully for user: {entry.Email}");
+                        _logger.LogInformation("Client profile created successfully for user: {Email}", entry.Email);
                     }
                     else
                     {
                         var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                        _logger.LogWarning($"Failed to create client profile for user {entry.Email}. Status: {response.StatusCode}, Error: {errorContent}");
+                        _logger.LogWarning("Failed to create client profile for user {Email}. Status: {StatusCode}, Error: {ErrorContent}", entry.Email, response.StatusCode, errorContent);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error creating client profile for user {entry.Email}");
+                    _logger.LogError(ex, "Error creating client profile for user {Email}", entry.Email);
                     // Don't fail the registration if client creation fails
                 }
 

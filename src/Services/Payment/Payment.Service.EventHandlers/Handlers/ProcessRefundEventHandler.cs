@@ -32,7 +32,7 @@ namespace Payment.Service.EventHandlers.Handlers
 
         public async Task Handle(ProcessRefundCommand notification, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"--- Processing refund for payment {notification.PaymentId}");
+            _logger.LogInformation("--- Processing refund for payment {PaymentId}", notification.PaymentId);
 
             try
             {
@@ -43,14 +43,14 @@ namespace Payment.Service.EventHandlers.Handlers
 
                 if (payment == null)
                 {
-                    _logger.LogWarning($"Payment {notification.PaymentId} not found");
+                    _logger.LogWarning("Payment {PaymentId} not found", notification.PaymentId);
                     throw new InvalidOperationException("Payment not found");
                 }
 
                 // 2. Validar que puede ser reembolsado
                 if (!payment.CanBeRefunded)
                 {
-                    _logger.LogWarning($"Payment {notification.PaymentId} cannot be refunded");
+                    _logger.LogWarning("Payment {PaymentId} cannot be refunded", notification.PaymentId);
                     throw new InvalidOperationException("Payment cannot be refunded");
                 }
 
@@ -73,11 +73,11 @@ namespace Payment.Service.EventHandlers.Handlers
                     // Notificar al usuario
                     await _notificationProxy.SendRefundProcessedAsync(payment.UserId, payment.PaymentId);
 
-                    _logger.LogInformation($"Refund processed successfully for payment {notification.PaymentId}");
+                    _logger.LogInformation("Refund processed successfully for payment {PaymentId}", notification.PaymentId);
                 }
                 else
                 {
-                    _logger.LogError($"Refund failed for payment {notification.PaymentId}: {result.ErrorMessage}");
+                    _logger.LogError("Refund failed for payment {PaymentId}: {ErrorMessage}", notification.PaymentId, result.ErrorMessage);
                     throw new InvalidOperationException($"Refund failed: {result.ErrorMessage}");
                 }
 
@@ -85,7 +85,7 @@ namespace Payment.Service.EventHandlers.Handlers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error processing refund for payment {notification.PaymentId}");
+                _logger.LogError(ex, "Error processing refund for payment {PaymentId}", notification.PaymentId);
                 throw;
             }
         }

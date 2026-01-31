@@ -46,7 +46,7 @@ namespace Payment.Service.EventHandlers.Handlers
 
         public async Task<PaymentProcessingResult> Handle(ProcessPaymentCommand notification, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"--- Processing payment for order {notification.OrderId}");
+            _logger.LogInformation("--- Processing payment for order {OrderId}", notification.OrderId);
 
             try
             {
@@ -54,7 +54,7 @@ namespace Payment.Service.EventHandlers.Handlers
                 var order = await _orderProxy.GetOrderByIdAsync(notification.OrderId);
                 if (order == null)
                 {
-                    _logger.LogWarning($"Order {notification.OrderId} not found");
+                    _logger.LogWarning("Order {OrderId} not found", notification.OrderId);
                     return new PaymentProcessingResult
                     {
                         Success = false,
@@ -92,7 +92,7 @@ namespace Payment.Service.EventHandlers.Handlers
                 string customerName = "Cliente";
                 if (string.IsNullOrEmpty(userEmail))
                 {
-                    _logger.LogWarning($"UserEmail not found in command for user {notification.UserId}, attempting to get from Customer Service");
+                    _logger.LogWarning("UserEmail not found in command for user {UserId}, attempting to get from Customer Service", notification.UserId);
                     var customer = await _customerProxy.GetCustomerByIdAsync(order.ClientId);
                     userEmail = customer?.Email ?? "mfmolloja@gmail.com";
                     customerName = customer?.FullName ?? "Cliente";
@@ -202,7 +202,7 @@ namespace Payment.Service.EventHandlers.Handlers
                         _logger.LogWarning(httpEx, "HTTP fallback failed, but event was published to RabbitMQ");
                     }
 
-                    _logger.LogInformation($"Payment {payment.PaymentId} completed successfully");
+                    _logger.LogInformation("Payment {PaymentId} completed successfully", payment.PaymentId);
 
                     await _context.SaveChangesAsync(cancellationToken);
 
@@ -269,7 +269,7 @@ namespace Payment.Service.EventHandlers.Handlers
                         _logger.LogWarning(httpEx, "HTTP fallback failed, but event was published to RabbitMQ");
                     }
 
-                    _logger.LogWarning($"Payment failed: {result.ErrorMessage}");
+                    _logger.LogWarning("Payment failed: {ErrorMessage}", result.ErrorMessage);
 
                     await _context.SaveChangesAsync(cancellationToken);
 
@@ -285,7 +285,7 @@ namespace Payment.Service.EventHandlers.Handlers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error processing payment for order {notification.OrderId}");
+                _logger.LogError(ex, "Error processing payment for order {OrderId}", notification.OrderId);
                 return new PaymentProcessingResult
                 {
                     Success = false,

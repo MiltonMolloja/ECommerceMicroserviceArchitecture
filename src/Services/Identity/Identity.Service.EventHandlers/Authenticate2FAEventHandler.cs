@@ -65,7 +65,7 @@ namespace Identity.Service.EventHandlers
                 var user = await _userManager.FindByIdAsync(request.UserId);
                 if (user == null)
                 {
-                    _logger.LogWarning($"2FA authentication attempt for non-existent user: {request.UserId}");
+                    _logger.LogWarning("2FA authentication attempt for non-existent user: {UserId}", request.UserId);
                     return new IdentityAccess { Succeeded = false };
                 }
 
@@ -86,7 +86,7 @@ namespace Identity.Service.EventHandlers
 
                 if (!codeValid)
                 {
-                    _logger.LogWarning($"Invalid 2FA code for user {user.Email}");
+                    _logger.LogWarning("Invalid 2FA code for user {Email}", user.Email);
 
                     await _auditService.LogActionAsync(
                         user.Id,
@@ -164,7 +164,7 @@ namespace Identity.Service.EventHandlers
                 // Send new session alert email
                 await SendNewSessionAlertAsync(user, ipAddress, userAgent);
 
-                _logger.LogInformation($"2FA authentication successful for {user.Email}");
+                _logger.LogInformation("2FA authentication successful for {Email}", user.Email);
 
                 return new IdentityAccess
                 {
@@ -176,7 +176,7 @@ namespace Identity.Service.EventHandlers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error during 2FA authentication for user {request.UserId}");
+                _logger.LogError(ex, "Error during 2FA authentication for user {UserId}", request.UserId);
                 throw;
             }
         }
@@ -208,11 +208,11 @@ namespace Identity.Service.EventHandlers
                         SecureLink = $"{_configuration.GetValue<string>("FrontendUrl") ?? "http://localhost:4400"}/profile/security"
                     });
 
-                _logger.LogInformation($"New session alert email sent to {user.Email} after 2FA");
+                _logger.LogInformation("New session alert email sent to {Email} after 2FA", user.Email);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error sending new session alert email to {user.Email}");
+                _logger.LogError(ex, "Error sending new session alert email to {Email}", user.Email);
                 // Don't throw - email failure shouldn't block authentication
             }
         }
@@ -308,13 +308,13 @@ namespace Identity.Service.EventHandlers
                 }
                 else
                 {
-                    _logger.LogWarning($"Failed to get ClientId for UserId {userId}. Status: {response.StatusCode}");
+                    _logger.LogWarning("Failed to get ClientId for UserId {UserId}. Status: {StatusCode}", userId, response.StatusCode);
                     return null;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error getting ClientId for UserId {userId}");
+                _logger.LogError(ex, "Error getting ClientId for UserId {UserId}", userId);
                 return null;
             }
         }

@@ -41,7 +41,7 @@ namespace Identity.Service.EventHandlers
                 var user = await _userManager.FindByIdAsync(request.UserId);
                 if (user == null)
                 {
-                    _logger.LogWarning($"2FA enable attempt for non-existent user: {request.UserId}");
+                    _logger.LogWarning("2FA enable attempt for non-existent user: {UserId}", request.UserId);
                     return new Enable2FAResponse { Succeeded = false };
                 }
 
@@ -68,7 +68,7 @@ namespace Identity.Service.EventHandlers
                     ipAddress,
                     userAgent);
 
-                _logger.LogInformation($"2FA setup initiated for {user.Email}. Secret generated.");
+                _logger.LogInformation("2FA setup initiated for {Email}. Secret generated.", user.Email);
 
                 return new Enable2FAResponse
                 {
@@ -80,7 +80,7 @@ namespace Identity.Service.EventHandlers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error enabling 2FA for user {request.UserId}");
+                _logger.LogError(ex, "Error enabling 2FA for user {UserId}", request.UserId);
                 throw;
             }
         }

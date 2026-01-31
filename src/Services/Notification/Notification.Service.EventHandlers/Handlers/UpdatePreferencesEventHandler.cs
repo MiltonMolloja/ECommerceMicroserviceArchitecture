@@ -25,7 +25,7 @@ namespace Notification.Service.EventHandlers.Handlers
 
         public async Task Handle(UpdatePreferencesCommand notification, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Updating notification preferences for user {notification.UserId}");
+            _logger.LogInformation("Updating notification preferences for user {UserId}", notification.UserId);
 
             try
             {
@@ -56,11 +56,11 @@ namespace Notification.Service.EventHandlers.Handlers
 
                 await _context.SaveChangesAsync(cancellationToken);
 
-                _logger.LogInformation($"Notification preferences updated for user {notification.UserId}");
+                _logger.LogInformation("Notification preferences updated for user {UserId}", notification.UserId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error updating notification preferences for user {notification.UserId}");
+                _logger.LogError(ex, "Error updating notification preferences for user {UserId}", notification.UserId);
                 throw;
             }
         }

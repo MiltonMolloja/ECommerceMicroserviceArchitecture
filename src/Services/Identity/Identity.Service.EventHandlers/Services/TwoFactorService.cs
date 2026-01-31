@@ -55,13 +55,13 @@ namespace Identity.Service.EventHandlers.Services
                 _context.UserBackupCodes.AddRange(backupCodes);
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation($"Generated {count} backup codes for user {userId}");
+                _logger.LogInformation("Generated {Count} backup codes for user {UserId}", count, userId);
 
                 return codes;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error generating backup codes for user {userId}");
+                _logger.LogError(ex, "Error generating backup codes for user {UserId}", userId);
                 throw;
             }
         }
@@ -79,7 +79,7 @@ namespace Identity.Service.EventHandlers.Services
 
                 if (backupCode == null)
                 {
-                    _logger.LogWarning($"Invalid backup code attempt for user {userId}");
+                    _logger.LogWarning("Invalid backup code attempt for user {UserId}", userId);
                     return false;
                 }
 
@@ -88,12 +88,12 @@ namespace Identity.Service.EventHandlers.Services
                 backupCode.UsedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation($"Backup code validated and marked as used for user {userId}");
+                _logger.LogInformation("Backup code validated and marked as used for user {UserId}", userId);
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error validating backup code for user {userId}");
+                _logger.LogError(ex, "Error validating backup code for user {UserId}", userId);
                 return false;
             }
         }
@@ -111,7 +111,7 @@ namespace Identity.Service.EventHandlers.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error checking backup code existence for user {userId}");
+                _logger.LogError(ex, "Error checking backup code existence for user {UserId}", userId);
                 return null;
             }
         }
@@ -128,12 +128,12 @@ namespace Identity.Service.EventHandlers.Services
                 {
                     _context.UserBackupCodes.RemoveRange(existingCodes);
                     await _context.SaveChangesAsync();
-                    _logger.LogInformation($"Invalidated {existingCodes.Count} backup codes for user {userId}");
+                    _logger.LogInformation("Invalidated {Count} backup codes for user {UserId}", existingCodes.Count, userId);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error invalidating backup codes for user {userId}");
+                _logger.LogError(ex, "Error invalidating backup codes for user {UserId}", userId);
                 throw;
             }
         }

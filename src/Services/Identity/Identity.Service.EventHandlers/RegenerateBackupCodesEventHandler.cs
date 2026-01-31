@@ -43,7 +43,7 @@ namespace Identity.Service.EventHandlers
                 var user = await _userManager.FindByIdAsync(request.UserId);
                 if (user == null)
                 {
-                    _logger.LogWarning($"Backup codes regeneration attempt for non-existent user: {request.UserId}");
+                    _logger.LogWarning("Backup codes regeneration attempt for non-existent user: {UserId}", request.UserId);
                     return new RegenerateBackupCodesResponse { Succeeded = false };
                 }
 
@@ -51,7 +51,7 @@ namespace Identity.Service.EventHandlers
                 var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
                 if (!passwordValid)
                 {
-                    _logger.LogWarning($"Invalid password during backup codes regeneration for {user.Email}");
+                    _logger.LogWarning("Invalid password during backup codes regeneration for {Email}", user.Email);
                     return new RegenerateBackupCodesResponse { Succeeded = false };
                 }
 
@@ -71,7 +71,7 @@ namespace Identity.Service.EventHandlers
 
                 if (!codeValid)
                 {
-                    _logger.LogWarning($"Invalid 2FA code during backup codes regeneration for {user.Email}");
+                    _logger.LogWarning("Invalid 2FA code during backup codes regeneration for {Email}", user.Email);
                     return new RegenerateBackupCodesResponse { Succeeded = false };
                 }
 
@@ -89,7 +89,7 @@ namespace Identity.Service.EventHandlers
                     ipAddress,
                     userAgent);
 
-                _logger.LogInformation($"Backup codes regenerated for {user.Email}");
+                _logger.LogInformation("Backup codes regenerated for {Email}", user.Email);
 
                 return new RegenerateBackupCodesResponse
                 {
@@ -99,7 +99,7 @@ namespace Identity.Service.EventHandlers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error regenerating backup codes for user {request.UserId}");
+                _logger.LogError(ex, "Error regenerating backup codes for user {UserId}", request.UserId);
                 throw;
             }
         }

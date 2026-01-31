@@ -46,7 +46,7 @@ namespace Identity.Service.EventHandlers
                 var user = await _userManager.FindByEmailAsync(request.Email);
                 if (user == null)
                 {
-                    _logger.LogWarning($"Reset password attempt for non-existent email: {request.Email}");
+                    _logger.LogWarning("Reset password attempt for non-existent email: {Email}", request.Email);
                     return false;
                 }
 
@@ -59,7 +59,7 @@ namespace Identity.Service.EventHandlers
                 if (!result.Succeeded)
                 {
                     var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                    _logger.LogWarning($"Password reset failed for {user.Email}: {errors}");
+                    _logger.LogWarning("Password reset failed for {Email}: {Errors}", user.Email, errors);
 
                     await _auditService.LogActionAsync(
                         user.Id,
@@ -109,13 +109,13 @@ namespace Identity.Service.EventHandlers
                     ipAddress,
                     userAgent);
 
-                _logger.LogInformation($"Password reset successfully for {user.Email}. All sessions invalidated.");
+                _logger.LogInformation("Password reset successfully for {Email}. All sessions invalidated.", user.Email);
 
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error resetting password for {request.Email}");
+                _logger.LogError(ex, "Error resetting password for {Email}", request.Email);
                 throw;
             }
         }

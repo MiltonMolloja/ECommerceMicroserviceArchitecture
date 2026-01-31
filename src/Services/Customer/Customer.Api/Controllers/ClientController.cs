@@ -51,7 +51,7 @@ namespace Customer.Api.Controllers
             var cachedClients = await _cacheService.GetAsync<DataCollection<ClientDto>>(cacheKey);
             if (cachedClients != null)
             {
-                _logger.LogInformation($"Clients retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Clients retrieved from cache: {CacheKey}", cacheKey);
                 return cachedClients;
             }
 
@@ -66,7 +66,7 @@ namespace Customer.Api.Controllers
 
             // Guardar en caché usando configuración de appsettings
             await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-            _logger.LogInformation($"Clients cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+            _logger.LogInformation("Clients cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
             return result;
         }
@@ -81,7 +81,7 @@ namespace Customer.Api.Controllers
             var cachedClient = await _cacheService.GetAsync<ClientDto>(cacheKey);
             if (cachedClient != null)
             {
-                _logger.LogInformation($"Client retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Client retrieved from cache: {CacheKey}", cacheKey);
                 return cachedClient;
             }
 
@@ -92,7 +92,7 @@ namespace Customer.Api.Controllers
             if (client != null)
             {
                 await _cacheService.SetAsync(cacheKey, client, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-                _logger.LogInformation($"Client cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+                _logger.LogInformation("Client cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
             }
 
             return client;
@@ -112,7 +112,7 @@ namespace Customer.Api.Controllers
             var cachedClient = await _cacheService.GetAsync<ClientDto>(cacheKey);
             if (cachedClient != null)
             {
-                _logger.LogInformation($"Client retrieved from cache by userId: {cacheKey}");
+                _logger.LogInformation("Client retrieved from cache by userId: {CacheKey}", cacheKey);
                 return Ok(cachedClient);
             }
 
@@ -121,13 +121,13 @@ namespace Customer.Api.Controllers
 
             if (client == null)
             {
-                _logger.LogWarning($"Client not found for userId: {userId}");
+                _logger.LogWarning("Client not found for userId: {UserId}", userId);
                 return NotFound(new { message = $"Client not found for userId: {userId}" });
             }
 
             // Guardar en caché usando configuración de appsettings
             await _cacheService.SetAsync(cacheKey, client, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-            _logger.LogInformation($"Client cached by userId: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+            _logger.LogInformation("Client cached by userId: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
             return Ok(client);
         }

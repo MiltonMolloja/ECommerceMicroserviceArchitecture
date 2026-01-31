@@ -1,4 +1,4 @@
-﻿using Api.Gateway.Models;
+using Api.Gateway.Models;
 using Common.Caching;
 using Api.Gateway.Models.Customer.DTOs;
 using Api.Gateway.Proxies;
@@ -45,7 +45,7 @@ namespace Api.Gateway.WebClient.Controllers
             var cachedClients = await _cacheService.GetAsync<DataCollection<ClientDto>>(cacheKey);
             if (cachedClients != null)
             {
-                _logger.LogInformation($"Clients retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Clients retrieved from cache: {CacheKey}", cacheKey);
                 return cachedClients;
             }
 
@@ -54,7 +54,7 @@ namespace Api.Gateway.WebClient.Controllers
 
             // Guardar en caché
             await _cacheService.SetAsync(cacheKey, clients, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-            _logger.LogInformation($"Clients cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+            _logger.LogInformation("Clients cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
             return clients;
         }
@@ -68,7 +68,7 @@ namespace Api.Gateway.WebClient.Controllers
             var cachedClient = await _cacheService.GetAsync<ClientDto>(cacheKey);
             if (cachedClient != null)
             {
-                _logger.LogInformation($"Client retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Client retrieved from cache: {CacheKey}", cacheKey);
                 return cachedClient;
             }
 
@@ -79,7 +79,7 @@ namespace Api.Gateway.WebClient.Controllers
             if (client != null)
             {
                 await _cacheService.SetAsync(cacheKey, client, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-                _logger.LogInformation($"Client cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+                _logger.LogInformation("Client cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
             }
 
             return client;

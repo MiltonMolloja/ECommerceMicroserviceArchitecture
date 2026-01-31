@@ -63,13 +63,13 @@ namespace Payment.Service.Gateways.Mock
 
         public async Task<PaymentResult> ProcessPaymentAsync(PaymentRequest request)
         {
-            _logger.LogInformation($"[MOCK GATEWAY] Processing payment for amount {request.Amount} {request.Currency}");
-            _logger.LogInformation($"[MOCK GATEWAY] CardholderName: {request.CardholderName}, {request.IdentificationType}: {request.IdentificationNumber}");
+            _logger.LogInformation("[MOCK GATEWAY] Processing payment for amount {Amount} {Currency}", request.Amount, request.Currency);
+            _logger.LogInformation("[MOCK GATEWAY] CardholderName: {CardholderName}, {IdentificationType}: {IdentificationNumber}", request.CardholderName, request.IdentificationType, request.IdentificationNumber);
 
             // Simular latencia de red
             if (_simulateDelay)
             {
-                _logger.LogDebug($"[MOCK GATEWAY] Simulating network delay of {_delayMilliseconds}ms");
+                _logger.LogDebug("[MOCK GATEWAY] Simulating network delay of {DelayMilliseconds}ms", _delayMilliseconds);
                 await Task.Delay(_delayMilliseconds);
             }
 
@@ -90,11 +90,11 @@ namespace Payment.Service.Gateways.Mock
             {
                 if (TestCardholderNames.TryGetValue(cardholderName, out var testResult))
                 {
-                    _logger.LogInformation($"[MOCK GATEWAY] ✓ Test cardholder name detected: '{cardholderName}' -> Status: {testResult.Status}");
+                    _logger.LogInformation("[MOCK GATEWAY] Test cardholder name detected: '{CardholderName}' -> Status: {Status}", cardholderName, testResult.Status);
 
                     if (testResult.Status == "approved")
                     {
-                        _logger.LogInformation($"[MOCK GATEWAY] ✓ Payment APPROVED - {testResult.Message}");
+                        _logger.LogInformation("[MOCK GATEWAY] Payment APPROVED - {Message}", testResult.Message);
                         return new PaymentResult
                         {
                             Success = true,
@@ -106,7 +106,7 @@ namespace Payment.Service.Gateways.Mock
                     }
                     else if (testResult.Status == "rejected")
                     {
-                        _logger.LogWarning($"[MOCK GATEWAY] ✗ Payment REJECTED - {testResult.Message} (Code: {testResult.StatusDetail})");
+                        _logger.LogWarning("[MOCK GATEWAY] Payment REJECTED - {Message} (Code: {StatusDetail})", testResult.Message, testResult.StatusDetail);
                         return new PaymentResult
                         {
                             Success = false,
@@ -119,7 +119,7 @@ namespace Payment.Service.Gateways.Mock
                     }
                     else if (testResult.Status == "pending")
                     {
-                        _logger.LogInformation($"[MOCK GATEWAY] ⏳ Payment PENDING - {testResult.Message}");
+                        _logger.LogInformation("[MOCK GATEWAY] Payment PENDING - {Message}", testResult.Message);
                         return new PaymentResult
                         {
                             Success = true,
@@ -132,13 +132,13 @@ namespace Payment.Service.Gateways.Mock
                 }
                 else
                 {
-                    _logger.LogWarning($"[MOCK GATEWAY] ⚠ Cardholder name '{cardholderName}' is NOT a test name. Valid test names: APRO, CALL, FUND, SECU, EXPI, FORM, BLAC, CARD, DUPL, HIGH, OTHE, CONT, PCONT");
-                    _logger.LogInformation($"[MOCK GATEWAY] Proceeding with default approval logic (non-test mode)");
+                    _logger.LogWarning("[MOCK GATEWAY] Cardholder name '{CardholderName}' is NOT a test name. Valid test names: APRO, CALL, FUND, SECU, EXPI, FORM, BLAC, CARD, DUPL, HIGH, OTHE, CONT, PCONT", cardholderName);
+                    _logger.LogInformation("[MOCK GATEWAY] Proceeding with default approval logic (non-test mode)");
                 }
             }
             else
             {
-                _logger.LogWarning($"[MOCK GATEWAY] ⚠ No cardholder name provided. Proceeding with default approval logic");
+                _logger.LogWarning("[MOCK GATEWAY] No cardholder name provided. Proceeding with default approval logic");
             }
 
             // ============================================
@@ -147,7 +147,7 @@ namespace Payment.Service.Gateways.Mock
 
             if (request.PaymentToken == "MOCK_FAIL_TOKEN")
             {
-                _logger.LogWarning($"[MOCK GATEWAY] Payment failed - Test token for failure scenario");
+                _logger.LogWarning("[MOCK GATEWAY] Payment failed - Test token for failure scenario");
                 return new PaymentResult
                 {
                     Success = false,
@@ -159,7 +159,7 @@ namespace Payment.Service.Gateways.Mock
 
             if (request.Amount >= 9999)
             {
-                _logger.LogWarning($"[MOCK GATEWAY] Payment failed - Amount exceeds test limit");
+                _logger.LogWarning("[MOCK GATEWAY] Payment failed - Amount exceeds test limit");
                 return new PaymentResult
                 {
                     Success = false,
@@ -170,7 +170,7 @@ namespace Payment.Service.Gateways.Mock
             }
 
             // Por defecto: pago exitoso
-            _logger.LogInformation($"[MOCK GATEWAY] Payment succeeded - TransactionID: {transactionId}");
+            _logger.LogInformation("[MOCK GATEWAY] Payment succeeded - TransactionID: {TransactionId}", transactionId);
 
             return new PaymentResult
             {
@@ -184,7 +184,7 @@ namespace Payment.Service.Gateways.Mock
 
         public async Task<RefundResult> ProcessRefundAsync(RefundRequest request)
         {
-            _logger.LogInformation($"[MOCK GATEWAY] Processing refund for transaction {request.TransactionId}, amount {request.Amount}");
+            _logger.LogInformation("[MOCK GATEWAY] Processing refund for transaction {TransactionId}, amount {Amount}", request.TransactionId, request.Amount);
 
             // Simular latencia de red
             if (_simulateDelay)
@@ -195,7 +195,7 @@ namespace Payment.Service.Gateways.Mock
             // Validar que sea un transaction ID de mock
             if (!request.TransactionId.StartsWith("MOCK_"))
             {
-                _logger.LogWarning($"[MOCK GATEWAY] Refund failed - Invalid transaction ID format");
+                _logger.LogWarning("[MOCK GATEWAY] Refund failed - Invalid transaction ID format");
                 return new RefundResult
                 {
                     Success = false,
@@ -205,7 +205,7 @@ namespace Payment.Service.Gateways.Mock
 
             var refundId = $"REFUND_{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}_{Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper()}";
 
-            _logger.LogInformation($"[MOCK GATEWAY] Refund succeeded - RefundID: {refundId}");
+            _logger.LogInformation("[MOCK GATEWAY] Refund succeeded - RefundID: {RefundId}", refundId);
 
             return new RefundResult
             {

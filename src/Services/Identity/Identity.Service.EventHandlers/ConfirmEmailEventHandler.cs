@@ -38,13 +38,13 @@ namespace Identity.Service.EventHandlers
                 var user = await _userManager.FindByIdAsync(request.UserId);
                 if (user == null)
                 {
-                    _logger.LogWarning($"Email confirmation attempt for non-existent user: {request.UserId}");
+                    _logger.LogWarning("Email confirmation attempt for non-existent user: {UserId}", request.UserId);
                     return false;
                 }
 
                 if (user.EmailConfirmed)
                 {
-                    _logger.LogInformation($"Email already confirmed for user {user.Email}");
+                    _logger.LogInformation("Email already confirmed for user {Email}", user.Email);
                     return true;
                 }
 
@@ -56,7 +56,7 @@ namespace Identity.Service.EventHandlers
                 if (!result.Succeeded)
                 {
                     var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                    _logger.LogWarning($"Email confirmation failed for {user.Email}: {errors}");
+                    _logger.LogWarning("Email confirmation failed for {Email}: {Errors}", user.Email, errors);
 
                     await _auditService.LogActionAsync(
                         user.Id,
@@ -77,13 +77,13 @@ namespace Identity.Service.EventHandlers
                     ipAddress,
                     userAgent);
 
-                _logger.LogInformation($"Email confirmed successfully for {user.Email}");
+                _logger.LogInformation("Email confirmed successfully for {Email}", user.Email);
 
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error confirming email for user {request.UserId}");
+                _logger.LogError(ex, "Error confirming email for user {UserId}", request.UserId);
                 throw;
             }
         }

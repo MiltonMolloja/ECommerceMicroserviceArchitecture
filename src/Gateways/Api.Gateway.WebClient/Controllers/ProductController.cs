@@ -52,7 +52,7 @@ namespace Api.Gateway.WebClient.Controllers
             var cachedProducts = await _cacheService.GetAsync<DataCollection<ProductDto>>(cacheKey);
             if (cachedProducts != null)
             {
-                _logger.LogInformation($"Products retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Products retrieved from cache: {CacheKey}", cacheKey);
                 return cachedProducts;
             }
 
@@ -61,7 +61,7 @@ namespace Api.Gateway.WebClient.Controllers
 
             // Guardar en caché
             await _cacheService.SetAsync(cacheKey, products, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-            _logger.LogInformation($"Products cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+            _logger.LogInformation("Products cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
             return products;
         }
@@ -77,7 +77,7 @@ namespace Api.Gateway.WebClient.Controllers
             var cachedProduct = await _cacheService.GetAsync<ProductDto>(cacheKey);
             if (cachedProduct != null)
             {
-                _logger.LogInformation($"Product retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Product retrieved from cache: {CacheKey}", cacheKey);
                 return cachedProduct;
             }
 
@@ -88,7 +88,7 @@ namespace Api.Gateway.WebClient.Controllers
             if (product != null)
             {
                 await _cacheService.SetAsync(cacheKey, product, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-                _logger.LogInformation($"Product cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+                _logger.LogInformation("Product cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
             }
 
             return product;
@@ -116,7 +116,7 @@ namespace Api.Gateway.WebClient.Controllers
                 // Si hay filtros de atributos, usar búsqueda avanzada
                 if (attributeFilters.Any())
                 {
-                    _logger.LogInformation($"Gateway: Detected {attributeFilters.Count} attribute filters, using advanced search");
+                    _logger.LogInformation("Gateway: Detected {AttributeFiltersCount} attribute filters, using advanced search", attributeFilters.Count);
 
                     // Convertir ProductSearchRequest a ProductAdvancedSearchRequest
                     var advancedRequest = new ProductAdvancedSearchRequest
@@ -153,7 +153,7 @@ namespace Api.Gateway.WebClient.Controllers
                     var cachedAdvancedResult = await _cacheService.GetAsync<ProductAdvancedSearchResponse>(advancedCacheKey);
                     if (cachedAdvancedResult != null)
                     {
-                        _logger.LogInformation($"Gateway: Advanced search with attributes retrieved from cache: {advancedCacheKey}");
+                        _logger.LogInformation("Gateway: Advanced search with attributes retrieved from cache: {AdvancedCacheKey}", advancedCacheKey);
 
                         // Convertir resultado avanzado cacheado a resultado simple
                         var cachedSimpleResult = new ProductSearchResponse
@@ -195,7 +195,8 @@ namespace Api.Gateway.WebClient.Controllers
                     );
 
                     _logger.LogInformation(
-                        $"Gateway: Advanced search with attributes executed in {executionTimeAdv}ms and cached: {advancedCacheKey}"
+                        "Gateway: Advanced search with attributes executed in {ExecutionTimeAdv}ms and cached: {AdvancedCacheKey}",
+                        executionTimeAdv, advancedCacheKey
                     );
 
                     // Convertir resultado avanzado a resultado simple
@@ -248,7 +249,7 @@ namespace Api.Gateway.WebClient.Controllers
                 var cachedResult = await _cacheService.GetAsync<ProductSearchResponse>(cacheKey);
                 if (cachedResult != null)
                 {
-                    _logger.LogInformation($"Gateway: Search results retrieved from cache: {cacheKey}");
+                    _logger.LogInformation("Gateway: Search results retrieved from cache: {CacheKey}", cacheKey);
                     return Ok(cachedResult);
                 }
 
@@ -265,7 +266,8 @@ namespace Api.Gateway.WebClient.Controllers
                 );
 
                 _logger.LogInformation(
-                    $"Gateway: Search executed in {executionTime}ms and cached: {cacheKey}"
+                    "Gateway: Search executed in {ExecutionTime}ms and cached: {CacheKey}",
+                    executionTime, cacheKey
                 );
 
                 return Ok(result);
@@ -329,7 +331,7 @@ namespace Api.Gateway.WebClient.Controllers
                     var cachedResult = await _cacheService.GetAsync<ProductAdvancedSearchResponse>(cacheKey);
                     if (cachedResult != null)
                     {
-                        _logger.LogInformation($"Gateway: Advanced search results retrieved from cache: {cacheKey}");
+                        _logger.LogInformation("Gateway: Advanced search results retrieved from cache: {CacheKey}", cacheKey);
                         if (cachedResult.Metadata?.Performance != null)
                         {
                             cachedResult.Metadata.Performance.CacheHit = true;
@@ -351,8 +353,8 @@ namespace Api.Gateway.WebClient.Controllers
                 await _cacheService.SetAsync(cacheKey, result, cacheDuration);
 
                 _logger.LogInformation(
-                    $"Gateway: Advanced search executed in {executionTime}ms (Total: {result.Metadata?.Performance?.TotalExecutionTime}ms) " +
-                    $"and cached: {cacheKey}"
+                    "Gateway: Advanced search executed in {ExecutionTime}ms (Total: {TotalExecutionTime}ms) and cached: {CacheKey}",
+                    executionTime, result.Metadata?.Performance?.TotalExecutionTime, cacheKey
                 );
 
                 return Ok(result);
@@ -409,7 +411,7 @@ namespace Api.Gateway.WebClient.Controllers
             foreach (var value in validValues)
             {
                 attributeFilters[attributeKey].Add(value);
-                _logger.LogInformation($"Parsed attribute filter: attr_{attributeId} = {value}");
+                _logger.LogInformation("Parsed attribute filter: attr_{AttributeId} = {Value}", attributeId, value);
             }
         }
 
@@ -514,7 +516,7 @@ namespace Api.Gateway.WebClient.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error getting reviews for product {productId}");
+                _logger.LogError(ex, "Error getting reviews for product {ProductId}", productId);
                 return StatusCode(500, new { message = "Error retrieving product reviews", error = ex.Message });
             }
         }
@@ -532,7 +534,7 @@ namespace Api.Gateway.WebClient.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error getting rating summary for product {productId}");
+                _logger.LogError(ex, "Error getting rating summary for product {ProductId}", productId);
                 return StatusCode(500, new { message = "Error retrieving rating summary", error = ex.Message });
             }
         }

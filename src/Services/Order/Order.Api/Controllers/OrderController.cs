@@ -50,7 +50,7 @@ namespace Order.Api.Controllers
             var cachedOrders = await _cacheService.GetAsync<DataCollection<OrderDto>>(cacheKey);
             if (cachedOrders != null)
             {
-                _logger.LogInformation($"Orders retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Orders retrieved from cache: {CacheKey}", cacheKey);
                 return cachedOrders;
             }
 
@@ -59,7 +59,7 @@ namespace Order.Api.Controllers
 
             // Guardar en caché usando configuración de appsettings
             await _cacheService.SetAsync(cacheKey, orders, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-            _logger.LogInformation($"Orders cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+            _logger.LogInformation("Orders cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
             return orders;
         }
@@ -73,7 +73,7 @@ namespace Order.Api.Controllers
             var cachedOrder = await _cacheService.GetAsync<OrderDto>(cacheKey);
             if (cachedOrder != null)
             {
-                _logger.LogInformation($"Order retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Order retrieved from cache: {CacheKey}", cacheKey);
                 return cachedOrder;
             }
 
@@ -84,7 +84,7 @@ namespace Order.Api.Controllers
             if (order != null)
             {
                 await _cacheService.SetAsync(cacheKey, order, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-                _logger.LogInformation($"Order cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+                _logger.LogInformation("Order cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
             }
 
             return order;
@@ -112,7 +112,7 @@ namespace Order.Api.Controllers
                 {
                     // Admin creating order for a specific client
                     // TODO: Add authorization check to ensure user has admin role
-                    _logger.LogInformation($"Admin creating order for ClientId: {notification.ClientId}");
+                    _logger.LogInformation("Admin creating order for ClientId: {ClientId}", notification.ClientId);
                 }
 
                 // Crear la orden
@@ -131,7 +131,7 @@ namespace Order.Api.Controllers
                     }
                 }
 
-                _logger.LogInformation($"Order created successfully with OrderId: {orderId} and cache invalidated");
+                _logger.LogInformation("Order created successfully with OrderId: {OrderId} and cache invalidated", orderId);
                 return Ok(new { message = "Order created successfully", success = true, orderId = orderId });
             }
             catch (ValidationException vex)
@@ -183,12 +183,12 @@ namespace Order.Api.Controllers
                     }
                 }
 
-                _logger.LogInformation($"Order {id} status updated to {request.Status}");
+                _logger.LogInformation("Order {OrderId} status updated to {Status}", id, request.Status);
                 return Ok(new { message = "Order status updated successfully", success = true });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error updating order {id} status");
+                _logger.LogError(ex, "Error updating order {OrderId} status", id);
                 return BadRequest(new { message = ex.Message, success = false });
             }
         }

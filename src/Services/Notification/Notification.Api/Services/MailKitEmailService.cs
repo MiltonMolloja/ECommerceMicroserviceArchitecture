@@ -70,11 +70,11 @@ namespace Notification.Api.Services
                 // Desconectar
                 await client.DisconnectAsync(true);
 
-                _logger.LogInformation($"Email sent successfully to {message.To} - Subject: {message.Subject}");
+                _logger.LogInformation("Email sent successfully to {To} - Subject: {Subject}", message.To, message.Subject);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error sending email to {message.To}");
+                _logger.LogError(ex, "Error sending email to {To}", message.To);
                 throw;
             }
         }
@@ -100,7 +100,7 @@ namespace Notification.Api.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error sending templated email to {to} using template {templateName}");
+                _logger.LogError(ex, "Error sending templated email to {To} using template {TemplateName}", to, templateName);
                 throw;
             }
         }

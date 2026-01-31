@@ -88,7 +88,7 @@ namespace Notification.Api.Services
                         break;
 
                     default:
-                        _logger.LogWarning($"Template not found: {templateName}");
+                        _logger.LogWarning("Template not found: {TemplateName}", templateName);
                         subject = "Notificación - ECommerce";
                         htmlBody = RenderDefaultTemplate(dataDict);
                         textBody = "Notificación de ECommerce";
@@ -99,7 +99,7 @@ namespace Notification.Api.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error rendering template {templateName}");
+                _logger.LogError(ex, "Error rendering template {TemplateName}", templateName);
                 throw;
             }
         }

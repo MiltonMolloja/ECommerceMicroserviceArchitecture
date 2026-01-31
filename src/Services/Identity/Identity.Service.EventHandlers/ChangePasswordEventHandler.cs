@@ -46,7 +46,7 @@ namespace Identity.Service.EventHandlers
                 var user = await _userManager.FindByIdAsync(request.UserId);
                 if (user == null)
                 {
-                    _logger.LogWarning($"User not found: {request.UserId}");
+                    _logger.LogWarning("User not found: {UserId}", request.UserId);
                     return false;
                 }
 
@@ -59,7 +59,7 @@ namespace Identity.Service.EventHandlers
                 if (!result.Succeeded)
                 {
                     var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                    _logger.LogWarning($"Password change failed for user {user.Email}: {errors}");
+                    _logger.LogWarning("Password change failed for user {Email}: {Errors}", user.Email, errors);
 
                     await _auditService.LogActionAsync(
                         user.Id,
@@ -113,13 +113,13 @@ namespace Identity.Service.EventHandlers
                     ipAddress,
                     userAgent);
 
-                _logger.LogInformation($"Password changed successfully for user {user.Email}. All sessions invalidated.");
+                _logger.LogInformation("Password changed successfully for user {Email}. All sessions invalidated.", user.Email);
 
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error changing password for user {request.UserId}");
+                _logger.LogError(ex, "Error changing password for user {UserId}", request.UserId);
                 throw;
             }
         }

@@ -75,7 +75,7 @@ namespace Identity.Api.Controllers
                     }
                 }
 
-                _logger.LogInformation($"User created successfully and user cache invalidated");
+                _logger.LogInformation("User created successfully and user cache invalidated");
                 return Ok(new { message = "User created successfully", success = true });
             }
 
@@ -106,7 +106,7 @@ namespace Identity.Api.Controllers
             var isBlocked = await _cacheService.GetAsync<bool?>(blockKey);
             if (isBlocked == true)
             {
-                _logger.LogWarning($"Login attempt blocked for user: {command.Email}");
+                _logger.LogWarning("Login attempt blocked for user: {Email}", command.Email);
                 return StatusCode(429, new { message = "Too many failed attempts. Please try again later." });
             }
 
@@ -133,13 +133,13 @@ namespace Identity.Api.Controllers
 
                 await _cacheService.SetAsync(loginAttemptsKey, attempts, TimeSpan.FromMinutes(15));
 
-                _logger.LogWarning($"Failed login attempt {attempts} for user: {command.Email}");
+                _logger.LogWarning("Failed login attempt {Attempts} for user: {Email}", attempts, command.Email);
 
                 // Bloquear después de 5 intentos fallidos
                 if (attempts >= 5)
                 {
                     await _cacheService.SetAsync(blockKey, true, TimeSpan.FromMinutes(15));
-                    _logger.LogWarning($"User blocked due to too many failed attempts: {command.Email}");
+                    _logger.LogWarning("User blocked due to too many failed attempts: {Email}", command.Email);
                     return StatusCode(429, new { message = "Too many failed attempts. Account blocked for 15 minutes." });
                 }
 
@@ -154,7 +154,7 @@ namespace Identity.Api.Controllers
             var sessionKey = $"session:{command.Email}:{Guid.NewGuid()}";
             await _cacheService.SetAsync(sessionKey, new { email = command.Email, loginTime = DateTime.UtcNow }, TimeSpan.FromHours(24));
 
-            _logger.LogInformation($"Successful login for user: {command.Email}");
+            _logger.LogInformation("Successful login for user: {Email}", command.Email);
             return Ok(result);
         }
 
@@ -178,11 +178,11 @@ namespace Identity.Api.Controllers
 
             if (!result.Succeeded)
             {
-                _logger.LogWarning($"Failed refresh token attempt from IP: {command.IpAddress}");
+                _logger.LogWarning("Failed refresh token attempt from IP: {IpAddress}", command.IpAddress);
                 return Unauthorized(new { message = "Invalid or expired refresh token" });
             }
 
-            _logger.LogInformation($"Successful token refresh from IP: {command.IpAddress}");
+            _logger.LogInformation("Successful token refresh from IP: {IpAddress}", command.IpAddress);
             return Ok(result);
         }
 
@@ -203,11 +203,11 @@ namespace Identity.Api.Controllers
 
             if (!result)
             {
-                _logger.LogWarning($"Failed revoke token attempt from IP: {command.IpAddress}");
+                _logger.LogWarning("Failed revoke token attempt from IP: {IpAddress}", command.IpAddress);
                 return BadRequest(new { message = "Failed to revoke token" });
             }
 
-            _logger.LogInformation($"Token revoked successfully from IP: {command.IpAddress}");
+            _logger.LogInformation("Token revoked successfully from IP: {IpAddress}", command.IpAddress);
             return Ok(new { message = "Token revoked successfully" });
         }
 
@@ -339,7 +339,7 @@ namespace Identity.Api.Controllers
                 return BadRequest(new { message = "UserId and Token are required." });
             }
 
-            _logger.LogInformation($"Email confirmation attempt - UserId: {userId}, Token length: {token.Length}");
+            _logger.LogInformation("Email confirmation attempt - UserId: {UserId}, Token length: {TokenLength}", userId, token.Length);
 
             var command = new ConfirmEmailCommand
             {

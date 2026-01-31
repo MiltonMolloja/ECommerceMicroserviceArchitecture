@@ -58,7 +58,7 @@ namespace Catalog.Api.Controllers
             var cachedProducts = await _cacheService.GetAsync<DataCollection<ProductDto>>(cacheKey);
             if (cachedProducts != null)
             {
-                _logger.LogInformation($"Products retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Products retrieved from cache: {CacheKey}", cacheKey);
                 return cachedProducts;
             }
 
@@ -73,7 +73,7 @@ namespace Catalog.Api.Controllers
 
             // Guardar en caché usando configuración de appsettings
             await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-            _logger.LogInformation($"Products cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+            _logger.LogInformation("Products cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
             return result;
         }
@@ -89,7 +89,7 @@ namespace Catalog.Api.Controllers
             var cachedProduct = await _cacheService.GetAsync<ProductDto>(cacheKey);
             if (cachedProduct != null)
             {
-                _logger.LogInformation($"Product retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Product retrieved from cache: {CacheKey}", cacheKey);
                 return cachedProduct;
             }
 
@@ -100,7 +100,7 @@ namespace Catalog.Api.Controllers
             if (product != null)
             {
                 await _cacheService.SetAsync(cacheKey, product, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-                _logger.LogInformation($"Product cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+                _logger.LogInformation("Product cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
             }
 
             return product;
@@ -144,7 +144,7 @@ namespace Catalog.Api.Controllers
                 var cachedResult = await _cacheService.GetAsync<ProductSearchResponse>(cacheKey);
                 if (cachedResult != null)
                 {
-                    _logger.LogInformation($"Search results retrieved from cache: {cacheKey}");
+                    _logger.LogInformation("Search results retrieved from cache: {CacheKey}", cacheKey);
                     return Ok(cachedResult);
                 }
 
@@ -167,8 +167,8 @@ namespace Catalog.Api.Controllers
                 );
 
                 _logger.LogInformation(
-                    $"Search executed in {executionTime}ms and cached: {cacheKey}"
-                );
+                    "Search executed in {ExecutionTime}ms and cached: {CacheKey}",
+                    executionTime, cacheKey);
 
                 return Ok(result);
             }
@@ -231,7 +231,7 @@ namespace Catalog.Api.Controllers
                     var cachedResult = await _cacheService.GetAsync<ProductAdvancedSearchResponse>(cacheKey);
                     if (cachedResult != null)
                     {
-                        _logger.LogInformation($"Advanced search results retrieved from cache: {cacheKey}");
+                        _logger.LogInformation("Advanced search results retrieved from cache: {CacheKey}", cacheKey);
                         cachedResult.Metadata.Performance.CacheHit = true;
                         return Ok(cachedResult);
                     }
@@ -248,11 +248,11 @@ namespace Catalog.Api.Controllers
                 await _cacheService.SetAsync(cacheKey, result, cacheDuration);
 
                 _logger.LogInformation(
-                    $"Advanced search executed in {result.Metadata.Performance.TotalExecutionTime}ms " +
-                    $"(Query: {result.Metadata.Performance.QueryExecutionTime}ms, " +
-                    $"Facets: {result.Metadata.Performance.FacetCalculationTime}ms) " +
-                    $"and cached: {cacheKey}"
-                );
+                    "Advanced search executed in {TotalExecutionTime}ms (Query: {QueryExecutionTime}ms, Facets: {FacetCalculationTime}ms) and cached: {CacheKey}",
+                    result.Metadata.Performance.TotalExecutionTime,
+                    result.Metadata.Performance.QueryExecutionTime,
+                    result.Metadata.Performance.FacetCalculationTime,
+                    cacheKey);
 
                 return Ok(result);
             }
@@ -437,7 +437,7 @@ namespace Catalog.Api.Controllers
                     }
                 }
 
-                _logger.LogInformation($"✅ Caché limpiado. Intentos de limpieza: {cleared}");
+                _logger.LogInformation("Cache cleared. Cleanup attempts: {Cleared}", cleared);
                 return Ok(new { message = $"Cache cleared. Attempts: {cleared}" });
             }
             catch (Exception ex)

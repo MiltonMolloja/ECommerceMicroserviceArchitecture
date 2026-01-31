@@ -159,7 +159,7 @@ namespace Notification.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error getting notification {id}");
+                _logger.LogError(ex, "Error getting notification {Id}", id);
                 return StatusCode(500, new { error = "Internal server error" });
             }
         }
@@ -191,7 +191,7 @@ namespace Notification.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error marking notification {id} as read");
+                _logger.LogError(ex, "Error marking notification {Id} as read", id);
                 return BadRequest(new { error = ex.Message });
             }
         }
@@ -261,12 +261,12 @@ namespace Notification.Api.Controllers
 
                 await _mediator.Publish(command);
 
-                _logger.LogInformation($"Payment confirmation notification sent for payment {request.PaymentId}, user {request.UserId}");
+                _logger.LogInformation("Payment confirmation notification sent for payment {PaymentId}, user {UserId}", request.PaymentId, request.UserId);
                 return Ok(new { message = "Payment confirmation notification sent successfully" });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error sending payment confirmation notification for payment {request.PaymentId}");
+                _logger.LogError(ex, "Error sending payment confirmation notification for payment {PaymentId}", request.PaymentId);
                 return BadRequest(new { error = ex.Message });
             }
         }
@@ -306,12 +306,12 @@ namespace Notification.Api.Controllers
 
                 await _mediator.Publish(command);
 
-                _logger.LogInformation($"Payment failed notification sent for payment {request.PaymentId}, user {request.UserId}");
+                _logger.LogInformation("Payment failed notification sent for payment {PaymentId}, user {UserId}", request.PaymentId, request.UserId);
                 return Ok(new { message = "Payment failed notification sent successfully" });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error sending payment failed notification for payment {request.PaymentId}");
+                _logger.LogError(ex, "Error sending payment failed notification for payment {PaymentId}", request.PaymentId);
                 return BadRequest(new { error = ex.Message });
             }
         }
@@ -343,12 +343,12 @@ namespace Notification.Api.Controllers
 
                 await _mediator.Publish(command);
 
-                _logger.LogInformation($"Refund processed notification sent for payment {request.PaymentId}, user {request.UserId}");
+                _logger.LogInformation("Refund processed notification sent for payment {PaymentId}, user {UserId}", request.PaymentId, request.UserId);
                 return Ok(new { message = "Refund processed notification sent successfully" });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error sending refund processed notification for payment {request.PaymentId}");
+                _logger.LogError(ex, "Error sending refund processed notification for payment {PaymentId}", request.PaymentId);
                 return BadRequest(new { error = ex.Message });
             }
         }
@@ -388,12 +388,12 @@ namespace Notification.Api.Controllers
 
                 await _mediator.Publish(command);
 
-                _logger.LogInformation($"Order placed notification sent for order {request.OrderNumber}, user {request.UserId}");
+                _logger.LogInformation("Order placed notification sent for order {OrderNumber}, user {UserId}", request.OrderNumber, request.UserId);
                 return Ok(new { message = "Order placed notification sent successfully" });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error sending order placed notification for order {request.OrderNumber}");
+                _logger.LogError(ex, "Error sending order placed notification for order {OrderNumber}", request.OrderNumber);
                 return BadRequest(new { error = ex.Message });
             }
         }

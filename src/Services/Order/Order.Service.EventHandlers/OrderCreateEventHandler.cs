@@ -60,7 +60,7 @@ namespace Order.Service.EventHandlers
                     await _context.AddAsync(entry, cancellationToken);
                     await _context.SaveChangesAsync(cancellationToken);
 
-                    _logger.LogInformation($"--- Order {entry.OrderId} was created");
+                    _logger.LogInformation("--- Order {OrderId} was created", entry.OrderId);
 
                     // 04. Update Stocks
                     _logger.LogInformation("--- Updating stock");

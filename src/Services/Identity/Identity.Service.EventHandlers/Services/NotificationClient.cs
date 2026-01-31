@@ -43,16 +43,16 @@ namespace Identity.Service.EventHandlers.Services
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
-                    _logger.LogError($"Error sending email to {to}. Status: {response.StatusCode}. Error: {errorContent}");
+                    _logger.LogError("Error sending email to {To}. Status: {StatusCode}. Error: {ErrorContent}", to, response.StatusCode, errorContent);
                 }
                 else
                 {
-                    _logger.LogInformation($"Email sent successfully to {to} using template {template}");
+                    _logger.LogInformation("Email sent successfully to {To} using template {Template}", to, template);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Exception sending email to {to}");
+                _logger.LogError(ex, "Exception sending email to {To}", to);
                 // Don't throw - email failures shouldn't break the main flow
             }
         }
@@ -75,16 +75,16 @@ namespace Identity.Service.EventHandlers.Services
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
-                    _logger.LogError($"Error sending SMS to {phoneNumber}. Status: {response.StatusCode}. Error: {errorContent}");
+                    _logger.LogError("Error sending SMS to {PhoneNumber}. Status: {StatusCode}. Error: {ErrorContent}", phoneNumber, response.StatusCode, errorContent);
                 }
                 else
                 {
-                    _logger.LogInformation($"SMS sent successfully to {phoneNumber}");
+                    _logger.LogInformation("SMS sent successfully to {PhoneNumber}", phoneNumber);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Exception sending SMS to {phoneNumber}");
+                _logger.LogError(ex, "Exception sending SMS to {PhoneNumber}", phoneNumber);
                 // Don't throw - SMS failures shouldn't break the main flow
             }
         }

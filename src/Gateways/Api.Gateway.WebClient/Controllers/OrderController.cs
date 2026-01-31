@@ -1,4 +1,4 @@
-﻿using Api.Gateway.Models;
+using Api.Gateway.Models;
 using Common.Caching;
 using Api.Gateway.Models.Order.DTOs;
 using Api.Gateway.Models.Orders.Commands;
@@ -64,7 +64,7 @@ namespace Api.Gateway.WebClient.Controllers
             var cachedOrders = await _cacheService.GetAsync<DataCollection<OrderDto>>(cacheKey);
             if (cachedOrders != null)
             {
-                _logger.LogInformation($"Orders retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Orders retrieved from cache: {CacheKey}", cacheKey);
                 return cachedOrders;
             }
 
@@ -89,7 +89,7 @@ namespace Api.Gateway.WebClient.Controllers
 
             // Guardar en caché
             await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-            _logger.LogInformation($"Orders cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+            _logger.LogInformation("Orders cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
             return result;
         }
@@ -103,7 +103,7 @@ namespace Api.Gateway.WebClient.Controllers
             var cachedOrder = await _cacheService.GetAsync<OrderDto>(cacheKey);
             if (cachedOrder != null)
             {
-                _logger.LogInformation($"Order retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Order retrieved from cache: {CacheKey}", cacheKey);
                 return cachedOrder;
             }
 
@@ -128,7 +128,7 @@ namespace Api.Gateway.WebClient.Controllers
 
             // Guardar en caché
             await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-            _logger.LogInformation($"Order cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+            _logger.LogInformation("Order cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
             return result;
         }
@@ -173,7 +173,7 @@ namespace Api.Gateway.WebClient.Controllers
                     }
                 }
 
-                _logger.LogInformation($"Order created successfully with OrderId: {result.OrderId} and cache invalidated");
+                _logger.LogInformation("Order created successfully with OrderId: {OrderId} and cache invalidated", result.OrderId);
                 return Ok(new { message = result.Message, success = result.Success, orderId = result.OrderId });
             }
             catch (Exception ex)

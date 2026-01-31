@@ -32,7 +32,7 @@ namespace Notification.Service.EventHandlers.Handlers
 
         public async Task Handle(SendNotificationCommand notification, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"--- Sending notification type {notification.Type} to user {notification.UserId}");
+            _logger.LogInformation("--- Sending notification type {Type} to user {UserId}", notification.Type, notification.UserId);
 
             try
             {
@@ -43,7 +43,7 @@ namespace Notification.Service.EventHandlers.Handlers
                 // Si no existen preferencias, crear defaults
                 if (preferences == null)
                 {
-                    _logger.LogInformation($"Creating default preferences for user {notification.UserId}");
+                    _logger.LogInformation("Creating default preferences for user {UserId}", notification.UserId);
                     preferences = new NotificationPreferences
                     {
                         UserId = notification.UserId,
@@ -65,7 +65,7 @@ namespace Notification.Service.EventHandlers.Handlers
                 // 2. Validar que el usuario permite este tipo de notificación
                 if (!preferences.AllowsNotificationType(notification.Type))
                 {
-                    _logger.LogInformation($"User {notification.UserId} has disabled notifications of type {notification.Type}");
+                    _logger.LogInformation("User {UserId} has disabled notifications of type {Type}", notification.UserId, notification.Type);
                     return; // No enviar notificación
                 }
 
@@ -76,7 +76,7 @@ namespace Notification.Service.EventHandlers.Handlers
 
                 if (!allowedChannels.Any())
                 {
-                    _logger.LogInformation($"User {notification.UserId} has disabled all requested channels");
+                    _logger.LogInformation("User {UserId} has disabled all requested channels", notification.UserId);
                     return; // No enviar notificación
                 }
 
@@ -97,7 +97,7 @@ namespace Notification.Service.EventHandlers.Handlers
                 else
                 {
                     // Fallback si no hay template
-                    _logger.LogWarning($"No template found for notification type {notification.Type}");
+                    _logger.LogWarning("No template found for notification type {Type}", notification.Type);
                     title = $"Notification: {notification.Type}";
                     message = JsonSerializer.Serialize(notification.Variables);
                 }
@@ -119,12 +119,12 @@ namespace Notification.Service.EventHandlers.Handlers
                 await _context.Notifications.AddAsync(inAppNotification, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
 
-                _logger.LogInformation($"In-App notification {inAppNotification.NotificationId} created successfully");
+                _logger.LogInformation("In-App notification {NotificationId} created successfully", inAppNotification.NotificationId);
 
                 // 6. Enviar por otros canales (Email, Push, SMS)
                 foreach (var channel in allowedChannels.Where(c => c != NotificationChannel.InApp))
                 {
-                    _logger.LogInformation($"Sending notification via {channel}");
+                    _logger.LogInformation("Sending notification via {Channel}", channel);
 
                     if (channel == NotificationChannel.Email)
                     {
@@ -132,14 +132,14 @@ namespace Notification.Service.EventHandlers.Handlers
                     }
                     else
                     {
-                        _logger.LogInformation($"TODO: Send notification via {channel} (Provider not implemented yet)");
+                        _logger.LogInformation("TODO: Send notification via {Channel} (Provider not implemented yet)", channel);
                         // TODO: Implementar Push y SMS
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error sending notification to user {notification.UserId}");
+                _logger.LogError(ex, "Error sending notification to user {UserId}", notification.UserId);
                 throw;
             }
         }
@@ -157,21 +157,21 @@ namespace Notification.Service.EventHandlers.Handlers
 
                 if (string.IsNullOrEmpty(userEmail))
                 {
-                    _logger.LogWarning($"Cannot send email to user {notification.UserId}: Email not provided in variables");
+                    _logger.LogWarning("Cannot send email to user {UserId}: Email not provided in variables", notification.UserId);
                     return;
                 }
 
                 // Determinar el template a usar basado en el tipo de notificación
                 string templateName = DetermineEmailTemplate(notification.Type);
 
-                _logger.LogInformation($"Sending email to {userEmail} using template {templateName}");
+                _logger.LogInformation("Sending email to {UserEmail} using template {TemplateName}", userEmail, templateName);
 
                 // Enviar el email con todas las variables
                 await _emailService.SendTemplatedEmailAsync(userEmail, templateName, notification.Variables);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error sending email notification to user {notification.UserId}");
+                _logger.LogError(ex, "Error sending email notification to user {UserId}", notification.UserId);
                 // No lanzar excepción para no interrumpir el flujo
             }
         }

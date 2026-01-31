@@ -55,14 +55,14 @@ namespace Catalog.Api.Controllers
             var cachedCategories = await _cacheService.GetAsync<DataCollection<CategoryDto>>(cacheKey);
             if (cachedCategories != null)
             {
-                _logger.LogInformation($"Categories retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Categories retrieved from cache: {CacheKey}", cacheKey);
                 return Ok(cachedCategories);
             }
 
             var result = await _categoryQueryService.GetAllAsync(page, take);
 
             await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-            _logger.LogInformation($"Categories cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+            _logger.LogInformation("Categories cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
             return Ok(result);
         }
@@ -83,19 +83,19 @@ namespace Catalog.Api.Controllers
             var cachedCategory = await _cacheService.GetAsync<CategoryDto>(cacheKey);
             if (cachedCategory != null)
             {
-                _logger.LogInformation($"Category retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Category retrieved from cache: {CacheKey}", cacheKey);
                 return Ok(cachedCategory);
             }
 
             var category = await _categoryQueryService.GetAsync(id);
             if (category == null)
             {
-                _logger.LogWarning($"Category with ID {id} not found");
+                _logger.LogWarning("Category with ID {Id} not found", id);
                 return NotFound(new { message = $"Category with ID {id} not found" });
             }
 
             await _cacheService.SetAsync(cacheKey, category, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-            _logger.LogInformation($"Category cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+            _logger.LogInformation("Category cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
             return Ok(category);
         }
@@ -116,19 +116,19 @@ namespace Catalog.Api.Controllers
             var cachedCategory = await _cacheService.GetAsync<CategoryDto>(cacheKey);
             if (cachedCategory != null)
             {
-                _logger.LogInformation($"Category retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Category retrieved from cache: {CacheKey}", cacheKey);
                 return Ok(cachedCategory);
             }
 
             var category = await _categoryQueryService.GetBySlugAsync(slug);
             if (category == null)
             {
-                _logger.LogWarning($"Category with slug '{slug}' not found");
+                _logger.LogWarning("Category with slug '{Slug}' not found", slug);
                 return NotFound(new { message = $"Category with slug '{slug}' not found" });
             }
 
             await _cacheService.SetAsync(cacheKey, category, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-            _logger.LogInformation($"Category cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+            _logger.LogInformation("Category cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
             return Ok(category);
         }
@@ -148,7 +148,7 @@ namespace Catalog.Api.Controllers
             var cachedTree = await _cacheService.GetAsync<List<CategoryTreeDto>>(cacheKey);
             if (cachedTree != null)
             {
-                _logger.LogInformation($"Category tree retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Category tree retrieved from cache: {CacheKey}", cacheKey);
                 return Ok(cachedTree);
             }
 
@@ -156,7 +156,7 @@ namespace Catalog.Api.Controllers
 
             // Cache por más tiempo ya que el árbol cambia raramente
             await _cacheService.SetAsync(cacheKey, tree, TimeSpan.FromHours(1));
-            _logger.LogInformation($"Category tree cached: {cacheKey} for 1 hour");
+            _logger.LogInformation("Category tree cached: {CacheKey} for 1 hour", cacheKey);
 
             return Ok(tree);
         }
@@ -175,14 +175,14 @@ namespace Catalog.Api.Controllers
             var cachedRoots = await _cacheService.GetAsync<List<CategoryDto>>(cacheKey);
             if (cachedRoots != null)
             {
-                _logger.LogInformation($"Root categories retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Root categories retrieved from cache: {CacheKey}", cacheKey);
                 return Ok(cachedRoots);
             }
 
             var roots = await _categoryQueryService.GetRootCategoriesAsync();
 
             await _cacheService.SetAsync(cacheKey, roots, TimeSpan.FromHours(1));
-            _logger.LogInformation($"Root categories cached: {cacheKey} for 1 hour");
+            _logger.LogInformation("Root categories cached: {CacheKey} for 1 hour", cacheKey);
 
             return Ok(roots);
         }
@@ -202,14 +202,14 @@ namespace Catalog.Api.Controllers
             var cachedSubs = await _cacheService.GetAsync<List<CategoryDto>>(cacheKey);
             if (cachedSubs != null)
             {
-                _logger.LogInformation($"Subcategories retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Subcategories retrieved from cache: {CacheKey}", cacheKey);
                 return Ok(cachedSubs);
             }
 
             var subcategories = await _categoryQueryService.GetSubCategoriesAsync(parentId);
 
             await _cacheService.SetAsync(cacheKey, subcategories, TimeSpan.FromHours(1));
-            _logger.LogInformation($"Subcategories cached: {cacheKey} for 1 hour");
+            _logger.LogInformation("Subcategories cached: {CacheKey} for 1 hour", cacheKey);
 
             return Ok(subcategories);
         }
@@ -231,19 +231,19 @@ namespace Catalog.Api.Controllers
             var cachedBreadcrumbs = await _cacheService.GetAsync<List<CategoryBreadcrumbDto>>(cacheKey);
             if (cachedBreadcrumbs != null)
             {
-                _logger.LogInformation($"Breadcrumbs retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Breadcrumbs retrieved from cache: {CacheKey}", cacheKey);
                 return Ok(cachedBreadcrumbs);
             }
 
             var breadcrumbs = await _categoryQueryService.GetBreadcrumbsAsync(id);
             if (breadcrumbs == null || breadcrumbs.Count == 0)
             {
-                _logger.LogWarning($"Category with ID {id} not found for breadcrumbs");
+                _logger.LogWarning("Category with ID {Id} not found for breadcrumbs", id);
                 return NotFound(new { message = $"Category with ID {id} not found" });
             }
 
             await _cacheService.SetAsync(cacheKey, breadcrumbs, TimeSpan.FromHours(1));
-            _logger.LogInformation($"Breadcrumbs cached: {cacheKey} for 1 hour");
+            _logger.LogInformation("Breadcrumbs cached: {CacheKey} for 1 hour", cacheKey);
 
             return Ok(breadcrumbs);
         }
@@ -264,19 +264,19 @@ namespace Catalog.Api.Controllers
             var cachedBreadcrumbs = await _cacheService.GetAsync<List<CategoryBreadcrumbDto>>(cacheKey);
             if (cachedBreadcrumbs != null)
             {
-                _logger.LogInformation($"Breadcrumbs retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Breadcrumbs retrieved from cache: {CacheKey}", cacheKey);
                 return Ok(cachedBreadcrumbs);
             }
 
             var breadcrumbs = await _categoryQueryService.GetBreadcrumbsBySlugAsync(slug);
             if (breadcrumbs == null || breadcrumbs.Count == 0)
             {
-                _logger.LogWarning($"Category with slug '{slug}' not found for breadcrumbs");
+                _logger.LogWarning("Category with slug '{Slug}' not found for breadcrumbs", slug);
                 return NotFound(new { message = $"Category with slug '{slug}' not found" });
             }
 
             await _cacheService.SetAsync(cacheKey, breadcrumbs, TimeSpan.FromHours(1));
-            _logger.LogInformation($"Breadcrumbs cached: {cacheKey} for 1 hour");
+            _logger.LogInformation("Breadcrumbs cached: {CacheKey} for 1 hour", cacheKey);
 
             return Ok(breadcrumbs);
         }

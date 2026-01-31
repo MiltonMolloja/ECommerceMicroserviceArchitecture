@@ -33,26 +33,26 @@ namespace Order.Service.EventHandlers.Handlers
 
         public async Task Handle(UpdateOrderStatusCommand notification, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Updating order {notification.OrderId} status to {notification.NewStatus}");
+            _logger.LogInformation("Updating order {OrderId} status to {NewStatus}", notification.OrderId, notification.NewStatus);
 
             var order = await _context.Orders.FindAsync(notification.OrderId);
             if (order == null)
             {
-                _logger.LogError($"Order {notification.OrderId} not found");
+                _logger.LogError("Order {OrderId} not found", notification.OrderId);
                 throw new Exception($"Order {notification.OrderId} not found");
             }
 
             // Si el estado ya es el mismo, no hacer nada (idempotencia)
             if (order.Status == notification.NewStatus)
             {
-                _logger.LogInformation($"Order {notification.OrderId} is already in status {notification.NewStatus}, skipping update");
+                _logger.LogInformation("Order {OrderId} is already in status {NewStatus}, skipping update", notification.OrderId, notification.NewStatus);
                 return;
             }
 
             // Validar transición de estado
             if (!IsValidStateTransition(order.Status, notification.NewStatus))
             {
-                _logger.LogWarning($"Invalid state transition from {order.Status} to {notification.NewStatus} for order {notification.OrderId}");
+                _logger.LogWarning("Invalid state transition from {CurrentStatus} to {NewStatus} for order {OrderId}", order.Status, notification.NewStatus, notification.OrderId);
                 throw new Exception($"Cannot transition from {order.Status} to {notification.NewStatus}");
             }
 
@@ -84,7 +84,7 @@ namespace Order.Service.EventHandlers.Handlers
             }
 
             await _context.SaveChangesAsync(cancellationToken);
-            _logger.LogInformation($"Order {notification.OrderId} status updated to {notification.NewStatus}");
+            _logger.LogInformation("Order {OrderId} status updated to {NewStatus}", notification.OrderId, notification.NewStatus);
         }
 
         private async Task PublishOrderCancelledEventAsync(Domain.Order order, string reason, CancellationToken cancellationToken)
@@ -149,7 +149,7 @@ namespace Order.Service.EventHandlers.Handlers
             // Si no hay transiciones definidas para el estado actual, permitir el cambio (para flexibilidad)
             if (!validTransitions.ContainsKey(currentStatus))
             {
-                _logger.LogWarning($"No transition rules defined for {currentStatus}, allowing transition to {newStatus}");
+                _logger.LogWarning("No transition rules defined for {CurrentStatus}, allowing transition to {NewStatus}", currentStatus, newStatus);
                 return true;
             }
 

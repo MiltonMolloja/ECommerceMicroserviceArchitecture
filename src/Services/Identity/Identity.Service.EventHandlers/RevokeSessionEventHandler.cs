@@ -39,7 +39,7 @@ namespace Identity.Service.EventHandlers
 
                 if (session == null)
                 {
-                    _logger.LogWarning($"Session {request.SessionId} not found for user {request.UserId}");
+                    _logger.LogWarning("Session {SessionId} not found for user {UserId}", request.SessionId, request.UserId);
                     return false;
                 }
 
@@ -60,13 +60,13 @@ namespace Identity.Service.EventHandlers
                     ipAddress,
                     userAgent);
 
-                _logger.LogInformation($"Session {request.SessionId} revoked for user {request.UserId}");
+                _logger.LogInformation("Session {SessionId} revoked for user {UserId}", request.SessionId, request.UserId);
 
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error revoking session {request.SessionId} for user {request.UserId}");
+                _logger.LogError(ex, "Error revoking session {SessionId} for user {UserId}", request.SessionId, request.UserId);
                 throw;
             }
         }

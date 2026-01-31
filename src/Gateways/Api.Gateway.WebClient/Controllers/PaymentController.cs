@@ -119,7 +119,7 @@ namespace Api.Gateway.WebClient.Controllers
                 var cachedPayment = await _cacheService.GetAsync<PaymentDto>(cacheKey);
                 if (cachedPayment != null)
                 {
-                    _logger.LogInformation($"Payment retrieved from cache: {cacheKey}");
+                    _logger.LogInformation("Payment retrieved from cache: {CacheKey}", cacheKey);
                     return Ok(cachedPayment);
                 }
 
@@ -133,13 +133,13 @@ namespace Api.Gateway.WebClient.Controllers
 
                 // Guardar en caché
                 await _cacheService.SetAsync(cacheKey, payment, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-                _logger.LogInformation($"Payment cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+                _logger.LogInformation("Payment cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
                 return Ok(payment);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error getting payment {id}");
+                _logger.LogError(ex, "Error getting payment {PaymentId}", id);
                 return StatusCode(500, new { message = "Error retrieving payment", error = ex.Message });
             }
         }
@@ -158,7 +158,7 @@ namespace Api.Gateway.WebClient.Controllers
                 var cachedPayment = await _cacheService.GetAsync<PaymentDto>(cacheKey);
                 if (cachedPayment != null)
                 {
-                    _logger.LogInformation($"Payment retrieved from cache: {cacheKey}");
+                    _logger.LogInformation("Payment retrieved from cache: {CacheKey}", cacheKey);
                     return Ok(cachedPayment);
                 }
 
@@ -172,13 +172,13 @@ namespace Api.Gateway.WebClient.Controllers
 
                 // Guardar en caché
                 await _cacheService.SetAsync(cacheKey, payment, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-                _logger.LogInformation($"Payment cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+                _logger.LogInformation("Payment cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
                 return Ok(payment);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error getting payment for order {orderId}");
+                _logger.LogError(ex, "Error getting payment for order {OrderId}", orderId);
                 return StatusCode(500, new { message = "Error retrieving payment", error = ex.Message });
             }
         }
@@ -197,7 +197,7 @@ namespace Api.Gateway.WebClient.Controllers
                 var cachedHistory = await _cacheService.GetAsync<List<PaymentDto>>(cacheKey);
                 if (cachedHistory != null)
                 {
-                    _logger.LogInformation($"Payment history retrieved from cache: {cacheKey}");
+                    _logger.LogInformation("Payment history retrieved from cache: {CacheKey}", cacheKey);
                     return Ok(cachedHistory);
                 }
 
@@ -206,7 +206,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 // Guardar en caché
                 await _cacheService.SetAsync(cacheKey, payments, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-                _logger.LogInformation($"Payment history cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+                _logger.LogInformation("Payment history cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
                 return Ok(payments);
             }
@@ -238,7 +238,7 @@ namespace Api.Gateway.WebClient.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error processing refund for payment {id}");
+                _logger.LogError(ex, "Error processing refund for payment {PaymentId}", id);
                 return StatusCode(500, new { message = "Error processing refund", error = ex.Message });
             }
         }
@@ -257,7 +257,7 @@ namespace Api.Gateway.WebClient.Controllers
                 var cachedTransactions = await _cacheService.GetAsync<List<PaymentTransactionDto>>(cacheKey);
                 if (cachedTransactions != null)
                 {
-                    _logger.LogInformation($"Payment transactions retrieved from cache: {cacheKey}");
+                    _logger.LogInformation("Payment transactions retrieved from cache: {CacheKey}", cacheKey);
                     return Ok(cachedTransactions);
                 }
 
@@ -266,13 +266,13 @@ namespace Api.Gateway.WebClient.Controllers
 
                 // Guardar en caché
                 await _cacheService.SetAsync(cacheKey, transactions, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-                _logger.LogInformation($"Payment transactions cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+                _logger.LogInformation("Payment transactions cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
                 return Ok(transactions);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error getting transactions for payment {id}");
+                _logger.LogError(ex, "Error getting transactions for payment {PaymentId}", id);
                 return StatusCode(500, new { message = "Error retrieving transactions", error = ex.Message });
             }
         }

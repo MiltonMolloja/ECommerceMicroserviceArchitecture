@@ -28,7 +28,7 @@ namespace Notification.Service.EventHandlers.Services
         {
             try
             {
-                _logger.LogInformation($"Sending templated email to {to} using template {templateName}");
+                _logger.LogInformation("Sending templated email to {To} using template {TemplateName}", to, templateName);
 
                 var request = new
                 {
@@ -44,16 +44,16 @@ namespace Notification.Service.EventHandlers.Services
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
-                    _logger.LogWarning($"Failed to send email to {to}. Status: {response.StatusCode}, Error: {errorContent}");
+                    _logger.LogWarning("Failed to send email to {To}. Status: {StatusCode}, Error: {ErrorContent}", to, response.StatusCode, errorContent);
                 }
                 else
                 {
-                    _logger.LogInformation($"Email sent successfully to {to}");
+                    _logger.LogInformation("Email sent successfully to {To}", to);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error sending templated email to {to}");
+                _logger.LogError(ex, "Error sending templated email to {To}", to);
                 // No lanzar excepción, solo loguear
             }
         }

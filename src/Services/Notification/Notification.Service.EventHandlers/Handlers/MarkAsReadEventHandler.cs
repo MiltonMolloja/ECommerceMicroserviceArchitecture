@@ -24,7 +24,7 @@ namespace Notification.Service.EventHandlers.Handlers
 
         public async Task Handle(MarkAsReadCommand notification, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Marking notification {notification.NotificationId} as read for user {notification.UserId}");
+            _logger.LogInformation("Marking notification {NotificationId} as read for user {UserId}", notification.NotificationId, notification.UserId);
 
             try
             {
@@ -35,18 +35,18 @@ namespace Notification.Service.EventHandlers.Handlers
 
                 if (notificationEntity == null)
                 {
-                    _logger.LogWarning($"Notification {notification.NotificationId} not found for user {notification.UserId}");
+                    _logger.LogWarning("Notification {NotificationId} not found for user {UserId}", notification.NotificationId, notification.UserId);
                     return;
                 }
 
                 notificationEntity.MarkAsRead();
                 await _context.SaveChangesAsync(cancellationToken);
 
-                _logger.LogInformation($"Notification {notification.NotificationId} marked as read");
+                _logger.LogInformation("Notification {NotificationId} marked as read", notification.NotificationId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error marking notification {notification.NotificationId} as read");
+                _logger.LogError(ex, "Error marking notification {NotificationId} as read", notification.NotificationId);
                 throw;
             }
         }

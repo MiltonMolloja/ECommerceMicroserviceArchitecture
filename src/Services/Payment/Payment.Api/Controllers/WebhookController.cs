@@ -27,7 +27,7 @@ namespace Payment.Api.Controllers
                 var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
                 var signatureHeader = Request.Headers["Stripe-Signature"];
 
-                _logger.LogInformation($"Stripe webhook received: {json}");
+                _logger.LogInformation("Stripe webhook received: {Json}", json);
 
                 // TODO: Implementar lógica de verificación de firma y procesamiento de eventos
                 // Ver: https://stripe.com/docs/webhooks/signatures
@@ -51,7 +51,7 @@ namespace Payment.Api.Controllers
             {
                 var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
 
-                _logger.LogInformation($"PayPal webhook received: {json}");
+                _logger.LogInformation("PayPal webhook received: {Json}", json);
 
                 // TODO: Implementar lógica de verificación y procesamiento de eventos de PayPal
 

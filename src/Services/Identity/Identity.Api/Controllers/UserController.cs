@@ -52,7 +52,7 @@ namespace Identity.Api.Controllers
             var cachedUsers = await _cacheService.GetAsync<DataCollection<UserDto>>(cacheKey);
             if (cachedUsers != null)
             {
-                _logger.LogInformation($"Users retrieved from cache: {cacheKey}");
+                _logger.LogInformation("Users retrieved from cache: {CacheKey}", cacheKey);
                 return cachedUsers;
             }
 
@@ -61,7 +61,7 @@ namespace Identity.Api.Controllers
 
             // Guardar en caché usando configuración de appsettings
             await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-            _logger.LogInformation($"Users cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+            _logger.LogInformation("Users cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
 
             return result;
         }
@@ -76,7 +76,7 @@ namespace Identity.Api.Controllers
             var cachedUser = await _cacheService.GetAsync<UserDto>(cacheKey);
             if (cachedUser != null)
             {
-                _logger.LogInformation($"User retrieved from cache: {cacheKey}");
+                _logger.LogInformation("User retrieved from cache: {CacheKey}", cacheKey);
                 return cachedUser;
             }
 
@@ -87,7 +87,7 @@ namespace Identity.Api.Controllers
             if (user != null)
             {
                 await _cacheService.SetAsync(cacheKey, user, TimeSpan.FromMinutes(_cacheSettings.CacheExpirationMinutes));
-                _logger.LogInformation($"User cached: {cacheKey} for {_cacheSettings.CacheExpirationMinutes} minutes");
+                _logger.LogInformation("User cached: {CacheKey} for {CacheExpirationMinutes} minutes", cacheKey, _cacheSettings.CacheExpirationMinutes);
             }
 
             return user;

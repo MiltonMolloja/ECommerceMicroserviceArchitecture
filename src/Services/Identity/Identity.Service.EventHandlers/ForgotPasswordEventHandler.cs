@@ -42,7 +42,7 @@ namespace Identity.Service.EventHandlers
                 // Don't reveal if user exists or not (security best practice)
                 if (user == null)
                 {
-                    _logger.LogWarning($"Forgot password request for non-existent email: {request.Email}");
+                    _logger.LogWarning("Forgot password request for non-existent email: {Email}", request.Email);
                     // Still return true to not reveal user existence
                     return true;
                 }
@@ -75,13 +75,13 @@ namespace Identity.Service.EventHandlers
                     ipAddress,
                     userAgent);
 
-                _logger.LogInformation($"Password reset email sent to {user.Email}");
+                _logger.LogInformation("Password reset email sent to {Email}", user.Email);
 
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error processing forgot password request for {request.Email}");
+                _logger.LogError(ex, "Error processing forgot password request for {Email}", request.Email);
                 throw;
             }
         }

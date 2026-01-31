@@ -40,7 +40,7 @@ namespace Identity.Service.EventHandlers
                 var user = await _userManager.FindByIdAsync(request.UserId);
                 if (user == null)
                 {
-                    _logger.LogWarning($"2FA verify attempt for non-existent user: {request.UserId}");
+                    _logger.LogWarning("2FA verify attempt for non-existent user: {UserId}", request.UserId);
                     return false;
                 }
 
@@ -55,7 +55,7 @@ namespace Identity.Service.EventHandlers
 
                 if (!isValid)
                 {
-                    _logger.LogWarning($"Invalid 2FA code for user {user.Email}");
+                    _logger.LogWarning("Invalid 2FA code for user {Email}", user.Email);
 
                     await _auditService.LogActionAsync(
                         user.Id,
@@ -90,13 +90,13 @@ namespace Identity.Service.EventHandlers
                     ipAddress,
                     userAgent);
 
-                _logger.LogInformation($"2FA successfully enabled for {user.Email}");
+                _logger.LogInformation("2FA successfully enabled for {Email}", user.Email);
 
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error verifying 2FA for user {request.UserId}");
+                _logger.LogError(ex, "Error verifying 2FA for user {UserId}", request.UserId);
                 throw;
             }
         }
