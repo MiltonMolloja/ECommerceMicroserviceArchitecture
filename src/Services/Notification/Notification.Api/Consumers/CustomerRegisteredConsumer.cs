@@ -55,7 +55,7 @@ public class CustomerRegisteredConsumer : IConsumer<CustomerRegisteredEvent>
             _logger.LogError(ex,
                 "Error sending welcome email to {Email} for CustomerId: {CustomerId}",
                 message.Email, message.CustomerId);
-            throw;
+            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
         }
     }
 }

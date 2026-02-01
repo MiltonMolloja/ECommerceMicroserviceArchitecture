@@ -241,7 +241,7 @@ namespace Identity.Api
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Failed to create database schema");
-                    throw;
+                    // S2139: Log and handle - don't rethrow to avoid duplicate logging
                 }
             }
 

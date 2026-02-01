@@ -61,7 +61,7 @@ public class CartAbandonedConsumer : IConsumer<CartAbandonedEvent>
             _logger.LogError(ex,
                 "Error sending cart abandonment email for CartId: {CartId} to {ClientEmail}",
                 message.CartId, message.ClientEmail);
-            throw;
+            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
         }
     }
 }

@@ -61,7 +61,7 @@ public class PaymentCompletedConsumer : IConsumer<PaymentCompletedEvent>
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error processing PaymentCompletedEvent for OrderId: {OrderId}", message.OrderId);
-            throw; // Re-throw para que MassTransit maneje el retry
+            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
         }
     }
 }

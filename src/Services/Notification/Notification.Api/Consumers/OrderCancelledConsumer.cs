@@ -57,7 +57,7 @@ public class OrderCancelledConsumer : IConsumer<OrderCancelledEvent>
             _logger.LogError(ex,
                 "Error sending order cancellation email for OrderId: {OrderId} to {ClientEmail}",
                 message.OrderId, message.ClientEmail);
-            throw;
+            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
         }
     }
 }

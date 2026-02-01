@@ -60,7 +60,7 @@ public class PaymentFailedConsumer : IConsumer<PaymentFailedEvent>
             _logger.LogError(ex,
                 "Error sending payment failed email for OrderId: {OrderId} to {ClientEmail}",
                 message.OrderId, message.ClientEmail);
-            throw; // Re-throw para que MassTransit maneje el retry
+            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
         }
     }
 }

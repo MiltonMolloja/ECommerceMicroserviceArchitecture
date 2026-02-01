@@ -118,7 +118,7 @@ namespace Payment.Api.Controllers
             }
             catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
-                _logger.LogError(ex, $"Error getting payment {id}");
+                _logger.LogError(ex, "Error getting payment {PaymentId}", id);
                 return StatusCode(500, new { error = "Internal server error" });
             }
         }
@@ -143,7 +143,7 @@ namespace Payment.Api.Controllers
             }
             catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
-                _logger.LogError(ex, $"Error getting payment for order {orderId}");
+                _logger.LogError(ex, "Error getting payment for order {OrderId}", orderId);
                 return StatusCode(500, new { error = "Internal server error" });
             }
         }
@@ -198,7 +198,7 @@ namespace Payment.Api.Controllers
             }
             catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
-                _logger.LogError(ex, $"Error processing refund for payment {id}");
+                _logger.LogError(ex, "Error processing refund for payment {PaymentId}", id);
                 return BadRequest(new { error = ex.Message });
             }
         }
@@ -218,7 +218,7 @@ namespace Payment.Api.Controllers
             }
             catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
-                _logger.LogError(ex, $"Error getting transactions for payment {id}");
+                _logger.LogError(ex, "Error getting transactions for payment {PaymentId}", id);
                 return StatusCode(500, new { error = "Internal server error" });
             }
         }

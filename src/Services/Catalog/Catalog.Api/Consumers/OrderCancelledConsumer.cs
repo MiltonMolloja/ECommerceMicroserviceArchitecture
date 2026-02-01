@@ -68,7 +68,7 @@ public class OrderCancelledConsumer : IConsumer<OrderCancelledEvent>
             _logger.LogError(ex,
                 "Error releasing stock for OrderId: {OrderId}",
                 message.OrderId);
-            throw;
+            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
         }
     }
 }

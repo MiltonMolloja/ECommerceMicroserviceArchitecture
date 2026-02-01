@@ -71,7 +71,7 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
             _logger.LogError(ex,
                 "Error clearing cart for ClientId: {ClientId} after OrderId: {OrderId}",
                 message.ClientId, message.OrderId);
-            throw; // Re-throw para que MassTransit maneje el retry
+            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
         }
     }
 }

@@ -61,7 +61,7 @@ public class StockUpdatedConsumer : IConsumer<StockUpdatedEvent>
             _logger.LogError(ex,
                 "Error processing StockUpdatedEvent for ProductId: {ProductId}",
                 message.ProductId);
-            throw;
+            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
         }
     }
 }

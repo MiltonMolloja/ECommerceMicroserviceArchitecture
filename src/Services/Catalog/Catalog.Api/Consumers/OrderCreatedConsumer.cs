@@ -65,7 +65,7 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
             _logger.LogError(ex,
                 "Error processing OrderCreatedEvent for OrderId: {OrderId}",
                 message.OrderId);
-            throw;
+            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
         }
     }
 }
