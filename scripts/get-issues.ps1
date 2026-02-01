@@ -1,8 +1,14 @@
 param(
     [string]$Rule = "csharpsquid:S2629",
     [int]$PageSize = 50,
-    [string]$Token = "squ_f10da5ad19320666cef18128c2c9f31a67bed5b7"
+    [string]$Token = $env:SONAR_TOKEN
 )
+
+if (-not $Token) {
+    Write-Host "Error: SONAR_TOKEN environment variable not set" -ForegroundColor Red
+    Write-Host "Set it with: `$env:SONAR_TOKEN = 'your-token'" -ForegroundColor Yellow
+    exit 1
+}
 
 $headers = @{ "Authorization" = "Bearer $Token" }
 $url = "http://localhost:9000/api/issues/search?componentKeys=ECommerceMicroserviceArchitecture&resolved=false&rules=$Rule&ps=$PageSize"
