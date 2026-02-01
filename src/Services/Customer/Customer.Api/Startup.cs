@@ -199,7 +199,7 @@ namespace Customer.Api
                     var created = db.Database.EnsureCreated();
                     logger.LogInformation("Database EnsureCreated for Customer returned: {Created}", created);
                 }
-                catch (Exception ex)
+catch (Exception ex) when (ex is Npgsql.NpgsqlException or Microsoft.EntityFrameworkCore.DbUpdateException or InvalidOperationException)
                 {
                     logger.LogError(ex, "Failed to create Customer database schema");
                 }

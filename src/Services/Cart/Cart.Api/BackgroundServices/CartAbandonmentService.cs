@@ -44,7 +44,7 @@ public class CartAbandonmentService : BackgroundService
             {
                 await CheckForAbandonedCartsAsync(stoppingToken);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error checking for abandoned carts");
             }
@@ -115,7 +115,7 @@ public class CartAbandonmentService : BackgroundService
                 _logger.LogInformation("CartAbandonedEvent published for CartId: {CartId}, ClientId: {ClientId}",
                     cart.CartId, cart.ClientId);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error publishing CartAbandonedEvent for CartId: {CartId}", cart.CartId);
             }

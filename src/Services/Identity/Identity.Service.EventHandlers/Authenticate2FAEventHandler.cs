@@ -210,7 +210,7 @@ namespace Identity.Service.EventHandlers
 
                 _logger.LogInformation("New session alert email sent to {Email} after 2FA", user.Email);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error sending new session alert email to {Email}", user.Email);
                 // Don't throw - email failure shouldn't block authentication
@@ -312,7 +312,7 @@ namespace Identity.Service.EventHandlers
                     return null;
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error getting ClientId for UserId {UserId}", userId);
                 return null;

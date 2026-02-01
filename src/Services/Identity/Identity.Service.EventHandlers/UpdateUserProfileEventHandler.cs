@@ -68,7 +68,7 @@ namespace Identity.Service.EventHandlers
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error updating profile for user {UserId}", request.UserId);
                 return false;

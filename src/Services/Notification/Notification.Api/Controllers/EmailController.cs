@@ -60,7 +60,7 @@ namespace Notification.Api.Controllers
                     message = $"Email sent successfully to {request.To}"
                 });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error sending email to {To}", request.To);
                 return StatusCode(500, new { error = "Internal server error sending email", details = ex.Message });
@@ -101,7 +101,7 @@ namespace Notification.Api.Controllers
                     message = $"Email sent successfully to {message.To}"
                 });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error sending direct email to {To}", message.To);
                 return StatusCode(500, new { error = "Internal server error sending email", details = ex.Message });

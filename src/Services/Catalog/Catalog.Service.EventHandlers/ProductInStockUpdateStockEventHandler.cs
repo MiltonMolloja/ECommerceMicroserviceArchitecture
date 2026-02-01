@@ -109,7 +109,7 @@ namespace Catalog.Service.EventHandlers
                 _logger.LogInformation("StockUpdatedEvent published for ProductId: {ProductId}, Previous: {Previous}, Current: {Current}",
                     productId, previousStock, currentStock);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogWarning(ex, "Failed to publish StockUpdatedEvent for ProductId: {ProductId}", productId);
                 // No fallar la actualización de stock si falla la publicación del evento

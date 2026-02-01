@@ -94,9 +94,9 @@ namespace Identity.Service.EventHandlers
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Error verifying 2FA for user {UserId}", request.UserId);
+                // S2139: Let higher-level exception handlers log the exception to avoid duplicate logging
                 throw;
             }
         }

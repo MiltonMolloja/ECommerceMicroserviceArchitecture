@@ -111,7 +111,7 @@ namespace Common.Logging
                         correlationId = httpContext.Items["X-Correlation-ID"]?.ToString();
                     }
                 }
-                catch
+                catch (Exception ex) when (ex is InvalidOperationException or Npgsql.NpgsqlException or System.Data.Common.DbException)
                 {
                     // If we can't get the correlation ID, just continue without it
                 }
@@ -140,7 +140,7 @@ namespace Common.Logging
                     command.ExecuteNonQuery();
                 }
             }
-            catch
+            catch (Exception ex) when (ex is InvalidOperationException or Npgsql.NpgsqlException or System.Data.Common.DbException)
             {
                 // Silently fail to prevent logging errors from crashing the application
             }

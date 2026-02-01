@@ -44,7 +44,7 @@ namespace Notification.Api.Controllers
 
                 return Ok(new { message = "Notification sent successfully" });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error sending notification");
                 return BadRequest(new { error = ex.Message });
@@ -70,7 +70,7 @@ namespace Notification.Api.Controllers
 
                 return Ok(notifications);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error getting notifications");
                 return StatusCode(500, new { error = "Internal server error" });
@@ -96,7 +96,7 @@ namespace Notification.Api.Controllers
 
                 return Ok(notifications);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error getting unread notifications");
                 return StatusCode(500, new { error = "Internal server error" });
@@ -122,7 +122,7 @@ namespace Notification.Api.Controllers
 
                 return Ok(count);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error getting unread count");
                 return StatusCode(500, new { error = "Internal server error" });
@@ -157,7 +157,7 @@ namespace Notification.Api.Controllers
 
                 return Ok(notification);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error getting notification {Id}", id);
                 return StatusCode(500, new { error = "Internal server error" });
@@ -189,7 +189,7 @@ namespace Notification.Api.Controllers
 
                 return Ok(new { message = "Notification marked as read" });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error marking notification {Id} as read", id);
                 return BadRequest(new { error = ex.Message });
@@ -227,7 +227,7 @@ namespace Notification.Api.Controllers
 
                 return Ok(new { message = $"{unreadNotifications.Count} notifications marked as read" });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error marking all notifications as read");
                 return BadRequest(new { error = ex.Message });
@@ -264,7 +264,7 @@ namespace Notification.Api.Controllers
                 _logger.LogInformation("Payment confirmation notification sent for payment {PaymentId}, user {UserId}", request.PaymentId, request.UserId);
                 return Ok(new { message = "Payment confirmation notification sent successfully" });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error sending payment confirmation notification for payment {PaymentId}", request.PaymentId);
                 return BadRequest(new { error = ex.Message });
@@ -309,7 +309,7 @@ namespace Notification.Api.Controllers
                 _logger.LogInformation("Payment failed notification sent for payment {PaymentId}, user {UserId}", request.PaymentId, request.UserId);
                 return Ok(new { message = "Payment failed notification sent successfully" });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error sending payment failed notification for payment {PaymentId}", request.PaymentId);
                 return BadRequest(new { error = ex.Message });
@@ -346,7 +346,7 @@ namespace Notification.Api.Controllers
                 _logger.LogInformation("Refund processed notification sent for payment {PaymentId}, user {UserId}", request.PaymentId, request.UserId);
                 return Ok(new { message = "Refund processed notification sent successfully" });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error sending refund processed notification for payment {PaymentId}", request.PaymentId);
                 return BadRequest(new { error = ex.Message });
@@ -391,7 +391,7 @@ namespace Notification.Api.Controllers
                 _logger.LogInformation("Order placed notification sent for order {OrderNumber}, user {UserId}", request.OrderNumber, request.UserId);
                 return Ok(new { message = "Order placed notification sent successfully" });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error sending order placed notification for order {OrderNumber}", request.OrderNumber);
                 return BadRequest(new { error = ex.Message });

@@ -58,9 +58,9 @@ namespace Identity.Service.EventHandlers.Services
 
                 return codes;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Error generating backup codes for user {UserId}", userId);
+                // S2139: Let higher-level exception handlers log the exception to avoid duplicate logging
                 throw;
             }
         }
@@ -90,7 +90,7 @@ namespace Identity.Service.EventHandlers.Services
                 _logger.LogInformation("Backup code validated and marked as used for user {UserId}", userId);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error validating backup code for user {UserId}", userId);
                 return false;
@@ -108,7 +108,7 @@ namespace Identity.Service.EventHandlers.Services
 
                 return backupCode;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error checking backup code existence for user {UserId}", userId);
                 return null;
@@ -130,9 +130,9 @@ namespace Identity.Service.EventHandlers.Services
                     _logger.LogInformation("Invalidated {Count} backup codes for user {UserId}", existingCodes.Count, userId);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Error invalidating backup codes for user {UserId}", userId);
+                // S2139: Let higher-level exception handlers log the exception to avoid duplicate logging
                 throw;
             }
         }

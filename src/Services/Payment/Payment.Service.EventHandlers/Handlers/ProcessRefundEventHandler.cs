@@ -83,9 +83,9 @@ namespace Payment.Service.EventHandlers.Handlers
 
                 await _context.SaveChangesAsync(cancellationToken);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Error processing refund for payment {PaymentId}", notification.PaymentId);
+                _logger.LogError("Error processing refund for payment {PaymentId}", notification.PaymentId);
                 throw;
             }
         }

@@ -214,7 +214,7 @@ namespace Order.Api
                     var created = db.Database.EnsureCreated();
                     logger.LogInformation("Database EnsureCreated for Order returned: {Created}", created);
                 }
-                catch (System.Exception ex)
+catch (Exception ex) when (ex is Npgsql.NpgsqlException or Microsoft.EntityFrameworkCore.DbUpdateException or InvalidOperationException)
                 {
                     logger.LogError(ex, "Failed to create Order database schema");
                 }

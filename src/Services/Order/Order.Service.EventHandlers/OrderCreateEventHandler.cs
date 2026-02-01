@@ -100,7 +100,7 @@ namespace Order.Service.EventHandlers
                 await _publishEndpoint.Publish(orderCreatedEvent);
                 _logger.LogInformation("OrderCreatedEvent published for OrderId: {OrderId}", entry.OrderId);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 // No fallar la creación de orden si falla la publicación del evento
                 _logger.LogWarning(ex, "Failed to publish OrderCreatedEvent for OrderId: {OrderId}", entry.OrderId);

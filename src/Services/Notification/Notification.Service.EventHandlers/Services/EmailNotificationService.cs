@@ -51,7 +51,7 @@ namespace Notification.Service.EventHandlers.Services
                     _logger.LogInformation("Email sent successfully to {To}", to);
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error sending templated email to {To}", to);
                 // No lanzar excepción, solo loguear

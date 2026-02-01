@@ -36,7 +36,7 @@ namespace Payment.Service.Proxies.Order
                     $"{_baseUrl}/v1/orders/{orderId}");
                 return response;
             }
-            catch
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 // Si falla, retornamos null y manejamos en el handler
                 return null;
@@ -76,7 +76,7 @@ namespace Payment.Service.Proxies.Order
                     $"{_baseUrl}/v1/orders/{orderId}/status",
                     requestBody);
             }
-            catch
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 // Log error but don't throw
             }

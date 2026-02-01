@@ -63,7 +63,7 @@ namespace Identity.Service.EventHandlers
                 result.RefreshToken = newRefreshToken.Token;
                 result.ExpiresAt = newRefreshToken.ExpiresAt;
             }
-            catch (Exception)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 result.Succeeded = false;
                 // Log the error here if needed

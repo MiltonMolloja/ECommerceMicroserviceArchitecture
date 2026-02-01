@@ -78,7 +78,7 @@ namespace Catalog.Api.Controllers
 
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error fetching home page data");
                 return StatusCode(500, new { error = "Error loading home page data", message = ex.Message });
@@ -108,7 +108,7 @@ namespace Catalog.Api.Controllers
                 _logger.LogDebug("Fetched {Count} banners for position: {Position}", banners.Count, position);
                 return Ok(banners);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error fetching banners for position: {Position}", position);
                 return StatusCode(500, new { error = "Error loading banners" });
@@ -132,7 +132,7 @@ namespace Catalog.Api.Controllers
                 var products = await _homeService.GetFeaturedProductsAsync(limit, language);
                 return Ok(products);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error fetching featured products");
                 return StatusCode(500, new { error = "Error loading featured products" });
@@ -157,7 +157,7 @@ namespace Catalog.Api.Controllers
                 var products = await _homeService.GetDealsAsync(limit, language);
                 return Ok(products);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error fetching deals");
                 return StatusCode(500, new { error = "Error loading deals" });
@@ -181,7 +181,7 @@ namespace Catalog.Api.Controllers
                 var products = await _homeService.GetBestSellersAsync(limit, language);
                 return Ok(products);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error fetching bestsellers");
                 return StatusCode(500, new { error = "Error loading bestsellers" });
@@ -205,7 +205,7 @@ namespace Catalog.Api.Controllers
                 var products = await _homeService.GetNewArrivalsAsync(limit, language);
                 return Ok(products);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error fetching new arrivals");
                 return StatusCode(500, new { error = "Error loading new arrivals" });
@@ -231,7 +231,7 @@ namespace Catalog.Api.Controllers
                 var products = await _homeService.GetTopRatedAsync(limit, minRating, language);
                 return Ok(products);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error fetching top rated products");
                 return StatusCode(500, new { error = "Error loading top rated products" });
@@ -255,7 +255,7 @@ namespace Catalog.Api.Controllers
                 var categories = await _homeService.GetFeaturedCategoriesAsync(limit, language);
                 return Ok(categories);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error fetching featured categories");
                 return StatusCode(500, new { error = "Error loading featured categories" });

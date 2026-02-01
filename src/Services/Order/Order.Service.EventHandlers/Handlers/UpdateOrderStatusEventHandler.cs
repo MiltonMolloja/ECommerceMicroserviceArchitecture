@@ -118,7 +118,7 @@ namespace Order.Service.EventHandlers.Handlers
                 await _publishEndpoint.Publish(orderCancelledEvent, cancellationToken);
                 _logger.LogInformation("OrderCancelledEvent published for OrderId: {OrderId}", order.OrderId);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogWarning(ex, "Failed to publish OrderCancelledEvent for OrderId: {OrderId}", order.OrderId);
                 // No fallar la cancelación si falla la publicación del evento

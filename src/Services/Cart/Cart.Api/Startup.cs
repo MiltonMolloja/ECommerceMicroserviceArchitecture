@@ -205,7 +205,7 @@ namespace Cart.Api
                     var created = db.Database.EnsureCreated();
                     logger.LogInformation("Database EnsureCreated for Cart returned: {Created}", created);
                 }
-                catch (System.Exception ex)
+catch (Exception ex) when (ex is Npgsql.NpgsqlException or Microsoft.EntityFrameworkCore.DbUpdateException or InvalidOperationException)
                 {
                     logger.LogError(ex, "Failed to create Cart database schema");
                 }

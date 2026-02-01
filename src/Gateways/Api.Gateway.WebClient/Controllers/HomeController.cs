@@ -88,7 +88,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException)
             {
                 _logger.LogError(ex, "Error fetching home page data");
                 return StatusCode(500, new { error = "Error loading home page data", message = ex.Message });
@@ -125,7 +125,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 return Ok(banners);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException)
             {
                 _logger.LogError(ex, "Error fetching banners");
                 return StatusCode(500, new { error = "Error loading banners" });
@@ -157,7 +157,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 return Ok(products);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException)
             {
                 _logger.LogError(ex, "Error fetching featured products");
                 return StatusCode(500, new { error = "Error loading featured products" });
@@ -190,7 +190,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 return Ok(products);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException)
             {
                 _logger.LogError(ex, "Error fetching deals");
                 return StatusCode(500, new { error = "Error loading deals" });
@@ -222,7 +222,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 return Ok(products);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException)
             {
                 _logger.LogError(ex, "Error fetching bestsellers");
                 return StatusCode(500, new { error = "Error loading bestsellers" });
@@ -254,7 +254,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 return Ok(products);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException)
             {
                 _logger.LogError(ex, "Error fetching new arrivals");
                 return StatusCode(500, new { error = "Error loading new arrivals" });
@@ -289,7 +289,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 return Ok(products);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException)
             {
                 _logger.LogError(ex, "Error fetching top rated products");
                 return StatusCode(500, new { error = "Error loading top rated products" });
@@ -321,7 +321,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 return Ok(categories);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException)
             {
                 _logger.LogError(ex, "Error fetching featured categories");
                 return StatusCode(500, new { error = "Error loading featured categories" });

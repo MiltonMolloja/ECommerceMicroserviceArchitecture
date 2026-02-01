@@ -44,7 +44,7 @@ namespace Payment.Service.Proxies.Customer
 
                 return await response.Content.ReadFromJsonAsync<CustomerDto>();
             }
-            catch
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 return null;
             }

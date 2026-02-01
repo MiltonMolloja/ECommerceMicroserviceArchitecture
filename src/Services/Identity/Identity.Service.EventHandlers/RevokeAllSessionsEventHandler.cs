@@ -69,9 +69,9 @@ namespace Identity.Service.EventHandlers
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Error revoking all sessions for user {UserId}", request.UserId);
+                // S2139: Let higher-level exception handlers log the exception to avoid duplicate logging
                 throw;
             }
         }

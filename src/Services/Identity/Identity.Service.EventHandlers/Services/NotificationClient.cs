@@ -50,7 +50,7 @@ namespace Identity.Service.EventHandlers.Services
                     _logger.LogInformation("Email sent successfully to {To} using template {Template}", to, template);
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Exception sending email to {To}", to);
                 // Don't throw - email failures shouldn't break the main flow
@@ -82,7 +82,7 @@ namespace Identity.Service.EventHandlers.Services
                     _logger.LogInformation("SMS sent successfully to {PhoneNumber}", phoneNumber);
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Exception sending SMS to {PhoneNumber}", phoneNumber);
                 // Don't throw - SMS failures shouldn't break the main flow

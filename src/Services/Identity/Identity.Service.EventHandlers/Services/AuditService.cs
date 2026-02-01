@@ -45,7 +45,7 @@ namespace Identity.Service.EventHandlers.Services
 
                 _logger.LogInformation("Audit log created: User {UserId} - Action {Action} - Success {Success}", userId, action, success);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error creating audit log for user {UserId}, action {Action}", userId, action);
                 // Don't throw - audit failures shouldn't break the main flow

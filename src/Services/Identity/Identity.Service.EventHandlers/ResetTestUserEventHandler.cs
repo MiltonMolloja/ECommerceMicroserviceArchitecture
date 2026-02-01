@@ -96,7 +96,7 @@ namespace Identity.Service.EventHandlers
                 _logger.LogInformation("Test user reset successfully: {Email}", ResetTestUserCommand.TestUserEmail);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error resetting test user");
                 return false;

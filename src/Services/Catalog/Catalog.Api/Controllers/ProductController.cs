@@ -172,7 +172,7 @@ namespace Catalog.Api.Controllers
 
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error searching products with request: {@Request}", request);
                 return StatusCode(500, new
@@ -256,7 +256,7 @@ namespace Catalog.Api.Controllers
 
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error in advanced search with request: {@Request}", request);
                 return StatusCode(500, new
@@ -360,7 +360,7 @@ namespace Catalog.Api.Controllers
                     errors = errors
                 });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error creating product");
                 return StatusCode(500, new { message = "Error creating product", error = ex.Message });
@@ -440,7 +440,7 @@ namespace Catalog.Api.Controllers
                 _logger.LogInformation("Cache cleared. Cleanup attempts: {Cleared}", cleared);
                 return Ok(new { message = $"Cache cleared. Attempts: {cleared}" });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error clearing search cache");
                 return StatusCode(500, new { message = "Error clearing cache", error = ex.Message });

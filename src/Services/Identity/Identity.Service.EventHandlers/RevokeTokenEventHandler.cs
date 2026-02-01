@@ -23,7 +23,7 @@ namespace Identity.Service.EventHandlers
                 await _refreshTokenService.RevokeRefreshTokenAsync(request.RefreshToken, request.IpAddress);
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 return false;
             }

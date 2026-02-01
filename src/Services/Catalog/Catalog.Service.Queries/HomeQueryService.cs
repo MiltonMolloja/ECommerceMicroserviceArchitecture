@@ -315,7 +315,7 @@ namespace Catalog.Service.Queries
 
                 return JsonSerializer.Deserialize<T>(cached);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogWarning(ex, "Error reading from cache: {Key}", key);
                 return null;
@@ -339,7 +339,7 @@ namespace Catalog.Service.Queries
 
                 _logger.LogDebug("Cached data for key: {Key} with expiration: {Expiration}", key, expiration);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogWarning(ex, "Error writing to cache: {Key}", key);
                 // No lanzar excepción, solo loguear el error

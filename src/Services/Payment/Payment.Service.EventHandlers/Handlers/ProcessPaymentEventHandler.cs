@@ -195,7 +195,7 @@ namespace Payment.Service.EventHandlers.Handlers
                             EstimatedDelivery = "3-5 días hábiles"
                         });
                     }
-                    catch (Exception httpEx)
+                    catch (Exception httpEx) when (httpEx is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
                     {
                         // Si falla HTTP, el evento ya fue publicado en RabbitMQ
                         // Los consumidores procesarán el evento de forma asíncrona
@@ -264,7 +264,7 @@ namespace Payment.Service.EventHandlers.Handlers
                             FailureReason = result.ErrorMessage ?? "No pudimos procesar el pago. Por favor intenta nuevamente o contacta con soporte."
                         });
                     }
-                    catch (Exception httpEx)
+                    catch (Exception httpEx) when (httpEx is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
                     {
                         _logger.LogWarning(httpEx, "HTTP fallback failed, but event was published to RabbitMQ");
                     }
@@ -283,7 +283,7 @@ namespace Payment.Service.EventHandlers.Handlers
                     };
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error processing payment for order {OrderId}", notification.OrderId);
                 return new PaymentProcessingResult

@@ -137,9 +137,9 @@ namespace Notification.Service.EventHandlers.Handlers
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Error sending notification to user {UserId}", notification.UserId);
+                _logger.LogError("Error sending notification to user {UserId}", notification.UserId);
                 throw;
             }
         }
@@ -169,7 +169,7 @@ namespace Notification.Service.EventHandlers.Handlers
                 // Enviar el email con todas las variables
                 await _emailService.SendTemplatedEmailAsync(userEmail, templateName, notification.Variables);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error sending email notification to user {UserId}", notification.UserId);
                 // No lanzar excepción para no interrumpir el flujo

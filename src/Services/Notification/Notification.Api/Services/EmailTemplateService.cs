@@ -97,9 +97,9 @@ namespace Notification.Api.Services
 
                 return Task.FromResult((subject, htmlBody, textBody));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Error rendering template {TemplateName}", templateName);
+                _logger.LogError("Error rendering template {TemplateName}", templateName);
                 throw;
             }
         }

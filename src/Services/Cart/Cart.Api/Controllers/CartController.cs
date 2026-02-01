@@ -68,7 +68,7 @@ namespace Cart.Api.Controllers
                     errors = errors
                 });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error adding item to cart");
                 return StatusCode(500, new { message = "Error adding item to cart", error = ex.Message });
@@ -84,7 +84,7 @@ namespace Cart.Api.Controllers
                 await _mediator.Publish(command);
                 return Ok(new { message = "Quantity updated successfully", success = true });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error updating quantity");
                 return StatusCode(500, new { message = "Error updating quantity", error = ex.Message });
@@ -99,7 +99,7 @@ namespace Cart.Api.Controllers
                 await _mediator.Publish(new RemoveItemFromCartCommand { CartId = cartId, ProductId = productId });
                 return Ok(new { message = "Item removed successfully", success = true });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error removing item");
                 return StatusCode(500, new { message = "Error removing item", error = ex.Message });
@@ -114,7 +114,7 @@ namespace Cart.Api.Controllers
                 await _mediator.Publish(new ClearCartCommand { CartId = cartId });
                 return Ok(new { message = "Cart cleared successfully", success = true });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error clearing cart");
                 return StatusCode(500, new { message = "Error clearing cart", error = ex.Message });
@@ -130,7 +130,7 @@ namespace Cart.Api.Controllers
                 await _mediator.Publish(command);
                 return Ok(new { message = "Coupon applied successfully", success = true });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error applying coupon");
                 return StatusCode(500, new { message = "Error applying coupon", error = ex.Message });
@@ -145,7 +145,7 @@ namespace Cart.Api.Controllers
                 await _mediator.Publish(new RemoveCouponCommand { CartId = cartId });
                 return Ok(new { message = "Coupon removed successfully", success = true });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error removing coupon");
                 return StatusCode(500, new { message = "Error removing coupon", error = ex.Message });

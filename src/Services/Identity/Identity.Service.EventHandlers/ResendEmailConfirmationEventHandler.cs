@@ -82,9 +82,9 @@ namespace Identity.Service.EventHandlers
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Error resending email confirmation to {Email}", request.Email);
+                // S2139: Let higher-level exception handlers log the exception to avoid duplicate logging
                 throw;
             }
         }

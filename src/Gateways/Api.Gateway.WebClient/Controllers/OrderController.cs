@@ -176,7 +176,7 @@ namespace Api.Gateway.WebClient.Controllers
                 _logger.LogInformation("Order created successfully with OrderId: {OrderId} and cache invalidated", result.OrderId);
                 return Ok(new { message = result.Message, success = result.Success, orderId = result.OrderId });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error creating order");
                 return StatusCode(500, new { message = "Error creating order", error = ex.Message });

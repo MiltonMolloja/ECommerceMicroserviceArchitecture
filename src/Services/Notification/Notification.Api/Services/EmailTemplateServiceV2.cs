@@ -162,9 +162,9 @@ namespace Notification.Api.Services
 
                 return Task.FromResult((subject, htmlBody, textBody));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Error rendering template {TemplateName}", templateName);
+                _logger.LogError("Error rendering template {TemplateName}", templateName);
                 throw;
             }
         }
@@ -248,7 +248,7 @@ namespace Notification.Api.Services
                 _logger.LogInformation("Template loaded successfully: {TemplateFileName}", templateFileName);
                 return templateContent;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error loading template file: {TemplateFileName}", templateFileName);
                 return null;

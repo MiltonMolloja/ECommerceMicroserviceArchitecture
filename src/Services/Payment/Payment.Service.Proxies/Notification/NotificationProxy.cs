@@ -39,7 +39,7 @@ namespace Payment.Service.Proxies.Notification
                     $"{_baseUrl}/api/notification/payment-confirmation",
                     new { userId, paymentId });
             }
-            catch
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 // Log error but don't throw
             }
@@ -54,7 +54,7 @@ namespace Payment.Service.Proxies.Notification
                     $"{_baseUrl}/api/notification/payment-failed",
                     notification);
             }
-            catch
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 // Log error but don't throw
             }
@@ -69,7 +69,7 @@ namespace Payment.Service.Proxies.Notification
                     $"{_baseUrl}/api/notification/refund-processed",
                     new { userId, paymentId });
             }
-            catch
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 // Log error but don't throw
             }
@@ -84,7 +84,7 @@ namespace Payment.Service.Proxies.Notification
                     $"{_baseUrl}/api/notification/order-placed",
                     notification);
             }
-            catch
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 // Log error but don't throw
             }

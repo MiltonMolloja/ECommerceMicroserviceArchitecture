@@ -58,9 +58,9 @@ namespace Notification.Service.EventHandlers.Handlers
 
                 _logger.LogInformation("Notification preferences updated for user {UserId}", notification.UserId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Error updating notification preferences for user {UserId}", notification.UserId);
+                _logger.LogError("Error updating notification preferences for user {UserId}", notification.UserId);
                 throw;
             }
         }

@@ -93,7 +93,7 @@ namespace Catalog.Api.Controllers
                 _logger.LogInformation("Stock updated successfully and cache invalidated");
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error updating stock");
                 return StatusCode(500, new { message = "Error updating stock", error = ex.Message });

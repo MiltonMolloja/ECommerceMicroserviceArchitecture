@@ -92,7 +92,7 @@ namespace Api.Gateway.WebClient.Controllers
                     });
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error processing payment for OrderId: {OrderId}", command.OrderId);
                 return StatusCode(500, new
@@ -136,7 +136,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 return Ok(payment);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error getting payment {PaymentId}", id);
                 return StatusCode(500, new { message = "Error retrieving payment", error = ex.Message });
@@ -175,7 +175,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 return Ok(payment);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error getting payment for order {OrderId}", orderId);
                 return StatusCode(500, new { message = "Error retrieving payment", error = ex.Message });
@@ -209,7 +209,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 return Ok(payments);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error getting payment history");
                 return StatusCode(500, new { message = "Error retrieving payment history", error = ex.Message });
@@ -235,7 +235,7 @@ namespace Api.Gateway.WebClient.Controllers
                 _logger.LogInformation("Refund processing started for PaymentId: {PaymentId}", id);
                 return Ok(new { message = "Refund processing started", success = true });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error processing refund for payment {PaymentId}", id);
                 return StatusCode(500, new { message = "Error processing refund", error = ex.Message });
@@ -269,7 +269,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 return Ok(transactions);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error getting transactions for payment {PaymentId}", id);
                 return StatusCode(500, new { message = "Error retrieving transactions", error = ex.Message });

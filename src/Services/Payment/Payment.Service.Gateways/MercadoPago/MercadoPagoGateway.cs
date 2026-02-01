@@ -114,7 +114,7 @@ namespace Payment.Service.Gateways.MercadoPago
                     };
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error processing payment with MercadoPago");
                 return new PaymentResult
@@ -176,7 +176,7 @@ namespace Payment.Service.Gateways.MercadoPago
                     };
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error processing refund with MercadoPago");
                 return new RefundResult

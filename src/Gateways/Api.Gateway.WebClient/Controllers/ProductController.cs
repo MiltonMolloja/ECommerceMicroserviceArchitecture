@@ -272,7 +272,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException or ArgumentException)
             {
                 _logger.LogError(ex, "Gateway: Error searching products with request: {@Request}", request);
                 return StatusCode(500, new
@@ -359,7 +359,7 @@ namespace Api.Gateway.WebClient.Controllers
 
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException or ArgumentException)
             {
                 _logger.LogError(ex, "Gateway: Error in advanced search with request: {@Request}", request);
                 return StatusCode(500, new
@@ -514,7 +514,7 @@ namespace Api.Gateway.WebClient.Controllers
                 var result = await _catalogProxy.GetProductReviewsAsync(productId, page, pageSize, sortBy, verifiedOnly);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException or ArgumentException)
             {
                 _logger.LogError(ex, "Error getting reviews for product {ProductId}", productId);
                 return StatusCode(500, new { message = "Error retrieving product reviews", error = ex.Message });
@@ -532,7 +532,7 @@ namespace Api.Gateway.WebClient.Controllers
                 var result = await _catalogProxy.GetProductRatingSummaryAsync(productId);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException or ArgumentException)
             {
                 _logger.LogError(ex, "Error getting rating summary for product {ProductId}", productId);
                 return StatusCode(500, new { message = "Error retrieving rating summary", error = ex.Message });

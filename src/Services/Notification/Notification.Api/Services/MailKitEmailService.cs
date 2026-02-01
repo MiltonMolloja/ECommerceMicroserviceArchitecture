@@ -72,9 +72,9 @@ namespace Notification.Api.Services
 
                 _logger.LogInformation("Email sent successfully to {To} - Subject: {Subject}", message.To, message.Subject);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Error sending email to {To}", message.To);
+                _logger.LogError("Error sending email to {To}", message.To);
                 throw;
             }
         }
@@ -98,9 +98,9 @@ namespace Notification.Api.Services
                 // Enviar
                 await SendEmailAsync(message);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Error sending templated email to {To} using template {TemplateName}", to, templateName);
+                _logger.LogError("Error sending templated email to {To} using template {TemplateName}", to, templateName);
                 throw;
             }
         }

@@ -220,7 +220,7 @@ namespace Payment.Api
                     var created = db.Database.EnsureCreated();
                     logger.LogInformation("Database EnsureCreated for Payment returned: {Created}", created);
                 }
-                catch (System.Exception ex)
+catch (Exception ex) when (ex is Npgsql.NpgsqlException or Microsoft.EntityFrameworkCore.DbUpdateException or InvalidOperationException)
                 {
                     logger.LogError(ex, "Failed to create Payment database schema");
                 }

@@ -34,7 +34,7 @@ namespace Payment.Api.Controllers
 
                 return Ok();
             }
-            catch (System.Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error processing Stripe webhook");
                 return BadRequest();
@@ -57,7 +57,7 @@ namespace Payment.Api.Controllers
 
                 return Ok();
             }
-            catch (System.Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error processing PayPal webhook");
                 return BadRequest();

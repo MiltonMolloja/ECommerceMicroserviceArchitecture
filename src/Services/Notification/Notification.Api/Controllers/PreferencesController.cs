@@ -48,7 +48,7 @@ namespace Notification.Api.Controllers
 
                 return Ok(preferences);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error getting preferences");
                 return StatusCode(500, new { error = "Internal server error" });
@@ -76,7 +76,7 @@ namespace Notification.Api.Controllers
 
                 return Ok(new { message = "Preferences updated successfully" });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error updating preferences");
                 return BadRequest(new { error = ex.Message });

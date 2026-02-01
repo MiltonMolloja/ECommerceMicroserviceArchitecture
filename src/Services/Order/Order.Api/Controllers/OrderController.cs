@@ -146,7 +146,7 @@ namespace Order.Api.Controllers
                     errors = errors
                 });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error creating order");
                 return StatusCode(500, new { message = "Error creating order", error = ex.Message });
@@ -186,7 +186,7 @@ namespace Order.Api.Controllers
                 _logger.LogInformation("Order {OrderId} status updated to {Status}", id, request.Status);
                 return Ok(new { message = "Order status updated successfully", success = true });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error updating order {OrderId} status", id);
                 return BadRequest(new { message = ex.Message, success = false });

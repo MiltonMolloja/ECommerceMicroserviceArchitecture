@@ -88,7 +88,7 @@ namespace Identity.Service.EventHandlers
 
                     _logger.LogInformation("User created successfully: {Email}. Confirmation email sent.", entry.Email);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
                 {
                     _logger.LogError(ex, "Error sending confirmation email to {Email}", entry.Email);
                     // Don't fail the registration if email sending fails
@@ -119,7 +119,7 @@ namespace Identity.Service.EventHandlers
                         _logger.LogWarning("Failed to create client profile for user {Email}. Status: {StatusCode}, Error: {ErrorContent}", entry.Email, response.StatusCode, errorContent);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
                 {
                     _logger.LogError(ex, "Error creating client profile for user {Email}", entry.Email);
                     // Don't fail the registration if client creation fails
@@ -140,7 +140,7 @@ namespace Identity.Service.EventHandlers
                     await _publishEndpoint.Publish(customerRegisteredEvent, cancellationToken);
                     _logger.LogInformation("CustomerRegisteredEvent published for user: {Email}", entry.Email);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
                 {
                     _logger.LogWarning(ex, "Failed to publish CustomerRegisteredEvent for user: {Email}", entry.Email);
                     // Don't fail the registration if event publishing fails

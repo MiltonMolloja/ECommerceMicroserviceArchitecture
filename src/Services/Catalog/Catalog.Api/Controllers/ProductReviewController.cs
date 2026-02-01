@@ -68,7 +68,7 @@ namespace Catalog.Api.Controllers
 
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error retrieving reviews for product {ProductId}", productId);
                 return StatusCode(500, new { message = "Error retrieving product reviews", error = ex.Message });
@@ -94,7 +94,7 @@ namespace Catalog.Api.Controllers
 
                 return Ok(summary);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error retrieving rating summary for product {ProductId}", productId);
                 return StatusCode(500, new { message = "Error retrieving rating summary", error = ex.Message });

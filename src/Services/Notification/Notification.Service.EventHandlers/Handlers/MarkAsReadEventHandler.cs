@@ -44,9 +44,9 @@ namespace Notification.Service.EventHandlers.Handlers
 
                 _logger.LogInformation("Notification {NotificationId} marked as read", notification.NotificationId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Error marking notification {NotificationId} as read", notification.NotificationId);
+                _logger.LogError("Error marking notification {NotificationId} as read", notification.NotificationId);
                 throw;
             }
         }

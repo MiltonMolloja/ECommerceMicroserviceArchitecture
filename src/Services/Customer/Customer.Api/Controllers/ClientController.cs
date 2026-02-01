@@ -167,7 +167,7 @@ namespace Customer.Api.Controllers
                     errors = errors
                 });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException)
             {
                 _logger.LogError(ex, "Error creating client");
                 return StatusCode(500, new { message = "Error creating client", error = ex.Message });
