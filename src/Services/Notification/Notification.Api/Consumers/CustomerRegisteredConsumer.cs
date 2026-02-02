@@ -50,12 +50,12 @@ public class CustomerRegisteredConsumer : IConsumer<CustomerRegisteredEvent>
                 "Welcome email sent to {Email} for CustomerId: {CustomerId}",
                 message.Email, message.CustomerId);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or System.Net.Http.HttpRequestException or TaskCanceledException or TimeoutException)
         {
             _logger.LogError(ex,
                 "Error sending welcome email to {Email} for CustomerId: {CustomerId}",
                 message.Email, message.CustomerId);
-            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
+            // MassTransit will handle retry via its own mechanism
         }
     }
 }

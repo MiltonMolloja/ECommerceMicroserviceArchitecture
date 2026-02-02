@@ -52,12 +52,12 @@ public class OrderCancelledConsumer : IConsumer<OrderCancelledEvent>
                 "Order cancellation email sent for OrderId: {OrderId} to {ClientEmail}",
                 message.OrderId, message.ClientEmail);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or System.Net.Http.HttpRequestException or TaskCanceledException or TimeoutException)
         {
             _logger.LogError(ex,
                 "Error sending order cancellation email for OrderId: {OrderId} to {ClientEmail}",
                 message.OrderId, message.ClientEmail);
-            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
+            // MassTransit will handle retry via its own mechanism
         }
     }
 }

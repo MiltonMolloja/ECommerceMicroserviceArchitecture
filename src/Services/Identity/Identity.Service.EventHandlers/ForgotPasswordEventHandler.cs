@@ -79,10 +79,10 @@ namespace Identity.Service.EventHandlers
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or System.Net.Http.HttpRequestException or TaskCanceledException or TimeoutException)
             {
-                _logger.LogError(ex, "Error processing forgot password request for {Email}", request.Email);
-                throw;
+                // Rethrow with context - logging handled by global exception middleware
+                throw new InvalidOperationException($"Error processing forgot password request for {request.Email}", ex);
             }
         }
     }

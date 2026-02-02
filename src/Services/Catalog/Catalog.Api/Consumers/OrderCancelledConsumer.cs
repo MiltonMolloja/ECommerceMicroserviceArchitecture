@@ -63,12 +63,12 @@ public class OrderCancelledConsumer : IConsumer<OrderCancelledEvent>
                 "Stock released successfully for OrderId: {OrderId}",
                 message.OrderId);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or Microsoft.EntityFrameworkCore.DbUpdateException or Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException or TimeoutException)
         {
             _logger.LogError(ex,
                 "Error releasing stock for OrderId: {OrderId}",
                 message.OrderId);
-            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
+            // MassTransit will handle retry via its own mechanism
         }
     }
 }

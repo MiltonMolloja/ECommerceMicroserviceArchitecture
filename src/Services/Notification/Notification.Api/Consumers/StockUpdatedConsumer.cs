@@ -56,12 +56,12 @@ public class StockUpdatedConsumer : IConsumer<StockUpdatedEvent>
                     message.ProductId);
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or System.Net.Http.HttpRequestException or TaskCanceledException or TimeoutException)
         {
             _logger.LogError(ex,
                 "Error processing StockUpdatedEvent for ProductId: {ProductId}",
                 message.ProductId);
-            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
+            // MassTransit will handle retry via its own mechanism
         }
     }
 }

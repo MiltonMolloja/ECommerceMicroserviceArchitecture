@@ -174,10 +174,10 @@ namespace Identity.Service.EventHandlers
                     ExpiresAt = tokenDescriptor.Expires.Value
                 };
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or HttpRequestException or TaskCanceledException or TimeoutException)
             {
-                _logger.LogError(ex, "Error during 2FA authentication for user {UserId}", request.UserId);
-                throw;
+                // Rethrow with context - logging handled by global exception middleware
+                throw new InvalidOperationException($"Error during 2FA authentication for user {request.UserId}", ex);
             }
         }
 

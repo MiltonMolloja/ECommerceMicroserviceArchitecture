@@ -56,12 +56,12 @@ public class CartAbandonedConsumer : IConsumer<CartAbandonedEvent>
                 "Cart abandonment email sent for CartId: {CartId} to {ClientEmail}",
                 message.CartId, message.ClientEmail);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or System.Net.Http.HttpRequestException or TaskCanceledException or TimeoutException)
         {
             _logger.LogError(ex,
                 "Error sending cart abandonment email for CartId: {CartId} to {ClientEmail}",
                 message.CartId, message.ClientEmail);
-            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
+            // MassTransit will handle retry via its own mechanism
         }
     }
 }

@@ -117,10 +117,10 @@ namespace Identity.Service.EventHandlers
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or System.Net.Http.HttpRequestException or TaskCanceledException or TimeoutException or Microsoft.EntityFrameworkCore.DbUpdateException)
             {
-                _logger.LogError(ex, "Error changing password for user {UserId}", request.UserId);
-                throw;
+                // Rethrow with context - logging handled by global exception middleware
+                throw new InvalidOperationException($"Error changing password for user {request.UserId}", ex);
             }
         }
     }

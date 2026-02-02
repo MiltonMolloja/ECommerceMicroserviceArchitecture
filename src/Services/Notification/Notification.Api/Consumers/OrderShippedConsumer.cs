@@ -58,12 +58,12 @@ public class OrderShippedConsumer : IConsumer<OrderShippedEvent>
                 "Order shipped email sent for OrderId: {OrderId} to {ClientEmail}. Tracking: {TrackingNumber}",
                 message.OrderId, message.ClientEmail, message.TrackingNumber);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or System.Net.Http.HttpRequestException or TaskCanceledException or TimeoutException)
         {
             _logger.LogError(ex,
                 "Error sending order shipped email for OrderId: {OrderId} to {ClientEmail}",
                 message.OrderId, message.ClientEmail);
-            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
+            // MassTransit will handle retry via its own mechanism
         }
     }
 

@@ -56,10 +56,10 @@ public class PaymentFailedConsumer : IConsumer<PaymentFailedEvent>
                 "Order {OrderId} status updated to PaymentFailed via RabbitMQ event. Error: {ErrorMessage}",
                 message.OrderId, message.ErrorMessage);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or Microsoft.EntityFrameworkCore.DbUpdateException or Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException or TimeoutException)
         {
             _logger.LogError(ex, "Error processing PaymentFailedEvent for OrderId: {OrderId}", message.OrderId);
-            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
+            // MassTransit will handle retry via its own mechanism
         }
     }
 }

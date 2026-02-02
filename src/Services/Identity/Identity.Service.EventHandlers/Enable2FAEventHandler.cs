@@ -77,10 +77,10 @@ namespace Identity.Service.EventHandlers
                     BackupCodes = backupCodes.ToArray()
                 };
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or System.Net.Http.HttpRequestException or TaskCanceledException or TimeoutException)
             {
-                _logger.LogError(ex, "Error enabling 2FA for user {UserId}", request.UserId);
-                throw;
+                // Rethrow with context - logging handled by global exception middleware
+                throw new InvalidOperationException($"Error enabling 2FA for user {request.UserId}", ex);
             }
         }
     }

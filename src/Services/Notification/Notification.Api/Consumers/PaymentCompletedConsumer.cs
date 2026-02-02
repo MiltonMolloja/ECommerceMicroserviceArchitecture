@@ -56,12 +56,12 @@ public class PaymentCompletedConsumer : IConsumer<PaymentCompletedEvent>
                 "Order confirmation email sent via RabbitMQ event for OrderId: {OrderId} to {ClientEmail}",
                 message.OrderId, message.ClientEmail);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or System.Net.Http.HttpRequestException or TaskCanceledException or TimeoutException)
         {
             _logger.LogError(ex,
                 "Error sending order confirmation email for OrderId: {OrderId} to {ClientEmail}",
                 message.OrderId, message.ClientEmail);
-            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
+            // MassTransit will handle retry via its own mechanism
         }
     }
 }

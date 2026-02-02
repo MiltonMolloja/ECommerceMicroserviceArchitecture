@@ -60,12 +60,12 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
                 "OrderCreatedEvent processed successfully for OrderId: {OrderId}",
                 message.OrderId);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or Microsoft.EntityFrameworkCore.DbUpdateException or Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException or TimeoutException)
         {
             _logger.LogError(ex,
                 "Error processing OrderCreatedEvent for OrderId: {OrderId}",
                 message.OrderId);
-            // S2139: Log and handle - MassTransit will handle retry via its own mechanism
+            // MassTransit will handle retry via its own mechanism
         }
     }
 }
