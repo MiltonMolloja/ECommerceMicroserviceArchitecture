@@ -60,7 +60,7 @@ public class PaymentCompletedConsumerTest
         // Assert
         _emailServiceMock.Verify(x => x.SendTemplatedEmailAsync(
             "customer@example.com",
-            "OrderConfirmation",
+            "purchase-confirmation",
             It.Is<Dictionary<string, object>>(d =>
                 d.ContainsKey("CustomerName") &&
                 d.ContainsKey("OrderNumber") &&

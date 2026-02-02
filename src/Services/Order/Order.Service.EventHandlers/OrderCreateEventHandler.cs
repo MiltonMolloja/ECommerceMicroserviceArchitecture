@@ -132,32 +132,38 @@ namespace Order.Service.EventHandlers
             entry.OrderDate = DateTime.UtcNow; // Required by PostgreSQL schema
             entry.UpdatedAt = DateTime.UtcNow;
 
+            // Initialize optional fields with empty strings (required by PostgreSQL NOT NULL constraints)
+            entry.Notes = string.Empty;
+            entry.CancellationReason = string.Empty;
+            entry.PaymentTransactionId = string.Empty;
+            entry.PaymentGateway = string.Empty;
+
             // Shipping Address
-            entry.ShippingRecipientName = notification.ShippingRecipientName;
-            entry.ShippingPhone = notification.ShippingPhone;
-            entry.ShippingAddressLine1 = notification.ShippingAddressLine1;
-            entry.ShippingAddressLine2 = notification.ShippingAddressLine2;
-            entry.ShippingCity = notification.ShippingCity;
-            entry.ShippingState = notification.ShippingState;
-            entry.ShippingPostalCode = notification.ShippingPostalCode;
-            entry.ShippingCountry = notification.ShippingCountry;
+            entry.ShippingRecipientName = notification.ShippingRecipientName ?? string.Empty;
+            entry.ShippingPhone = notification.ShippingPhone ?? string.Empty;
+            entry.ShippingAddressLine1 = notification.ShippingAddressLine1 ?? string.Empty;
+            entry.ShippingAddressLine2 = notification.ShippingAddressLine2 ?? string.Empty;
+            entry.ShippingCity = notification.ShippingCity ?? string.Empty;
+            entry.ShippingState = notification.ShippingState ?? string.Empty;
+            entry.ShippingPostalCode = notification.ShippingPostalCode ?? string.Empty;
+            entry.ShippingCountry = notification.ShippingCountry ?? string.Empty;
 
             // Legacy ShippingAddress field (for PostgreSQL compatibility)
             entry.ShippingAddress = $"{notification.ShippingAddressLine1}, {notification.ShippingCity}, {notification.ShippingCountry}";
 
             // Billing Address
             entry.BillingAddressLine1 = notification.BillingSameAsShipping
-                ? notification.ShippingAddressLine1
-                : notification.BillingAddressLine1;
+                ? (notification.ShippingAddressLine1 ?? string.Empty)
+                : (notification.BillingAddressLine1 ?? string.Empty);
             entry.BillingCity = notification.BillingSameAsShipping
-                ? notification.ShippingCity
-                : notification.BillingCity;
+                ? (notification.ShippingCity ?? string.Empty)
+                : (notification.BillingCity ?? string.Empty);
             entry.BillingPostalCode = notification.BillingSameAsShipping
-                ? notification.ShippingPostalCode
-                : notification.BillingPostalCode;
+                ? (notification.ShippingPostalCode ?? string.Empty)
+                : (notification.BillingPostalCode ?? string.Empty);
             entry.BillingCountry = notification.BillingSameAsShipping
-                ? notification.ShippingCountry
-                : notification.BillingCountry;
+                ? (notification.ShippingCountry ?? string.Empty)
+                : (notification.BillingCountry ?? string.Empty);
             entry.BillingSameAsShipping = notification.BillingSameAsShipping;
 
             // Financial calculations (required by PostgreSQL schema)

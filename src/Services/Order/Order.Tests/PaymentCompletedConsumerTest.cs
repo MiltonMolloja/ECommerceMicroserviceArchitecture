@@ -21,6 +21,41 @@ public class PaymentCompletedConsumerTest
         _loggerMock = new Mock<ILogger<PaymentCompletedConsumer>>();
     }
 
+    /// <summary>
+    /// Creates a valid Order entity with all required properties set
+    /// </summary>
+    private static Domain.Order CreateValidOrder(int clientId, Action<Domain.Order>? configure = null)
+    {
+        var order = new Domain.Order
+        {
+            ClientId = clientId,
+            Status = OrderStatus.AwaitingPayment,
+            Total = 100,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            OrderDate = DateTime.UtcNow,
+            ShippingAddress = "Test Address",
+            ShippingRecipientName = "Test Recipient",
+            ShippingPhone = "+1234567890",
+            ShippingAddressLine1 = "123 Test St",
+            ShippingAddressLine2 = "",
+            ShippingCity = "Test City",
+            ShippingState = "TS",
+            ShippingPostalCode = "12345",
+            ShippingCountry = "USA",
+            BillingAddressLine1 = "123 Test St",
+            BillingCity = "Test City",
+            BillingPostalCode = "12345",
+            BillingCountry = "USA",
+            Notes = "",
+            CancellationReason = "",
+            PaymentTransactionId = "",
+            PaymentGateway = ""
+        };
+        configure?.Invoke(order);
+        return order;
+    }
+
     [TestMethod]
     public async Task Should_UpdateOrderStatus_ToPaid_When_PaymentCompleted()
     {
@@ -28,13 +63,7 @@ public class PaymentCompletedConsumerTest
         var context = ApplicationDbContextInMemory.Get();
 
         // Create a pending order
-        var order = new Domain.Order
-        {
-            ClientId = 1,
-            Status = OrderStatus.AwaitingPayment,
-            Total = 100,
-            CreatedAt = DateTime.UtcNow
-        };
+        var order = CreateValidOrder(1);
         context.Orders.Add(order);
         await context.SaveChangesAsync();
 
@@ -99,14 +128,11 @@ public class PaymentCompletedConsumerTest
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
 
-        var order = new Domain.Order
+        var order = CreateValidOrder(1, o =>
         {
-            ClientId = 1,
-            Status = OrderStatus.Paid, // Already paid
-            Total = 100,
-            CreatedAt = DateTime.UtcNow,
-            PaymentTransactionId = "OLD_TXN"
-        };
+            o.Status = OrderStatus.Paid;
+            o.PaymentTransactionId = "OLD_TXN";
+        });
         context.Orders.Add(order);
         await context.SaveChangesAsync();
 

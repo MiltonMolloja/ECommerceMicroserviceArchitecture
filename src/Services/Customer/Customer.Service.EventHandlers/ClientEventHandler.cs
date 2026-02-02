@@ -1,4 +1,4 @@
-﻿using Customer.Domain;
+using Customer.Domain;
 using Customer.Persistence.Database;
 using Customer.Service.EventHandlers.Commands;
 using MediatR;
@@ -33,7 +33,10 @@ namespace Customer.Service.EventHandlers
             await _context.AddAsync(new Client
             {
                 UserId = notification.UserId,
-                Phone = notification.Phone,
+                Phone = notification.Phone ?? string.Empty,
+                MobilePhone = string.Empty,
+                Gender = string.Empty,
+                ProfileImageUrl = string.Empty,
                 PreferredLanguage = notification.PreferredLanguage ?? "es",
                 PreferredCurrency = "USD",
                 IsActive = true,
@@ -104,9 +107,9 @@ namespace Customer.Service.EventHandlers
                 AddressType = notification.AddressType,
                 AddressName = notification.AddressName,
                 RecipientName = notification.RecipientName,
-                RecipientPhone = notification.RecipientPhone,
+                RecipientPhone = notification.RecipientPhone ?? string.Empty,
                 AddressLine1 = notification.AddressLine1,
-                AddressLine2 = notification.AddressLine2,
+                AddressLine2 = notification.AddressLine2 ?? string.Empty,
                 City = notification.City,
                 State = notification.State,
                 PostalCode = notification.PostalCode,

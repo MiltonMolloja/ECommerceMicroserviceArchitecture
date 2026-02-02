@@ -10,6 +10,58 @@ namespace Customer.Tests;
 [TestClass]
 public class ClientEventHandlerTest
 {
+    #region Test Helpers
+
+    /// <summary>
+    /// Creates a valid Client entity with all required properties set
+    /// </summary>
+    private static Client CreateValidClient(string userId, Action<Client>? configure = null)
+    {
+        var client = new Client
+        {
+            UserId = userId,
+            Phone = "+1234567890",
+            MobilePhone = "+0987654321",
+            Gender = "PreferNotToSay",
+            ProfileImageUrl = "https://example.com/default.jpg",
+            PreferredLanguage = "es",
+            PreferredCurrency = "USD",
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        configure?.Invoke(client);
+        return client;
+    }
+
+    /// <summary>
+    /// Creates a valid ClientAddress entity with all required properties set
+    /// </summary>
+    private static ClientAddress CreateValidAddress(int clientId, Action<ClientAddress>? configure = null)
+    {
+        var address = new ClientAddress
+        {
+            ClientId = clientId,
+            AddressType = "Shipping",
+            AddressName = "Default",
+            RecipientName = "Test Recipient",
+            RecipientPhone = "+1234567890",
+            AddressLine1 = "123 Test Street",
+            AddressLine2 = "",
+            City = "Test City",
+            State = "TS",
+            PostalCode = "12345",
+            Country = "USA",
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        configure?.Invoke(address);
+        return address;
+    }
+
+    #endregion
+
     #region ClientCreateCommand Tests
 
     [TestMethod]
@@ -93,14 +145,7 @@ public class ClientEventHandlerTest
     {
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
-        var existingClient = new Client
-        {
-            UserId = "user-update-1",
-            Phone = "old-phone",
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+        var existingClient = CreateValidClient("user-update-1", c => c.Phone = "old-phone");
         await context.Clients.AddAsync(existingClient);
         await context.SaveChangesAsync();
 
@@ -156,16 +201,12 @@ public class ClientEventHandlerTest
     {
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
-        var existingClient = new Client
+        var existingClient = CreateValidClient("user-pref-1", c =>
         {
-            UserId = "user-pref-1",
-            PreferredLanguage = "es",
-            PreferredCurrency = "USD",
-            NewsletterSubscribed = false,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+            c.PreferredLanguage = "es";
+            c.PreferredCurrency = "USD";
+            c.NewsletterSubscribed = false;
+        });
         await context.Clients.AddAsync(existingClient);
         await context.SaveChangesAsync();
 
@@ -202,13 +243,7 @@ public class ClientEventHandlerTest
     {
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
-        var existingClient = new Client
-        {
-            UserId = "user-addr-1",
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+        var existingClient = CreateValidClient("user-addr-1");
         await context.Clients.AddAsync(existingClient);
         await context.SaveChangesAsync();
 
@@ -248,32 +283,19 @@ public class ClientEventHandlerTest
     {
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
-        var existingClient = new Client
-        {
-            UserId = "user-addr-2",
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+        var existingClient = CreateValidClient("user-addr-2");
         await context.Clients.AddAsync(existingClient);
         await context.SaveChangesAsync();
 
-        var existingAddress = new ClientAddress
+        var existingAddress = CreateValidAddress(existingClient.ClientId, a =>
         {
-            ClientId = existingClient.ClientId,
-            AddressType = "Shipping",
-            AddressName = "Old Home",
-            RecipientName = "John Doe",
-            AddressLine1 = "Old Street",
-            City = "Old City",
-            State = "NY",
-            PostalCode = "10001",
-            Country = "USA",
-            IsDefaultShipping = true,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+            a.AddressName = "Old Home";
+            a.RecipientName = "John Doe";
+            a.AddressLine1 = "Old Street";
+            a.City = "Old City";
+            a.State = "NY";
+            a.IsDefaultShipping = true;
+        });
         await context.ClientAddresses.AddAsync(existingAddress);
         await context.SaveChangesAsync();
 
@@ -314,21 +336,14 @@ public class ClientEventHandlerTest
     {
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
-        var existingAddress = new ClientAddress
+        var existingAddress = CreateValidAddress(1, a =>
         {
-            ClientId = 1,
-            AddressType = "Shipping",
-            AddressName = "Old Name",
-            RecipientName = "Old Recipient",
-            AddressLine1 = "Old Street",
-            City = "Old City",
-            State = "NY",
-            PostalCode = "10001",
-            Country = "USA",
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+            a.AddressName = "Old Name";
+            a.RecipientName = "Old Recipient";
+            a.AddressLine1 = "Old Street";
+            a.City = "Old City";
+            a.State = "NY";
+        });
         await context.ClientAddresses.AddAsync(existingAddress);
         await context.SaveChangesAsync();
 
@@ -366,38 +381,25 @@ public class ClientEventHandlerTest
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
         var clientId = 1;
-        var address1 = new ClientAddress
+        var address1 = CreateValidAddress(clientId, a =>
         {
-            ClientId = clientId,
-            AddressType = "Shipping",
-            AddressName = "Address 1",
-            RecipientName = "Recipient 1",
-            AddressLine1 = "Street 1",
-            City = "City 1",
-            State = "NY",
-            PostalCode = "10001",
-            Country = "USA",
-            IsDefaultShipping = true,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-        var address2 = new ClientAddress
+            a.AddressName = "Address 1";
+            a.RecipientName = "Recipient 1";
+            a.AddressLine1 = "Street 1";
+            a.City = "City 1";
+            a.State = "NY";
+            a.IsDefaultShipping = true;
+        });
+        var address2 = CreateValidAddress(clientId, a =>
         {
-            ClientId = clientId,
-            AddressType = "Shipping",
-            AddressName = "Address 2",
-            RecipientName = "Recipient 2",
-            AddressLine1 = "Street 2",
-            City = "City 2",
-            State = "CA",
-            PostalCode = "90001",
-            Country = "USA",
-            IsDefaultShipping = false,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+            a.AddressName = "Address 2";
+            a.RecipientName = "Recipient 2";
+            a.AddressLine1 = "Street 2";
+            a.City = "City 2";
+            a.State = "CA";
+            a.PostalCode = "90001";
+            a.IsDefaultShipping = false;
+        });
         await context.ClientAddresses.AddRangeAsync(address1, address2);
         await context.SaveChangesAsync();
 
@@ -425,38 +427,27 @@ public class ClientEventHandlerTest
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
         var clientId = 1;
-        var address1 = new ClientAddress
+        var address1 = CreateValidAddress(clientId, a =>
         {
-            ClientId = clientId,
-            AddressType = "Billing",
-            AddressName = "Address 1",
-            RecipientName = "Recipient 1",
-            AddressLine1 = "Street 1",
-            City = "City 1",
-            State = "NY",
-            PostalCode = "10001",
-            Country = "USA",
-            IsDefaultBilling = true,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-        var address2 = new ClientAddress
+            a.AddressType = "Billing";
+            a.AddressName = "Address 1";
+            a.RecipientName = "Recipient 1";
+            a.AddressLine1 = "Street 1";
+            a.City = "City 1";
+            a.State = "NY";
+            a.IsDefaultBilling = true;
+        });
+        var address2 = CreateValidAddress(clientId, a =>
         {
-            ClientId = clientId,
-            AddressType = "Billing",
-            AddressName = "Address 2",
-            RecipientName = "Recipient 2",
-            AddressLine1 = "Street 2",
-            City = "City 2",
-            State = "CA",
-            PostalCode = "90001",
-            Country = "USA",
-            IsDefaultBilling = false,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+            a.AddressType = "Billing";
+            a.AddressName = "Address 2";
+            a.RecipientName = "Recipient 2";
+            a.AddressLine1 = "Street 2";
+            a.City = "City 2";
+            a.State = "CA";
+            a.PostalCode = "90001";
+            a.IsDefaultBilling = false;
+        });
         await context.ClientAddresses.AddRangeAsync(address1, address2);
         await context.SaveChangesAsync();
 
@@ -487,21 +478,14 @@ public class ClientEventHandlerTest
     {
         // Arrange
         var context = ApplicationDbContextInMemory.Get();
-        var existingAddress = new ClientAddress
+        var existingAddress = CreateValidAddress(1, a =>
         {
-            ClientId = 1,
-            AddressType = "Shipping",
-            AddressName = "To Delete",
-            RecipientName = "Delete Recipient",
-            AddressLine1 = "Delete Street",
-            City = "Delete City",
-            State = "NY",
-            PostalCode = "10001",
-            Country = "USA",
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+            a.AddressName = "To Delete";
+            a.RecipientName = "Delete Recipient";
+            a.AddressLine1 = "Delete Street";
+            a.City = "Delete City";
+            a.State = "NY";
+        });
         await context.ClientAddresses.AddAsync(existingAddress);
         await context.SaveChangesAsync();
 
