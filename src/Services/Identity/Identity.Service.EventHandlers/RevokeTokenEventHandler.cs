@@ -2,6 +2,7 @@ using Identity.Service.EventHandlers.Commands;
 using Identity.Service.EventHandlers.Services;
 using MediatR;
 using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 

@@ -3,6 +3,7 @@ using Identity.Service.EventHandlers.Commands;
 using Identity.Service.EventHandlers.Services;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using System.Net.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;

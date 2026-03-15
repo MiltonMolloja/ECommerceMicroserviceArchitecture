@@ -2,6 +2,7 @@ using Identity.Domain;
 using Identity.Persistence.Database;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Identity.Service.EventHandlers.Services
