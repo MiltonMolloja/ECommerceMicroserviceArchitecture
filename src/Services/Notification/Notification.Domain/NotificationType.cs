@@ -14,6 +14,7 @@ namespace Notification.Domain
         Newsletter = 10,
         WelcomeEmail = 11,
         PasswordReset = 12,
-        PaymentRefunded = 13
+        PaymentRefunded = 13,
+        OrderStatus = 14
     }
 }
