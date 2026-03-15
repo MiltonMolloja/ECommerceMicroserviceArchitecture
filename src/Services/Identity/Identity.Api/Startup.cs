@@ -238,9 +238,9 @@ namespace Identity.Api
                     var created = db.Database.EnsureCreated();
                     logger.LogInformation("Database EnsureCreated returned: {Created}", created);
                 }
-                catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or Microsoft.EntityFrameworkCore.DbUpdateException or TimeoutException)
+                catch (Exception ex)
                 {
-                    logger.LogError(ex, "Failed to create database schema");
+                    logger.LogWarning(ex, "Failed to create database schema - continuing startup");
                     // Don't rethrow - startup should continue even if schema creation fails
                 }
             }
