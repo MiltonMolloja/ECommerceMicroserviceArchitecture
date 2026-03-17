@@ -3,6 +3,7 @@ using Catalog.Service.Queries.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Catalog.Api.Controllers
